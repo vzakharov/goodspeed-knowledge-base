@@ -26,7 +26,6 @@ export const USAGE_WINDOW_DAYS = 30;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-/** The UTC day `daysBefore` days before `end`'s, as `day` spells it. */
 function dayBefore(end: Date, daysBefore: number): string {
   return new Date(end.getTime() - daysBefore * DAY_MS)
     .toISOString()

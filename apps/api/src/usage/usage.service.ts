@@ -47,7 +47,6 @@ export class UsageService {
     });
   }
 
-  /** The usage window ending today. */
   async report(reader: Reader, now = new Date()): Promise<UsageReport> {
     const since = usageWindowStart(now);
     const days = rows(await reader.db.rpc('usage_by_day', { since }));

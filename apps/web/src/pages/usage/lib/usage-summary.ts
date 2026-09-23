@@ -23,9 +23,8 @@ function sum(values: readonly number[]): number {
 }
 
 /**
- * The report's window. It ends on the later of `now`'s UTC day and the newest
- * day reported, so a reader's clock running behind the API's still shows
- * every reported day.
+ * Ends on the later of `now`'s UTC day and the newest day reported, so a
+ * reader's clock running behind the API's still shows every reported day.
  */
 function windowDays(days: readonly UsageDay[], now: Date): string[] {
   let end = now;

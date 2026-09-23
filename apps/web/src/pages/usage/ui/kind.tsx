@@ -3,7 +3,7 @@ import { Box, Group, Text } from '@mantine/core';
 
 import { type CssColor, cssColor } from '@/shared/ui';
 
-/** A kind's colour follows the kind, so a chart and its legend always agree. */
+/** A kind keeps its colour wherever it is drawn, never one assigned by rank. */
 export const KIND_COLOR: Record<UsageKind, CssColor> = {
   chat: 'series-1',
   condense: 'series-2',

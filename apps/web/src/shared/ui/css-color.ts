@@ -10,8 +10,7 @@ export const CSS_COLORS = [
   'border-hairline-strong',
   'surface',
   'surface-strong',
-  // Chart series, in the fixed categorical order: slot n is the nth series a
-  // chart draws, whatever it is.
+  // Chart series slots, handed to a chart's entities in this fixed order.
   'series-1',
   'series-2',
   'series-3',
