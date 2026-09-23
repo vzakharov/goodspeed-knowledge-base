@@ -1,14 +1,14 @@
 Proposed squash title/body:
 
 ```
-feat: knowledge base database, API, stack, sign-in, documents and chat (pr #1)
+feat: knowledge base database, API, sign-in, documents, chat, usage (pr #1)
 ```
 
 ```
 The repository is the answer to Goodspeed's assessment brief, an
 AI-powered knowledge base with a RAG chat over the user's documents.
 This lands the monorepo, the schema, the API, one command that brings
-the stack up locally, and the web app through its chat.
+the stack up locally, and the web app over all of it.
 
 apps/web is a Next.js 16 static export carrying the design system of
 vzakharov/vovazakharov.com without its product. Supabase Auth signs
@@ -17,7 +17,9 @@ and RLS being what protect the data, and a typed client parses each
 response with the contract's schema under TanStack Query. Documents
 are listed, filtered by tag, edited with a markdown preview and shown
 searchable or not; the chat streams each answer as it is written and
-lists the passages it cites, linked to their documents. Page state
+lists the passages it cites, linked to their documents; the usage
+page charts each kind of model call's tokens per UTC day and lists
+them per model, naming calls a provider left uncounted. Page state
 lives in search parameters, a static export having no segment for a
 reader's ids. Lint, FSD boundaries, type-overlap and knip run from the
 root over every workspace.
