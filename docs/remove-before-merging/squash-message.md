@@ -37,7 +37,8 @@ and embeddings are configured apart over one OpenAI-compatible client,
 providers being preset rows; ingestion chunks markdown-aware and
 embeds in batches, and chat retrieves, cites [n] and streams over
 server-sent events. pnpm bootstrap starts the stack and writes each
-app's .env, and vet runs the database and end-to-end suites.
+app's .env; the README gives the reasons behind each design choice
+and a worked .env swap per provider.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
