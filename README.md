@@ -136,11 +136,19 @@ request, the abort reaches the provider call, and a stopped answer is not
 stored.
 
 **The AI layer is two capabilities, and a provider is a row of data.** The
-code that uses a model sees only two interfaces, in `apps/api/src/ai/models.ts`:
+code that uses a model sees only two interfaces, in outline (the full ones are
+in `apps/api/src/ai/models.ts`):
 
 ```ts
-type ChatModel = { complete(messages); stream(messages) };
-type EmbeddingModel = { dimensions; embed(texts) };
+type ChatModel = {
+  complete: (messages: ChatMessage[]) => Promise<ChatCompletion>;
+  stream: (messages: ChatMessage[]) => AsyncIterable<ChatStreamPart>;
+};
+
+type EmbeddingModel = {
+  dimensions: number;
+  embed: (texts: string[]) => Promise<Embeddings>;
+};
 ```
 
 They are separate because providers are: Groq and OpenRouter serve chat but
