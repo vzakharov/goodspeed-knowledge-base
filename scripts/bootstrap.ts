@@ -2,23 +2,15 @@
 
 /**
  * From a fresh clone to a runnable stack, as `pnpm bootstrap` (after its
- * `pnpm install`):
- *
- * 1. generates the local Auth signing key, `supabase/signing_keys.json`, if
- *    there is none — ES256, so the API verifies tokens against JWKS as it would
- *    against a hosted project;
- * 2. starts the local Supabase stack and applies any pending migration;
- * 3. writes each app's `.env` from its `.env.example`, with the Supabase values
- *    read from the running stack;
- * 4. checks the API's configuration and says what is left to set.
+ * `pnpm install`). The local Auth key is ES256, so the API verifies tokens
+ * against JWKS exactly as it would against a hosted project.
  *
  * Re-running is safe and is how a changed stack reaches the apps: nothing
  * already running is restarted, no data is reset, and an existing `.env` keeps
  * every value in it except the Supabase ones, which follow the stack. A
  * variable a template gained since is appended with its default.
  *
- * Bare Node runs this file, relying on its type stripping, so the import of the
- * API's config carries its `.ts` extension.
+ * Bare Node runs this file on its type stripping, so imports carry `.ts`.
  */
 
 /* eslint-disable no-console -- stdout is this script's interface: the stack's
