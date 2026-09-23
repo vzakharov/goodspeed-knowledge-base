@@ -59,7 +59,15 @@ floor, and `/finalize`'s reads only what came after the last chunk.
 
 ## Progress
 
-Steps 1–5 are done bar the stretch upload; step 6 has not started. `vet` is
+Steps 1–6 are done bar the stretch upload and `/finalize`.
+
+**The eighth session** wrote the README — setup, layout, the architecture
+decisions and their reasons, the chunking and retrieval numbers, a worked
+`.env` block per provider preset (Ollama's embeddings through a described
+768-wide migration, not a committed one), what more time would buy — and
+found no `@tobeused` tag left. The Loom links are placeholders for the
+operator. Left: the `/dry` leftovers below (the operator's call), then
+`/finalize`. `vet` is
 green at the pause and
 needs the stack up — `pnpm bootstrap` in a fresh session, after starting
 `dockerd` by hand. The API boots only with a model provider configured;
@@ -369,10 +377,10 @@ Ordered so each step leaves `vet` green and the app runnable.
 
 ### 6. Submission
 
-- [ ] README: setup, architecture decisions and why, how to swap providers
+- [x] README: setup, architecture decisions and why, how to swap providers
       (one worked example per preset), what more time would buy, both Loom
       links.
-- [ ] No `@tobeused` tag survives: each export either found its consumer
+- [x] No `@tobeused` tag survives: each export either found its consumer
       (drop the tag) or never did (drop the export).
 - [ ] `/finalize`.
 
