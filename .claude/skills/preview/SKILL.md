@@ -47,15 +47,27 @@ There is deliberately no Playwright dependency — Chrome's own `--screenshot` i
 
 ## Routes
 
-| Route      | Why                                                     |
-| ---------- | ------------------------------------------------------- |
-| `/sign-in` | sign-in and sign-up, the one route outside the guard    |
-| `/`        | the signed-in overview; signed out, it sends to sign-in |
+| Route                  | Why                                                                     |
+| ---------------------- | ----------------------------------------------------------------------- |
+| `/sign-in`             | sign-in and sign-up, the one route outside the guard                    |
+| `/`                    | the signed-in overview; signed out, it sends to sign-in                 |
+| `/documents`           | the list, its tag filter (`?tag=`) and the not-searchable notice        |
+| `/documents/new`       | the document form, with its Write/Preview tabs                          |
+| `/documents/edit?id=…` | the same form over a saved document, its status notice and delete modal |
 
 A route behind the guard renders only a loader until a session exists, so a
-bare `--screenshot` of it shows nothing. Sign up through `/sign-in` in a
-scripted browser first — the local stack confirms no email — and capture in
-that same browser context.
+bare `--screenshot` of it shows nothing. Get a session from the Auth API —
+`POST $NEXT_PUBLIC_SUPABASE_URL/auth/v1/signup` with the publishable key as
+`apikey`; the local stack confirms no email — then, in a CDP-driven browser,
+store its JSON under `localStorage['sb-127-auth-token']` on the app's origin
+(`sb-<first label of the Supabase host>-auth-token`) and navigate. The same
+token as a `Bearer` seeds documents through the API.
+
+The API will not boot without a model provider. `startFakeOpenAi` in
+`apps/api/test/fake-openai.ts` serves one locally — run it from a throwaway
+script under `tmp/preview/` with `node --import ./register.js` in `apps/api`,
+and start the API with both capabilities' `*_PROVIDER=custom` and
+`*_BASE_URL` pointed at it.
 
 Add a row per route a visual change can reach.
 
