@@ -1,28 +1,32 @@
 Proposed squash title/body:
 
 ```
-feat: knowledge base foundation, database, API, stack and sign-in (pr #1)
+feat: knowledge base database, API, stack, sign-in and documents (pr #1)
 ```
 
 ```
 The repository is the answer to Goodspeed's assessment brief, an
 AI-powered knowledge base with a RAG chat over the user's documents.
 This lands the monorepo, the schema, the API, one command that brings
-the stack up locally, and the web app as far as sign-in.
+the stack up locally, and the web app through its documents pages.
 
 apps/web is a Next.js 16 static export carrying the design system of
 vzakharov/vovazakharov.com without its product. Supabase Auth signs
-the reader in from the browser; a client-side guard fronts every other
-route, the API and RLS being what protect the data, and a typed client
-parses each response with the contract's schema under TanStack Query.
-Lint, FSD boundaries, type-overlap, knip and the cost ledger run from
-the root over every workspace.
+the reader in; a client-side guard fronts every other route, the API
+and RLS being what protect the data, and a typed client parses each
+response with the contract's schema under TanStack Query. The
+documents pages list, filter by tag, create, edit with a markdown
+preview and delete, showing whether each document is searchable and
+retrying one that is not; state lives in search parameters, a static
+export having no segment for a reader's ids. Lint, FSD boundaries,
+type-overlap and knip run from the root over every workspace.
 
 supabase/ holds the schema: documents, chunks as vector(1536) under
 HNSW, conversations and append-only usage events, with row-level
 security on every table and a security-invoker search function, so
 the caller's own policies scope retrieval. pgTAP checks a second user
-and an anonymous caller reach nothing of the first user's.
+and an anonymous caller reach nothing of the first user's, and that a
+list row's excerpt is the markdown's opening as plain text.
 
 apps/api is NestJS over @kb/contracts, the Zod home of every wire
 shape. It verifies the Supabase token against JWKS and queries as that
