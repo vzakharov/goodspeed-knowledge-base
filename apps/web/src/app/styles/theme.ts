@@ -12,6 +12,9 @@ import classes from './theme.module.scss';
 
 const foreground = cssColor('foreground');
 
+// Mantine's headings take their own family rather than inheriting the body's.
+const serif = 'var(--font-merriweather), serif';
+
 // The palette is monochrome, so every shade is the same token. Mantine still
 // wants ten.
 const monochrome: MantineColorsTuple = [
@@ -42,12 +45,12 @@ const variantColorResolver: VariantColorsResolver = (input) =>
     : defaultVariantColorsResolver(input);
 
 export const theme = createTheme({
-  fontFamily: 'var(--font-merriweather), serif',
+  fontFamily: serif,
   fontFamilyMonospace: 'var(--font-mono), monospace',
   // Sizes live here rather than on call sites: a `fz` prop would render as an
   // inline style no stylesheet could reach.
   headings: {
-    fontFamily: 'var(--font-merriweather), serif',
+    fontFamily: serif,
     sizes: {
       h1: { fontSize: '36px', lineHeight: '40px' },
       h2: { fontSize: '30px', lineHeight: '36px' },

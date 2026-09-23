@@ -13,6 +13,9 @@ import classes from './theme-toggle.module.scss';
 
 const SIZE = 38;
 
+// Shared by both icons, which swap in one slot.
+const ICON_SIZE = 20;
+
 const OPPOSITE = {
   light: 'dark',
   dark: 'light',
@@ -52,8 +55,8 @@ export function ThemeToggle({ label }: Labeled) {
       className={classes['toggle']}
     >
       {/* The icon names the scheme a click gets you, not the one you are in. */}
-      <Moon size={20} aria-hidden className={classes['whenLight']} />
-      <Sun size={20} aria-hidden className={classes['whenDark']} />
+      <Moon size={ICON_SIZE} aria-hidden className={classes['whenLight']} />
+      <Sun size={ICON_SIZE} aria-hidden className={classes['whenDark']} />
     </ActionIcon>
   );
 }

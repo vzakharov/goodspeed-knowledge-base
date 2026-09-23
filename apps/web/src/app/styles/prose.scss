@@ -10,6 +10,11 @@
 // alone — the element-specific rules further down and any component sheet
 // override it without having to out-specify it.
 
+// The foreground at partial strength — markers, the quote rule, table rules.
+@function foreground-at($strength) {
+  @return color-mix(in srgb, var(--color-foreground) $strength, transparent);
+}
+
 .prose-content {
   font-size: 1rem;
   line-height: 1.75;
@@ -114,11 +119,11 @@
   }
 
   :where(ul > li)::marker {
-    color: color-mix(in srgb, var(--color-foreground) 40%, transparent);
+    color: foreground-at(40%);
   }
 
   :where(ol > li)::marker {
-    color: color-mix(in srgb, var(--color-foreground) 60%, transparent);
+    color: foreground-at(60%);
     font-weight: 400;
   }
 
@@ -141,8 +146,7 @@
   :where(blockquote) {
     margin: 1.6em 0;
     padding-inline-start: 1em;
-    border-inline-start: 0.25rem solid
-      color-mix(in srgb, var(--color-foreground) 40%, transparent);
+    border-inline-start: 0.25rem solid foreground-at(40%);
     font-style: italic;
     font-weight: 500;
     quotes: '“' '”' '‘' '’';
@@ -226,8 +230,7 @@
   }
 
   :where(thead) {
-    border-bottom: 1px solid
-      color-mix(in srgb, var(--color-foreground) 30%, transparent);
+    border-bottom: 1px solid foreground-at(30%);
   }
 
   :where(thead th) {
@@ -237,8 +240,7 @@
   }
 
   :where(tbody tr) {
-    border-bottom: 1px solid
-      color-mix(in srgb, var(--color-foreground) 15%, transparent);
+    border-bottom: 1px solid foreground-at(15%);
   }
 
   // `:last-child` belongs inside the `:where()` for the same reason as the
