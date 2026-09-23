@@ -32,37 +32,80 @@ and everything from "Remaining work" on is the build.
   rule (one language here), the markdown content pipeline, the CV, the
   multi-site mechanism, GitHub Pages deploy, the PDF/OG renders.
 
+## Progress (second session, paused here)
+
+Steps 1, 3 and 4 are done, and step 2 but for the setup script and
+`.env.example`; step 5 (the web app) and step 6 have not started. `vet` is
+green at the pause, and so are `pnpm test`, `pnpm test:e2e` (the API over the
+local stack, two users) and `pnpm test:db` (pgTAP).
+
+**Why paused:** the branch was growing from "the foundation" into the whole
+app in one PR. Open: whether to land the foundation and backend as they stand
+and build the web app in a PR of its own, or to carry on here.
+
+**Open questions, as taken:** 1 — the aggregate Mantine sheet, and
+`check:mantine-styles` retired. 2 — lint stays at the root. 3 — boundaries
+over the API, lightly (`eslint.config.ts` § the API's layout). 4 — the
+recommendation, `vector(1536)` and `text-embedding-3-small`; the 768-for-all
+alternative is still a one-migration change. 5 — Docker runs in the cloud
+session: `dockerd` is started by hand and images come from
+`public.ecr.aws` (Docker Hub rate-limits it), so the local stack is how the
+database layer is verified.
+
+**Where the build departs from the steps below:**
+
+- Usage is its own append-only `usage_events` table (kind, provider, model,
+  tokens) rather than token columns on `messages`, so embedding and condense
+  calls are counted too; `usage_by_day` aggregates it.
+- The list, tag and usage reads are `security invoker` SQL functions rather
+  than views, since the type generator reads every view column as nullable.
+- `document_chunks.user_id` is held equal to the document's by a composite
+  foreign key; `replace_document_chunks` swaps a document's chunks in one
+  transaction, guarded by `content_hash`.
+- Local Auth signs with an ES256 key in `supabase/signing_keys.json`
+  (gitignored), so the API verifies tokens against JWKS; generating it is the
+  setup script's job.
+- API tests run under `@swc-node/register` (`apps/api/register.js`), since
+  `tsx` cannot emit decorator metadata; `pnpm test` is now the root's own
+  tests plus `turbo run test`. CLAUDE.md § "Testing" and § "Vetting" still
+  describe the old single glob.
+
+**Left before the web app:** the `pnpm setup` script (start the stack,
+generate the signing key if missing, reset, write each app's `.env` from
+`supabase status -o env`), `.env.example`, `test:db` and `test:e2e` in
+`vet.sh`, and CLAUDE.md brought up to the new workspaces.
+
 ## Remaining work
 
 Ordered so each step leaves `vet` green and the app runnable.
 
 ### 1. Settle the foundation
 
-- [ ] Answer the open questions below; the answers change steps 2–4.
-- [ ] Strip the print medium the design system still carries — `@media print`
+- [x] Answer the open questions below; the answers change steps 2–4.
+- [x] Strip the print medium the design system still carries — `@media print`
       blocks in `card.module.scss`, `theme.module.scss`, `prose.scss`, the
       `print-hidden` classes in `chip-nav.tsx` and `theme-toggle.tsx`, and
       the comments naming the deleted `print.scss`. The caller printed its
       pages to PDF; nothing here prints.
-- [ ] Retarget `prose.scss` from the caller's content pipeline to rendered
+- [x] Retarget `prose.scss` from the caller's content pipeline to rendered
       document markdown (the document view and the chat's answers), dropping
       the Shiki/Mermaid/directive rules nothing here emits.
-- [ ] Revisit `no-console` in `eslint/rule-groups/core.ts`: its rationale is the
+- [x] Revisit `no-console` in `eslint/rule-groups/core.ts`: its rationale is the
       static export's, and the API logs through Nest's `Logger`.
 
 ### 2. Monorepo and DX
 
-- [ ] `packages/contracts` (`@kb/contracts`) — Zod schemas for every request
+- [x] `packages/contracts` (`@kb/contracts`) — Zod schemas for every request
       and response the API exchanges with the web app; both sides infer their
       types from it (CLAUDE.md § "Derive types and schemas").
-- [ ] `apps/api` — NestJS, built with SWC. Its tsconfig extends the root but
+- [x] `apps/api` — NestJS, built with SWC. Its tsconfig extends the root but
       turns off `erasableSyntaxOnly` and turns on decorator metadata, since
       Nest's DI is constructor parameter properties plus
       `emitDecoratorMetadata`. Extend `eslint.config.ts` for it: a scoped block
       for what Nest's idiom needs (`no-extraneous-class` with
       `allowWithDecorator`, parameter properties), and — if the answer to Q3 is
       yes — a boundaries layout over its modules.
-- [ ] `supabase/` at the root, the CLI's own layout: `config.toml` (email
+- [x] `supabase/` at the root, the CLI's own layout: `config.toml` (email
       confirmation off locally, or Mailpit documented), `migrations/`,
       `seed.sql`. The `supabase` npm package as a root devDependency, so no
       global install.
@@ -77,32 +120,32 @@ Ordered so each step leaves `vet` green and the app runnable.
 
 ### 3. Database
 
-- [ ] Migration: `documents` (`id`, `user_id` default `auth.uid()`, `title`,
+- [x] Migration: `documents` (`id`, `user_id` default `auth.uid()`, `title`,
       `content`, `tags text[]`, `content_hash`, `embedding_status`,
       `created_at`, `updated_at` via trigger).
-- [ ] Migration: `document_chunks` (`document_id` on delete cascade,
+- [x] Migration: `document_chunks` (`document_id` on delete cascade,
       `user_id` denormalized for the policy and the search filter,
       `chunk_index`, `content`, `embedding vector(<dims>)`,
       `embedding_model`), HNSW index on `vector_cosine_ops`.
-- [ ] Migration: `conversations`, `messages` (`role`, `content`,
+- [x] Migration: `conversations`, `messages` (`role`, `content`,
       `citations jsonb`, `model`, `prompt_tokens`, `completion_tokens`).
-- [ ] RLS on every table, one policy per operation, `user_id = auth.uid()`.
-- [ ] `match_document_chunks(query_embedding, match_count, min_similarity)` —
+- [x] RLS on every table, one policy per operation, `user_id = auth.uid()`.
+- [x] `match_document_chunks(query_embedding, match_count, min_similarity)` —
       `security invoker`, so the caller's RLS scopes the search and no
       `user_id` argument can be spoofed.
-- [ ] Tests over the policies: a second user sees, updates and deletes nothing
+- [x] Tests over the policies: a second user sees, updates and deletes nothing
       of the first's (CLAUDE.md § "Testing": authorization code must have
       tests).
 
 ### 4. API
 
-- [ ] Auth guard: verify the Supabase access token (JWKS), then build a
+- [x] Auth guard: verify the Supabase access token (JWKS), then build a
       per-request Supabase client carrying the user's JWT, so Postgres RLS is
       the enforcement and the API's own scoping is the second line. No
       service-role key on any user-data path.
-- [ ] Config module: one Zod schema over `process.env`, parsed at boot —
+- [x] Config module: one Zod schema over `process.env`, parsed at boot —
       a misconfigured provider fails the start, not the first request.
-- [ ] AI layer (the brief's "key requirement"):
+- [x] AI layer (the brief's "key requirement"):
   - Two capabilities, configured independently: `ChatModel` (`stream`,
     `complete`) and `EmbeddingModel` (`embed`, `dimensions`). Independent
     because providers differ: Groq and OpenRouter serve chat but no
@@ -117,8 +160,8 @@ Ordered so each step leaves `vet` green and the app runnable.
   - Tests: fakes for the RAG services; the OpenAI-compatible implementation
     tested against a local HTTP server speaking the spec (CLAUDE.md: mock at
     HTTP boundaries).
-- [ ] Documents module: CRUD over `@kb/contracts` schemas.
-- [ ] Ingestion: on create and on update-with-changed-`content_hash`, chunk →
+- [x] Documents module: CRUD over `@kb/contracts` schemas.
+- [x] Ingestion: on create and on update-with-changed-`content_hash`, chunk →
       embed in batches → replace the document's chunks → set
       `embedding_status`. A failure sets `failed` and propagates; a retry
       endpoint re-runs it.
@@ -127,7 +170,7 @@ Ordered so each step leaves `vet` green and the app runnable.
     document title and heading path prefixed to the text that is embedded.
     Tokens estimated from characters so no one provider's tokenizer is baked
     in. The README explains each number.
-- [ ] Chat module: condense a follow-up into a standalone query from the
+- [x] Chat module: condense a follow-up into a standalone query from the
       history → embed → `match_document_chunks` → prompt with numbered
       context blocks and an instruction to answer only from them, cite `[n]`,
       and say so when the context does not hold the answer → stream.
@@ -135,7 +178,7 @@ Ordered so each step leaves `vet` green and the app runnable.
     client (`EventSource` can send neither a body nor an `Authorization`
     header). Token deltas, then one final event carrying citations and usage.
   - Persist both turns with citations and token counts.
-- [ ] Usage endpoint aggregating tokens per model per day.
+- [x] Usage endpoint aggregating tokens per model per day.
 
 ### 5. Web
 
