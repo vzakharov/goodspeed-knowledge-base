@@ -1,8 +1,8 @@
-import { Alert, Button, Group, Text } from '@mantine/core';
+import { Button, Group, Text } from '@mantine/core';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { pick } from '@/shared/lib/collections';
-import { ErrorAlert } from '@/shared/ui';
+import { Card, ErrorAlert } from '@/shared/ui';
 
 import { documentQueries, reembedOutdated } from '@/entities/document';
 
@@ -26,7 +26,7 @@ export function OutdatedNotice() {
   if (outdated === 0) return null;
 
   return (
-    <Alert variant="light">
+    <Card>
       <Group justify="space-between">
         <Text size="sm">
           {outdated === 1
@@ -45,6 +45,6 @@ export function OutdatedNotice() {
           Re-embed
         </Button>
       </Group>
-    </Alert>
+    </Card>
   );
 }

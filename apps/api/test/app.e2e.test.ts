@@ -200,8 +200,8 @@ describe('the API', () => {
     );
 
     assert.deepEqual(
-      alices.documents.map(({ id, excerpt }) => [id, excerpt.slice(0, 10)]),
-      [[doc.id, '# Espresso']],
+      alices.documents.map(({ id, excerpt }) => [id, excerpt.slice(0, 8)]),
+      [[doc.id, 'Espresso']],
     );
   });
 

@@ -11,12 +11,14 @@ type Look = Labeled &
 
 /**
  * Only a failure is coloured: the palette is monochrome, and the one state
- * asking the reader to act is the one that breaks from it.
+ * asking the reader to act is the one that breaks from it. The rest keep to
+ * `outline` and the theme's `default` skin: Mantine's tinted variants resolve
+ * against a literal palette, and on this one lose their text in a scheme.
  */
 const LOOK = {
   pending: {
     label: 'Embedding',
-    variant: 'light',
+    variant: 'default',
     explain: () => 'Being split and embedded; not searchable yet.',
   },
   ready: {
@@ -33,7 +35,7 @@ const LOOK = {
   },
   stale: {
     label: 'Out of date',
-    variant: 'light',
+    variant: 'default',
     explain: ({ model }) =>
       `Embedded with ${model ?? 'another model'}, which is no longer the configured one; embed it again to search it.`,
   },
