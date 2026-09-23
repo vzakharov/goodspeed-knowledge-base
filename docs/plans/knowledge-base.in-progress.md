@@ -10,6 +10,16 @@ This plan was written by the `/spinoff` session in `vzakharov/vovazakharov.com`
 that seeded the repo, and is left `paused`: the seed carried the foundation,
 and everything from "Remaining work" on is the build.
 
+## Session budget
+
+Each session takes one digestible chunk of the remaining work — a slice that
+lands whole, leaves `vet` green, and fits in a budget of a little over 200k
+tokens. Glance at the running total now and then rather than on every step.
+At the chunk's end — or earlier, if the budget is closing in — record under
+"Progress" what is done and what is left, `git mv` the plan back to
+`knowledge-base.paused.md`, commit and push, so the next session resumes from
+the file rather than from the conversation.
+
 ## Done in the seed (this PR)
 
 - `main` carries the agent loop, copied unchanged from the caller.
