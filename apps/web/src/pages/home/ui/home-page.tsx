@@ -1,6 +1,6 @@
 'use client';
 
-import { aiSettingsSchema } from '@kb/contracts';
+import { type AiSettings, aiSettingsSchema } from '@kb/contracts';
 import { Alert, Loader, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 
@@ -8,11 +8,10 @@ import { api } from '@/shared/api';
 import type { Labeled } from '@/shared/typings';
 import { Card, PageShell, Section } from '@/shared/ui';
 
-type ModelCardProps = Labeled & {
-  provider: string;
-  model: string;
-  detail?: string;
-};
+type ModelCardProps = Labeled &
+  AiSettings['chat'] & {
+    detail?: string;
+  };
 
 function ModelCard({ label, provider, model, detail }: ModelCardProps) {
   return (

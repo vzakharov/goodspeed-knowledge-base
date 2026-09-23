@@ -12,15 +12,13 @@ export class ApiRequestError extends Error {
   }
 }
 
-type ApiRequest = {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+type ApiRequest = Pick<RequestInit, 'method' | 'signal'> & {
   /** Sent as the JSON body. */
   json?: unknown;
-  signal?: AbortSignal;
 };
 
 type ApiClientOptions = {
-  baseUrl: string;
+  apiUrl: string;
   /** Read per request, so a refreshed token is the one sent. */
   accessToken: () => Promise<string | null>;
 };
@@ -38,7 +36,7 @@ async function requestError(response: Response): Promise<ApiRequestError> {
   );
 }
 
-export function createApiClient({ baseUrl, accessToken }: ApiClientOptions) {
+export function createApiClient({ apiUrl, accessToken }: ApiClientOptions) {
   /** The raw response, once its status is known to be 2xx. */
   async function send(
     path: string,
@@ -49,11 +47,11 @@ export function createApiClient({ baseUrl, accessToken }: ApiClientOptions) {
     if (token !== null) headers.set('Authorization', `Bearer ${token}`);
     if (json !== undefined) headers.set('Content-Type', 'application/json');
 
-    const response = await fetch(new URL(path, baseUrl), {
+    const response = await fetch(new URL(path, apiUrl), {
       method,
       headers,
       body: json === undefined ? null : JSON.stringify(json),
-      signal: signal ?? null,
+      signal,
     });
     if (!response.ok) throw await requestError(response);
 

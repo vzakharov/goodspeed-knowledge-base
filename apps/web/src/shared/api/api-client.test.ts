@@ -9,7 +9,7 @@ import { ApiRequestError, createApiClient } from './api-client.ts';
 type Reply = { status: number; body: string };
 
 let server: Server;
-let baseUrl: string;
+let apiUrl: string;
 let reply: Reply;
 let received: IncomingMessage & { body: string };
 
@@ -30,7 +30,7 @@ before(async () => {
   });
   const address = server.address();
   assert.ok(address !== null && typeof address === 'object');
-  baseUrl = `http://localhost:${address.port}`;
+  apiUrl = `http://localhost:${address.port}`;
 });
 
 after(() => server.close());
@@ -42,7 +42,7 @@ beforeEach(() => {
 const nameSchema = z.object({ name: z.string() });
 
 const clientWith = (token: string | null) =>
-  createApiClient({ baseUrl, accessToken: async () => token });
+  createApiClient({ apiUrl, accessToken: async () => token });
 
 describe('createApiClient', () => {
   it('sends the access token and parses the body with the schema', async () => {

@@ -147,10 +147,8 @@ const costOf = (tokens: TokenTally, rates: Rates): number => {
   return usd;
 };
 
-const rateKey = (
-  model: string,
-  speed: string | null | undefined,
-): string => `${model}/${speed ?? 'standard'}`;
+const rateKey = (model: string, speed: string | null | undefined): string =>
+  `${model}/${speed ?? 'standard'}`;
 
 // Skipped rather than priced, so it warns instead of tripping the unpriced throw.
 const SYNTHETIC_MODEL = '<synthetic>';

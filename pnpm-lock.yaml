@@ -14,6 +14,9 @@ importers:
       '@feature-sliced/steiger-plugin':
         specifier: ^0.7.0
         version: 0.7.0(typescript@5.9.3)
+      '@steiger/toolkit':
+        specifier: 0.2.3
+        version: 0.2.3
       '@types/estree':
         specifier: ^1.0.9
         version: 1.0.9
@@ -1522,6 +1525,14 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@steiger/toolkit@0.2.3':
+    resolution: {integrity: sha512-egAgPVSN5+bqmRDc0oGm4cXZtkF8puaBY7A7lft7nxJwb+v/J5aaFJ3vzQ9WxTR/qYl2bK5uKOIAGaj63Z0F1A==}
+    peerDependencies:
+      vitest: ^1.6.0 || ^2.1.8 || ^3.0.0
+    peerDependenciesMeta:
+      vitest:
+        optional: true
 
   '@supabase/auth-js@2.117.1':
     resolution: {integrity: sha512-3vJpc5thxaovbZ2zrWagzp/ZtCcXpQk1xftinzneNB1XLdhAmjqChOnj2Y8wpriYEFVvlqC+sFbR0JBUi83hDA==}
@@ -5698,6 +5709,8 @@ snapshots:
   '@sindresorhus/merge-streams@4.0.0': {}
 
   '@standard-schema/spec@1.1.0': {}
+
+  '@steiger/toolkit@0.2.3': {}
 
   '@supabase/auth-js@2.117.1':
     dependencies:
