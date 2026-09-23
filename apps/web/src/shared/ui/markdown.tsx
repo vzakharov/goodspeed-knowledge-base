@@ -4,8 +4,8 @@ import remarkGfm from 'remark-gfm';
 type MarkdownProps = { source: string };
 
 /**
- * A document's markdown as `prose.scss` styles it. `react-markdown` renders no
- * raw HTML, so a document cannot inject markup into the page.
+ * Markdown as `prose.scss` styles it. `react-markdown` renders no raw HTML, so
+ * neither a document nor a model's answer can inject markup into the page.
  */
 export function Markdown({ source }: MarkdownProps) {
   return (

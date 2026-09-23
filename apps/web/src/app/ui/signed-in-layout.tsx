@@ -26,6 +26,7 @@ const HEADER_HEIGHT = 56;
 const NAV: LabeledLink[] = [
   { label: 'Overview', href: '/' },
   { label: 'Documents', href: '/documents' },
+  { label: 'Chat', href: '/chat' },
 ];
 
 /**

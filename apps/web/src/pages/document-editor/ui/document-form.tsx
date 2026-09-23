@@ -19,10 +19,9 @@ import { schemaResolver, useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 
 import { pick } from '@/shared/lib/collections';
-import { ErrorAlert } from '@/shared/ui';
+import { ErrorAlert, Markdown } from '@/shared/ui';
 
 import classes from './document-form.module.scss';
-import { Markdown } from './markdown';
 
 const CONTENT_MIN_ROWS = 16;
 
