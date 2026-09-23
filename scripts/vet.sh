@@ -8,36 +8,24 @@ cd "$(dirname "$0")/.."
 
 status=0
 
-# Runs alone, and first. `next build` regenerates `apps/web/.next/types/`, which
-# that workspace's tsconfig includes, so overlapping it with the type check makes
-# tsc read a route-type module the build has not finished writing — an
-# intermittent TS2307 on an import that is fine by the time anyone looks.
-#
-# Kept out of the fan-out below rather than run as a batch of its own, because
-# run-parallel.sh wipes its log directory at startup — a build log written there
-# would be gone by the time the second batch finished citing it.
+# Runs one step on its own, replaying its log only when it fails. The log goes
+# under tmp/ rather than through run-parallel.sh, which wipes its log directory
+# at startup — a log written there would be gone by the time the fan-out
+# finished citing it.
+alone() {
+  local name=$1
+  shift
+  if ! "$@" >"tmp/vet-$name.log" 2>&1; then
+    sed "s/^/[$name] /" "tmp/vet-$name.log"
+    printf '[%s] full log: tmp/vet-%s.log\n' "$name" "$name"
+    status=1
+  fi
+}
+
 mkdir -p tmp
-if ! pnpm build >tmp/vet-build.log 2>&1; then
-  sed 's/^/[build] /' tmp/vet-build.log
-  printf '[build] full log: tmp/vet-build.log\n'
-  status=1
-fi
+alone build pnpm build
+alone styles pnpm styles:codegen
 
-# The one check that repairs what it finds, and it reports by failing: the
-# generator exits non-zero exactly when it had to write, so a stale partial is
-# both fixed and named in one pass and `git diff` is the report.
-#
-# It runs alone because it *writes* two `.scss` files that the fan-out's
-# stylelint and Prettier glob, and would hand one of them over truncated.
-if ! pnpm styles:codegen >tmp/vet-styles.log 2>&1; then
-  sed 's/^/[styles] /' tmp/vet-styles.log
-  printf '[styles] full log: tmp/vet-styles.log\n'
-  status=1
-fi
-
-# None of these writes anything another one reads, so they overlap freely.
-# Not `pnpm lint` — it carries --fix, and the fan-out must not mutate the tree;
-# `lint:css` is the check-only stylelint form, for the same reason.
 # The type check's workspace half goes through Turborepo, whose `typecheck`
 # depends on `build` — a cache hit on the build that just ran, never a rebuild.
 # type-overlap reads source text only; the test run writes only into the OS

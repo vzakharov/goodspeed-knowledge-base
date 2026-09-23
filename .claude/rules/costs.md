@@ -6,6 +6,7 @@ paths:
   - scripts/costs-report.ts
   - scripts/lib/session-cost.ts
   - scripts/lib/cost-totals.ts
+  - scripts/lib/ledger.ts
   - .claude/hooks/stop-session-cost.sh
   - .claude/hooks/prompt-session-name.sh
 ---

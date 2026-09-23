@@ -16,15 +16,13 @@ import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { flag, given } from './lib/argv.ts';
+import { readPrices, root, sessionsDir } from './lib/ledger.ts';
 import {
-  parsePrices,
   parseSessionCost,
   type SessionCost,
   summariseTranscript,
 } from './lib/session-cost.ts';
 import { writeAtomic } from './lib/write-atomic.ts';
-
-const root = process.env['CLAUDE_PROJECT_DIR'] ?? process.cwd();
 
 const transcript = flag('transcript');
 if (transcript === undefined) {
@@ -66,24 +64,16 @@ const nameOn = (row: string): string | null => {
   }
 };
 
-const prices = parsePrices(
-  readFileSync(path.join(root, '.claude/costs/prices.json'), 'utf8'),
-);
 const cost = summariseTranscript(
   {
     main: readFileSync(transcript, 'utf8'),
     subagents: subagentsOf(transcript),
   },
-  prices,
+  readPrices(),
   flag('session-id') ?? path.basename(transcript, '.jsonl'),
 );
 
-const out = path.join(
-  root,
-  '.claude/costs/sessions',
-  monthOf(cost),
-  `${cost.sessionId}.json`,
-);
+const out = path.join(sessionsDir, monthOf(cost), `${cost.sessionId}.json`);
 const named: SessionCost = { ...cost, name: flag('name') ?? nameOn(out) };
 writeAtomic(root, out, `${JSON.stringify(named, null, 2)}\n`);
 

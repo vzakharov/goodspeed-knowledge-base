@@ -19,14 +19,9 @@ import path from 'node:path';
 
 import { flag, given } from './lib/argv.ts';
 import { type Bucket, totalsOf } from './lib/cost-totals.ts';
-import {
-  parsePrices,
-  parseSessionCost,
-  type SessionCost,
-} from './lib/session-cost.ts';
+import { readPrices, sessionsDir } from './lib/ledger.ts';
+import { parseSessionCost, type SessionCost } from './lib/session-cost.ts';
 
-const root = process.env['CLAUDE_PROJECT_DIR'] ?? process.cwd();
-const sessionsDir = path.join(root, '.claude/costs/sessions');
 const wanted = flag('month');
 
 const months = (() => {
@@ -94,13 +89,10 @@ console.log(
   `\ntotal ${usd(totals.costUsd)} over ${count(totals.sessions, 'session')}${subagents > 0 ? `, ${usd(subagents)} of it subagents` : ''}`,
 );
 
-// The hand-kept rate table has no published source to check itself against, so
-// the report states its age, and checks the arithmetic against the only second
-// opinion there is: what Claude Code itself counted the session at, recorded in
-// the transcript the row was priced from.
-const prices = parsePrices(
-  readFileSync(path.join(root, '.claude/costs/prices.json'), 'utf8'),
-);
+// The rate table is hand-kept, so the report states its age and checks the
+// arithmetic against Claude Code's own count — one way only, with the slack
+// `.claude/rules/costs.md` § "Checking the arithmetic" explains.
+const prices = readPrices();
 const days = Math.floor((Date.now() - Date.parse(prices.as_of)) / 86_400_000);
 console.log(
   `\nrates as of ${prices.as_of} (${count(days, 'day')} ago), hand-kept in .claude/costs/prices.json`,
@@ -112,18 +104,6 @@ if (stale > 0)
     `${count(stale, 'row')} priced under an older table; their transcripts are gone, so the figures stand as billed at the time`,
   );
 
-// The check runs one way only, and that is what makes it sound. Both figures
-// count the same session upward, and Claude Code's is read out of the transcript
-// the row was priced from — so it was written at or before the moment the row
-// was, and coming out *higher* than the row means the row missed something.
-// Coming out lower means only that the session kept going, which every row's
-// last turn does.
-//
-// The tolerance is for what Claude Code counts and no row can — the background
-// Haiku calls and each compact's own request, neither of which reaches the
-// transcript as a response. Both ran to a fraction of a percent on every session
-// measured. Reading a subagent's file short of its spend, the failure this check
-// was added for, ran to seven.
 const SHORTFALL = 0.02;
 
 const short = rows.filter(

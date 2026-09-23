@@ -65,6 +65,12 @@ export type Titled = { title: string };
 export type Described = { description: string };
 `;
 
+/** Two types sharing exactly one member, `title: string`. */
+const ONE_SHARED_MEMBER: Tree = {
+  'lib/a.ts': 'export type A = { title: string; href: string };',
+  'lib/b.ts': 'export type B = { title: string; icon: string };',
+};
+
 describe('type-overlap: clean runs', () => {
   it('exits 0 and names both passes when nothing overlaps', () => {
     const { status, stdout } = run({
@@ -109,10 +115,7 @@ describe('type-overlap: clean runs', () => {
 
 describe('type-overlap: the member pass', () => {
   it('flags a single member two types both declare', () => {
-    const { status, stdout } = run({
-      'lib/a.ts': 'export type A = { title: string; href: string };',
-      'lib/b.ts': 'export type B = { title: string; icon: string };',
-    });
+    const { status, stdout } = run(ONE_SHARED_MEMBER);
     assert.equal(status, 1);
     assert.match(stdout, new RegExp(escapeRegExp(MEMBERS_HEADING)));
     assert.match(stdout, /1 shared members across 2 types:/);
@@ -190,10 +193,7 @@ describe('type-overlap: the base-combination pass', () => {
 
 describe('type-overlap: the fix bullets', () => {
   it('prints only the firing pass’s sub-bullet', () => {
-    const { stdout } = run({
-      'lib/a.ts': 'export type A = { title: string; href: string };',
-      'lib/b.ts': 'export type B = { title: string; icon: string };',
-    });
+    const { stdout } = run(ONE_SHARED_MEMBER);
     assert.ok(stdout.includes(MEMBERS_FIX));
     assert.ok(!stdout.includes(BASES_FIX));
   });
@@ -221,13 +221,9 @@ describe('type-overlap: the fix bullets', () => {
 
 describe('type-overlap: thresholds', () => {
   it('accepts an upward override and suppresses the finding below it', () => {
-    const { status, stdout } = run(
-      {
-        'lib/a.ts': 'export type A = { title: string; href: string };',
-        'lib/b.ts': 'export type B = { title: string; icon: string };',
-      },
-      { TYPE_OVERLAP_MIN: '2' },
-    );
+    const { status, stdout } = run(ONE_SHARED_MEMBER, {
+      TYPE_OVERLAP_MIN: '2',
+    });
     assert.equal(status, 0);
     assert.match(stdout, /no shared members \(min=2\)/);
   });
