@@ -1,0 +1,9 @@
+// Every cell but the model's keeps to one line; a squeezed table scrolls
+// sideways instead.
+.table {
+  white-space: nowrap;
+}
+
+.model {
+  white-space: normal;
+}

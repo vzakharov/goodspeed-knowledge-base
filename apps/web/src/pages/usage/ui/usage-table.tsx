@@ -3,6 +3,7 @@ import { Table, Text } from '@mantine/core';
 
 import { reportDay, tokenCount } from '../lib/format';
 import { KindName } from './kind';
+import classes from './usage-table.module.scss';
 
 /** Below this the table scrolls sideways rather than squeezing its columns. */
 const MIN_WIDTH = 640;
@@ -27,7 +28,7 @@ type UsageTableProps = { days: UsageDay[] };
 export function UsageTable({ days }: UsageTableProps) {
   return (
     <Table.ScrollContainer minWidth={MIN_WIDTH}>
-      <Table verticalSpacing="xs">
+      <Table verticalSpacing="xs" className={classes['table']}>
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Day</Table.Th>
@@ -56,7 +57,7 @@ export function UsageTable({ days }: UsageTableProps) {
                 <Table.Td>
                   <KindName {...{ kind }} />
                 </Table.Td>
-                <Table.Td>
+                <Table.Td className={classes['model']}>
                   <Text size="sm" ff="monospace" span>
                     {model}
                   </Text>{' '}

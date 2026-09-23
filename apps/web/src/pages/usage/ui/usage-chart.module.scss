@@ -29,7 +29,10 @@
 .tooltip {
   position: absolute;
   top: 0;
-  min-width: 200px;
+
+  // Its own width, not the room right of `left`, which a flipped tooltip
+  // near the right edge barely has.
+  width: max-content;
   padding: 8px 12px;
   pointer-events: none;
 }

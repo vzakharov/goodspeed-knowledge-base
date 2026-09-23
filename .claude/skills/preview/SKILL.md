@@ -55,6 +55,7 @@ There is deliberately no Playwright dependency — Chrome's own `--screenshot` i
 | `/documents/new`       | the document form, with its Write/Preview tabs                          |
 | `/documents/edit?id=…` | the same form over a saved document, its status notice and delete modal |
 | `/chat`, `/chat?c=…`   | the conversation list, a thread with its sources, the composer          |
+| `/usage`               | the per-kind totals, the per-day chart and its tooltip, the model table |
 
 A route behind the guard renders only a loader until a session exists, so a
 bare `--screenshot` of it shows nothing. Get a session from the Auth API —
@@ -71,6 +72,12 @@ and start the API with both capabilities' `*_PROVIDER=custom` and
 `*_BASE_URL` pointed at it. It answers at once, so an answer is stored before
 a capture can see it streaming: to catch the in-flight state, or to click Stop,
 add latency with CDP's `Network.emulateNetworkConditions` first.
+
+Every call the API makes lands on today, so `/usage` shows one column. For
+a month of history, insert backdated `usage_events` rows for the reader's
+`user_id` as `postgres` (`psql -h 127.0.0.1 -p 54322`), which the table's
+policies do not bind. The `custom` preset asks no usage of a streamed answer,
+so chat calls through the fake show as uncounted.
 
 Add a row per route a visual change can reach.
 
