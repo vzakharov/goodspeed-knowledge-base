@@ -1,0 +1,48 @@
+@use '../../../styles/mantine' as mantine;
+
+// Bound to components through `theme.components`, so the site's skins hold
+// without any call site repeating them. Control colours are not here: Mantine
+// emits them as inline `style` vars from `variantColorResolver`, which no class
+// can beat — see `theme.ts`.
+
+// The page title is the one heading that grows with the viewport, and it has to
+// be a class: the provider's runtime stylesheet redeclares
+// `--mantine-h1-font-size` on `:root`, which a second `:root` rule cannot
+// reliably outrank. The print size then has to be here too, since this class
+// outranks `styles/print.scss`'s `h1` rule.
+.title[data-order='1'] {
+  @include mantine.larger-than(mantine.$breakpoint-sm) {
+    font-size: 48px;
+    line-height: 1;
+  }
+
+  @media print {
+    font-size: 20pt;
+    line-height: 1.2;
+  }
+}
+
+.control {
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+// The print button pairs its icon with a label at the same 4px gap the rest of
+// the header uses; Mantine's own section gap is 10px.
+.controlSection {
+  margin-inline-end: 4px;
+}
+
+.list {
+  list-style-position: inside;
+  padding-inline-start: 0;
+}
+
+// An inside marker only reads as one while the item's content stays in the
+// inline flow. Mantine's wrapper is a block, which would indent wrapped lines
+// past the bullet instead of returning them to the margin.
+.listItemWrapper {
+  display: inline;
+}

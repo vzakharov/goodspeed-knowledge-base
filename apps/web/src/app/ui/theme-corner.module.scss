@@ -1,0 +1,14 @@
+@use '../../../styles/mantine' as mantine;
+
+// Anchored to the initial containing block — the page's full width, not the
+// measure of the sheet below it. A positioned ancestor would re-anchor it.
+.corner {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+
+  @include mantine.larger-than(mantine.$breakpoint-sm) {
+    top: 48px;
+    right: 48px;
+  }
+}

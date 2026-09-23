@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "verbatimModuleSyntax": true,
+    "noUncheckedSideEffectImports": true,
+    "erasableSyntaxOnly": true,
+    // exactOptionalPropertyTypes stays off: libraries type optional props as
+    // `prop?: string`, not `prop?: string | undefined`, so enabling it breaks call
+    // sites with no real safety gain.
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    // `scripts/render-mermaid.ts` and `scripts/generate-styles.ts` run
+    // under bare Node, whose ESM resolver needs the extension they import from
+    // `src/` by.
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true
+  },
+  // The base every workspace extends, and the project for the root's own
+  // tooling. Each workspace type-checks itself; this one covers what sits
+  // outside all of them.
+  "include": ["*.ts", "*.mts", "*.mjs", "eslint/**/*.ts", "scripts/**/*.ts"],
+  "exclude": ["node_modules", "tmp", "apps", "packages"]
+}

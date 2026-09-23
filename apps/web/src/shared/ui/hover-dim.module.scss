@@ -1,0 +1,7 @@
+@use '../../../styles/mantine' as mantine;
+
+.hoverDim {
+  @include mantine.hover {
+    opacity: 0.7;
+  }
+}

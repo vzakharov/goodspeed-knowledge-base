@@ -33,9 +33,9 @@ paths:
 
 ## What belongs here vs. in `CLAUDE.md`
 
-| | Goes in |
-|---|---|
-| Holds everywhere in the repo (commit style, error handling, general principles) | `CLAUDE.md` |
+|                                                                                                                | Goes in     |
+| -------------------------------------------------------------------------------------------------------------- | ----------- |
+| Holds everywhere in the repo (commit style, error handling, general principles)                                | `CLAUDE.md` |
 | Holds only when touching a particular area (schema rules, styling, test layout, a directory with a trap in it) | a rule file |
 
 The test is scope, not importance. A load-bearing rule that only applies to one

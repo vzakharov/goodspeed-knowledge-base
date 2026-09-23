@@ -3,6 +3,9 @@
   "lastSyncedSha": "6884e9605b98feeac41190624c1e3860e8d9c65e",
   "lastSyncedAt": "2026-09-23",
   "adopted": [
+    {
+      "CLAUDE.md": "adopted by way of vzakharov/vovazakharov.com, whose rewrite of the source's file this one derives from: § \"Language\" filled in rather than left as the source's adopter stub, no decision docs, and the source's § \"Vetting\" stackless-exit rule absent because this repo's vet.sh is real. The project sections — about, layout, deployment, vetting, testing, the skill list — are this repo's own, so a source commit touching them is read for the idea."
+    },
     ".claude/settings.json",
     {
       ".claude/voice/": "the house rule for writing to a person, imported by CLAUDE.md, plus `operators/` one file per handle. The source marks the entries `rewrite` because its own are its operator's; here that is the same person, so `operators/vzakharov.md` is taken verbatim. A second operator gets a file of their own rather than a rewrite of that one."
@@ -55,10 +58,13 @@
     "scripts/run-parallel.sh",
     ".claude/rules/README.md",
     {
-      ".claude/hooks/": "adopted whole. `install-deps.sh` is the source's stub while this repo has no stack; the stack's own install line replaces its TODO when the stack lands, after which the source's edits to that file are read for the idea and the body never lands."
+      ".claude/hooks/": "adopted whole. `install-deps.sh` ships upstream as a stub with a TODO where the install goes; here it carries this project's `corepack enable pnpm` + `pnpm install --frozen-lockfile`, so the source's edits to that file are read for the idea and the body never lands."
     },
     {
-      "scripts/vet.sh": "the source's stub, less its `check-muthur.sh` line: that script is declined below, being the source's own machinery. It exits 0 while the repo has no stack; the stack's checks replace the stub when the stack lands, after which the source's edits are read for the idea and the file never lands."
+      "scripts/vet.sh": "rewritten for this stack: pnpm build alone and first (it regenerates apps/web/.next/types/, which that workspace's tsconfig includes), then styles:codegen alone, then the rest fanned out through run-parallel.sh. CLAUDE.md § Vetting carries the roster and why each check sits where it does. Read the source's edits for the idea; the file itself never lands."
+    },
+    {
+      ".claude/skills/preview/": "rewritten for this repo: one app booted through `pnpm --filter @kb/web dev`, its own route table, and no printed-page section, nothing here printing. The capture mechanics — the 500px floor, dark mode, CDP for hover and measurement — land from the source as written."
     }
   ],
   "declined": {

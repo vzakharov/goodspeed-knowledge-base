@@ -11,15 +11,8 @@
 # Remote-only: a local session installs its own dependencies when it wants them,
 # and paying an install on every `claude` launch is not what anyone wants.
 #
-# TODO (new project): implement the install for your stack, e.g.
-#   pnpm install --frozen-lockfile     # Node / pnpm
-#   poetry install --sync              # Python / poetry
-#   cargo fetch                        # Rust
-#   go mod download                    # Go
-#
-# Until that line exists this hook no-ops cleanly, which is the correct state for
-# a repo with no stack yet. It is the paired site of `scripts/vet.sh`: a stack
-# that lands wires both, per CLAUDE.md § "Vetting".
+# The paired site of `scripts/vet.sh`, per CLAUDE.md § "Vetting": both name this
+# project's package manager, and a toolchain change moves both.
 
 set -euo pipefail
 
@@ -27,4 +20,5 @@ set -euo pipefail
 
 cd "${CLAUDE_PROJECT_DIR:-$(pwd)}"
 
-# TODO: install dependencies for your stack
+corepack enable pnpm >/dev/null 2>&1 || true
+pnpm install --frozen-lockfile
