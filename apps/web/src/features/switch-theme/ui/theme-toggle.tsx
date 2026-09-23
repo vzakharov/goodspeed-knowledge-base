@@ -3,7 +3,6 @@
 import { ActionIcon, useMantineColorScheme } from '@mantine/core';
 import { Moon, Sun } from 'lucide-react';
 
-import { cx } from '@/shared/lib/class-names';
 import type { Labeled } from '@/shared/typings';
 
 import {
@@ -50,7 +49,7 @@ export function ThemeToggle({ label }: Labeled) {
       size={SIZE}
       onClick={switchScheme}
       aria-label={label}
-      className={cx(classes['toggle'], 'print-hidden')}
+      className={classes['toggle']}
     >
       {/* The icon names the scheme a click gets you, not the one you are in. */}
       <Moon size={20} aria-hidden className={classes['whenLight']} />

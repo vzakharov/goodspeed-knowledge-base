@@ -9,12 +9,6 @@
   @include mantine.hover {
     border-color: var(--color-border-hairline-strong);
   }
-
-  // A printed card is a rule between entries, not a box around one.
-  @media print {
-    padding: 16px;
-    border-width: 0 0 1px;
-  }
 }
 
 .link {

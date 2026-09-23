@@ -10,7 +10,6 @@
     "typecheck": "tsc --noEmit && turbo run typecheck",
     "test": "node --import tsx --test \"**/*.test.ts\"",
     "type-overlap": "tsx scripts/type-overlap-check.ts",
-    "check:mantine-styles": "node scripts/check-mantine-styles.ts",
     "lint": "eslint . --fix",
     "lint:css": "stylelint \"**/*.{css,scss}\"",
     "lint:fsd": "steiger apps/web/src",

@@ -44,9 +44,8 @@ const variantColorResolver: VariantColorsResolver = (input) =>
 export const theme = createTheme({
   fontFamily: 'var(--font-merriweather), serif',
   fontFamilyMonospace: 'var(--font-mono), monospace',
-  // Sizes live here rather than on call sites so that `print.scss` can re-key
-  // them off `h1`–`h4`: a `fz` prop would render as an inline style no print
-  // rule could reach.
+  // Sizes live here rather than on call sites: a `fz` prop would render as an
+  // inline style no stylesheet could reach.
   headings: {
     fontFamily: 'var(--font-merriweather), serif',
     sizes: {

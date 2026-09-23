@@ -41,8 +41,7 @@ fi
 # The type check's workspace half goes through Turborepo, whose `typecheck`
 # depends on `build` — a cache hit on the build that just ran, never a rebuild.
 # type-overlap reads source text only; the test run writes only into the OS
-# temp directory; the Mantine check reads what the build already finished
-# writing under `apps/*/out/`. The squash check reads the proposal under
+# temp directory. The squash check reads the proposal under
 # docs/remove-before-merging/, and the last reads the agent infrastructure,
 # neither of which anything else here touches.
 scripts/run-parallel.sh \
@@ -52,7 +51,6 @@ scripts/run-parallel.sh \
   stylelint='pnpm lint:css' \
   fsd='pnpm lint:fsd' \
   type-overlap='pnpm type-overlap' \
-  mantine-styles='pnpm check:mantine-styles' \
   test='pnpm test' \
   squash='scripts/check-squash-message.sh' \
   skills='scripts/check-skill-catalog.sh' || status=1

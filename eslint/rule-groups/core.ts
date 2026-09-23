@@ -13,7 +13,7 @@ export const coreRules = {
     'no-eval',
     'no-new-func',
     'no-script-url',
-    'no-console', // a static export has no server-side log destination; `next dev` does not run ESLint, so console.log still works while developing
+    'no-console', // the API logs through Nest's `Logger`, which carries the level and the context; the static export has no log destination at all. A CLI whose stdout is its interface disables it at the top of the file
 
     // Correctness
     'array-callback-return',

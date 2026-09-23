@@ -19,7 +19,7 @@ This file is intentionally bare. It carries only the conventions that hold true 
 - **`packages/`** — workspaces both apps share.
 - **`eslint/`** — the lint ruleset `eslint.config.ts` orchestrates: `rule-groups/` by plugin family, `rules/` for the project-local `vova/*` rules. Linted like any other source; see `.claude/rules/eslint.md`.
 - **`.claude/costs/`** — what the work here would cost at Claude API rates: `prices.json`, the hand-maintained rate table, and `sessions/<YYYY-MM>/<session-id>.json`, one row per session, written by a `Stop` hook and carried to the trunk by the branch's merge. `pnpm costs` sums them on demand and writes nothing. `@.claude/rules/costs.md` carries how a transcript is priced, what checks the arithmetic, and how that hook shares the event with the harness's own.
-- **`scripts/`** — agent-facing shell/Python tooling; `vet.sh` is the entrypoint below. `type-overlap-check.ts` (`type-overlap-check.README.md` is its reference) runs under `tsx`; `generate-styles.ts` and `check-mantine-styles.ts` under bare Node's type stripping.
+- **`scripts/`** — agent-facing shell/Python tooling; `vet.sh` is the entrypoint below. `type-overlap-check.ts` (`type-overlap-check.README.md` is its reference) runs under `tsx`; `generate-styles.ts` under bare Node's type stripping.
 - **`.claude/`** — Skills, rules and session hooks.
 
 Anything that holds only over part of that tree lives as a path-scoped rule in `.claude/rules/`, loaded when a session touches the paths it names — the FSD layering and the styling cascade are both documented there rather than here.
@@ -43,7 +43,6 @@ pnpm format:check               # prettier --check .            │
 pnpm lint:css                   # stylelint, check-only         │ concurrent
 pnpm lint:fsd                   # steiger apps/web/src          │
 pnpm type-overlap               # scripts/type-overlap-check.ts │
-pnpm check:mantine-styles       # rendered classes vs. imports  │
 pnpm test                       # node --test over **/*.test.ts │
 scripts/check-squash-message.sh # squash proposal size          │
 scripts/check-skill-catalog.sh  # skill @-references            ┘
@@ -58,7 +57,6 @@ What about that list is deliberate:
 - **Turborepo's strict environment is why `turbo.json` passes the proxy and CA variables through.** A task sees only the variables `turbo.json` names, so without them `next/font` cannot reach Google Fonts from behind a proxy and the build fails on a TLS error. They are pass-through rather than hashed because they describe the machine, not the build's inputs.
 - **`pnpm lint:css` holds the styling cascade to `@.claude/rules/styling.md`** — the layered-Mantine import means no rule needs `!important`, so `declaration-no-important` rejects one outright.
 - **`pnpm type-overlap` fails on any member two named types both declare** (floor 1) **and on any combination of bases two of them both spell** (floor 2), with nothing grandfathered, across every workspace. Working a finding: `scripts/type-overlap-check.README.md`.
-- **`pnpm check:mantine-styles` is what makes the per-component Mantine imports safe to keep.** `apps/web/src/app/ui/theme-provider.tsx` names Mantine's three core stylesheets and one per component in use rather than the ~25 kB-gzipped aggregate. Omitting a sheet is silent — the component renders unstyled — so the check compares the `m_*` classes in the built HTML against the built CSS, both directions. It reads only `apps/*/out/`, which is what lets it overlap the rest; that is also its blind spot, a component rendered only after an interaction or behind sign-in never reaching a static export.
 - **`pnpm styles:codegen` repairs the generated Sass partials rather than reporting on them.** The breakpoints and the colour tokens are needed on both sides of a boundary neither language reads across, so the Sass halves are generated from the TypeScript ones. There is deliberately no check-only mode: `vet.sh` fails when the tree changed under it, `git diff` is the report, and a re-run is green.
 - **`scripts/check-skill-catalog.sh` asserts that every `@`-reference into `.claude/` resolves** — the failure it catches is silent.
 - **`scripts/check-squash-message.sh` holds the squash proposal to the size caps `@.claude/skills/squash-message/SKILL.md` states.**

@@ -8,17 +8,11 @@
 // The page title is the one heading that grows with the viewport, and it has to
 // be a class: the provider's runtime stylesheet redeclares
 // `--mantine-h1-font-size` on `:root`, which a second `:root` rule cannot
-// reliably outrank. The print size then has to be here too, since this class
-// outranks `styles/print.scss`'s `h1` rule.
+// reliably outrank.
 .title[data-order='1'] {
   @include mantine.larger-than(mantine.$breakpoint-sm) {
     font-size: 48px;
     line-height: 1;
-  }
-
-  @media print {
-    font-size: 20pt;
-    line-height: 1.2;
   }
 }
 
@@ -29,8 +23,8 @@
     border-color 150ms ease;
 }
 
-// The print button pairs its icon with a label at the same 4px gap the rest of
-// the header uses; Mantine's own section gap is 10px.
+// A button's icon sits 4px from its label, the gap the rest of the UI uses;
+// Mantine's own section gap is 10px.
 .controlSection {
   margin-inline-end: 4px;
 }

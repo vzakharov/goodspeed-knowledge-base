@@ -23,7 +23,7 @@ export type ChipNavProps = { chips: Chip[] };
  */
 export function ChipNav({ chips }: ChipNavProps) {
   return (
-    <Group component="nav" gap={8} wrap="wrap" fz="sm" className="print-hidden">
+    <Group component="nav" gap={8} wrap="wrap" fz="sm">
       {chips.map(({ label, href, current, hrefLang }) =>
         current ? (
           <Box

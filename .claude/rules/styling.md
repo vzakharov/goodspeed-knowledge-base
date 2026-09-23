@@ -16,24 +16,13 @@ specificity** — `globals.scss` and every `.module.scss` are
 unlayered, so none of them needs `!important` — stylelint's
 `declaration-no-important` holds that line.
 
-**Which sheets those are is a list, not the aggregate.** `theme-provider.tsx`
-names Mantine's three core files and one file per component in use; the
-aggregate `styles.layer.css` carries all ~200, some 25 kB gzipped more than this
-site renders. **A component used for the first time needs its sheet added there,
-and the omission is invisible in a build** — it compiles, type-checks and
-renders, unstyled. `pnpm check:mantine-styles` is what catches it, and prints
-the exact import line to add or drop.
-
-**That list is in Mantine's order, not alphabetical, and the difference is
-visible.** A composite renders its base's class alongside its own — `Button`
-carries `UnstyledButton`'s, `Anchor` carries `Text`'s — so two rules of one
-class each, both inside `@layer mantine`, collide and the later sheet wins.
-`UnstyledButton` after `Button` is `padding: 0` and `border: 0` over what the
-button asked for; `Text` after `Anchor` is `text-decoration: none` over the
-underline. The order to keep is the one `@mantine/core/styles.layer.css`
-composes, which the same check holds the built pages to and prints in full when
-they drift. `simple-import-sort` leaves side-effect imports where they are, so
-the hand-kept order survives a lint fix.
+**`theme-provider.tsx` imports the aggregate `styles.layer.css`, not one sheet
+per component.** A per-component list is only safe with a check that a component
+in use has its sheet, and the one such check reads the static export's HTML —
+where almost nothing here renders, the app living behind sign-in. So the ~25 kB
+gzipped the aggregate costs buys every component styled on first use, in
+Mantine's own sheet order. A Mantine package outside `@mantine/core` brings its
+own `styles.layer.css`, imported beside it.
 
 ## What a stylesheet cannot reach
 
@@ -78,12 +67,11 @@ invisible in exactly one scheme.
 
 ## Rendered markdown
 
-`apps/web/src/app/styles/prose.scss` owns the whole rhythm of the content pipeline's
-HTML — sizes, leading, vertical spacing, rules and the pipeline's own emissions
-(Shiki token colours, the Mermaid light/dark pair, scrollable tables, heading
-anchors) — scoped under `.prose-content`, which sits on the element holding the
-markup so that `> h1` still keys the part dividers. The markup is wrapped in
-nothing.
+`apps/web/src/app/styles/prose.scss` owns the whole rhythm of the HTML
+`react-markdown` renders — a document's body and the chat's answers: sizes,
+leading, vertical spacing, rules, tables that scroll inside the column —
+scoped under `.prose-content`, which sits on the element holding the markup.
+The markup is wrapped in nothing.
 
 **Long-form copy is not on the site's UI scale, and Mantine's `Typography` is
 not a substitute for this sheet.** `--mantine-line-height` and
@@ -91,8 +79,8 @@ not a substitute for this sheet.** `--mantine-line-height` and
 and cramped on a paragraph of an essay, and `Typography`'s own element rules
 reach for `--mantine-color-gray-0` behind `code`, `pre` and `blockquote` — a
 literal light grey that survives into the dark scheme. Every base rule here is
-`:where()`, so its specificity is the class alone and `print.scss`, a component
-sheet or an element-specific rule below overrides it without out-specifying it.
+`:where()`, so its specificity is the class alone and a component sheet or an
+element-specific rule below overrides it without out-specifying it.
 
 **A `:where()` selector cannot be split across a Sass nesting level.** Nesting
 `&:last-child` under `:where(tbody tr)` compiles to `:where(tbody tr):last-child`

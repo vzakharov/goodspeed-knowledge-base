@@ -5,9 +5,8 @@
  * reads them cannot drift; the order is the order that mixin takes its palette
  * in.
  *
- * Every palette declares all of them — light and dark in
- * `src/app/styles/globals.scss`, print in `src/app/styles/print.scss` — so
- * call sites never branch on the scheme.
+ * Both palettes declare all of them — light and dark, in
+ * `src/app/styles/globals.scss` — so call sites never branch on the scheme.
  */
 export const CSS_COLORS = [
   'background',

@@ -1,21 +1,8 @@
 'use client';
 
-// Core sheets first, then one per component in use — a component rendered
-// without its sheet is invisible breakage, and `pnpm check:mantine-styles` is
-// what catches it. `.claude/rules/styling.md` § Styling carries the rest.
-//
-// The component sheets are in Mantine's own order, not alphabetical: a
-// composite's root carries its base's class, and the later sheet wins —
-// `UnstyledButton` after `Button` strips the button's padding and border.
-import '@mantine/core/styles/baseline.layer.css';
-import '@mantine/core/styles/default-css-variables.layer.css';
-import '@mantine/core/styles/global.layer.css';
-import '@mantine/core/styles/UnstyledButton.layer.css';
-import '@mantine/core/styles/ActionIcon.layer.css';
-import '@mantine/core/styles/Text.layer.css';
-import '@mantine/core/styles/Container.layer.css';
-import '@mantine/core/styles/Stack.layer.css';
-import '@mantine/core/styles/Title.layer.css';
+// The aggregate, not one sheet per component: `.claude/rules/styling.md`
+// § Styling carries why.
+import '@mantine/core/styles.layer.css';
 
 import { type CSSVariablesResolver, MantineProvider } from '@mantine/core';
 
