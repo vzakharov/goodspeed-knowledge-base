@@ -1,10 +1,7 @@
 import type { Rule } from 'eslint';
 import type { JSXAttribute } from 'estree-jsx';
 
-// React reserves `key` and `ref`: they're stripped from spread props and can't
-// be forwarded via pick/spread, so `key={obj.key}` has no non-redundant
-// rewrite — flagging it just forces an awkward local rename. Exempt them.
-const RESERVED_JSX_ATTRS = new Set(['key', 'ref']);
+import { RESERVED_JSX_ATTRS } from './jsx-reserved-attrs';
 
 const rule: Rule.RuleModule = {
   meta: {
@@ -64,6 +61,8 @@ const rule: Rule.RuleModule = {
         // Skip namespace attributes (e.g. xml:lang).
         if (node.name.type !== 'JSXIdentifier') return;
         const attrName = node.name.name;
+        // A reserved attr can't be forwarded via pick/spread, so `key={obj.key}`
+        // has no non-redundant rewrite — flagging it only forces a local rename.
         if (RESERVED_JSX_ATTRS.has(attrName)) return;
 
         if (node.value?.type !== 'JSXExpressionContainer') return;

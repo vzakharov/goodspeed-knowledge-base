@@ -4,6 +4,7 @@ import type * as ts from 'typescript';
 
 import { type AstNode, tsType, type WithAnnotation } from './estree-mixins';
 import { hasTypeServices, type TypeServices } from './type-services';
+import { walkAst } from './walk-ast';
 
 /** The named-type of a `TSTypeReference`, or null when it isn't a bare identifier. */
 function referenceName(typeRef: AstNode): string | null {
@@ -81,25 +82,6 @@ function fieldIsRedundant(
   );
 }
 
-/** Depth-first visit of every `.type`-bearing node under `root` (skips cycles). */
-function walk(root: ESTree.Node, visit: (node: AstNode) => void): void {
-  const stack: unknown[] = [root];
-  while (stack.length > 0) {
-    const current = stack.pop();
-    if (Array.isArray(current)) {
-      for (const item of current) stack.push(item);
-      continue;
-    }
-    if (typeof current !== 'object' || current === null) continue;
-    const node = current as Record<string, unknown>;
-    if (typeof node['type'] === 'string') visit(node as AstNode);
-    for (const key of Object.keys(node)) {
-      if (key === 'parent' || key === 'loc' || key === 'range') continue;
-      stack.push(node[key]);
-    }
-  }
-}
-
 /** The name of a top-level `type`/`interface` declaration, else null. */
 function typeDeclName(decl: AstNode | undefined): string | null {
   if (
@@ -127,7 +109,7 @@ function collectTypeUsage(ast: ESTree.Program): {
   const counts = new Map<string, number>();
   const exported = new Set<string>();
 
-  walk(ast, (node) => {
+  walkAst(ast, (node) => {
     if (node.type === tsType('TSTypeReference')) {
       const name = referenceName(node);
       if (name !== null) counts.set(name, (counts.get(name) ?? 0) + 1);

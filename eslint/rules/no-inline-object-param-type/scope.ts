@@ -1,6 +1,7 @@
 import type { Rule } from 'eslint';
 import type * as ESTree from 'estree';
 
+import { walkAst } from '../walk-ast';
 import { type AstNode, type FunctionNode, parentOf, tsType } from './ast';
 
 /** The leftmost identifier of a `typeof X`/`typeof X.y` query's `exprName`. */
@@ -20,28 +21,14 @@ export function collectTypeofRoots(
 ): Set<string> {
   const names = new Set<string>();
   if (node === null || node === undefined) return names;
-  const isNode = (value: unknown): value is AstNode =>
-    typeof value === 'object' &&
-    value !== null &&
-    typeof (value as { type?: unknown }).type === 'string';
-  const visit = (current: AstNode): void => {
+  walkAst(node, (current) => {
     if (current.type === tsType('TSTypeQuery')) {
       const root = typeQueryRoot(
         (current as unknown as { exprName?: AstNode }).exprName,
       );
       if (root !== null) names.add(root);
     }
-    for (const key of Object.keys(current)) {
-      if (key === 'parent' || key === 'loc' || key === 'range') continue;
-      const value = (current as Record<string, unknown>)[key];
-      if (Array.isArray(value)) {
-        for (const child of value) if (isNode(child)) visit(child);
-      } else if (isNode(value)) {
-        visit(value);
-      }
-    }
-  };
-  visit(node as AstNode);
+  });
   return names;
 }
 

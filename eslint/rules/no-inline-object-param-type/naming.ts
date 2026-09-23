@@ -1,7 +1,7 @@
 import type { Rule } from 'eslint';
 import type * as ESTree from 'estree';
 
-import { tsType } from './ast';
+import { type KeyedNode, memberKeyName, tsType } from './ast';
 
 export const capitalize = (name: string): string =>
   name.charAt(0).toUpperCase() + name.slice(1);
@@ -47,22 +47,14 @@ function nameFromAncestor(node: ESTree.Node): string | null {
   if (node.type === 'VariableDeclarator') {
     return node.id.type === 'Identifier' ? node.id.name : null;
   }
-  if (node.type === 'Property') {
-    if (node.computed) return null;
-    return node.key.type === 'Identifier' ? node.key.name : null;
-  }
+  if (node.type === 'Property') return memberKeyName(node);
   if (
     node.type === tsType('MethodDefinition') ||
     node.type === tsType('PropertyDefinition')
   ) {
-    const def = node as unknown as {
-      kind?: string;
-      computed?: boolean;
-      key: ESTree.Node;
-    };
+    const def = node as unknown as KeyedNode & { kind?: string };
     if (def.kind === 'constructor') return enclosingClassName(node);
-    if (def.computed === true) return null;
-    return def.key.type === 'Identifier' ? def.key.name : null;
+    return memberKeyName(def);
   }
   return null;
 }

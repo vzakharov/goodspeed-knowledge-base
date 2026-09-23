@@ -98,11 +98,11 @@ const PRIMITIVE_KEYWORDS = new Set([
   'TSBooleanKeyword',
 ]);
 
-/** A node with a possibly-computed key — an object-pattern property or a type-literal member. */
-type KeyedNode = { computed?: boolean; key?: ESTree.Node };
+/** A node with a possibly-computed key — a property, a class member, or a type-literal member. */
+export type KeyedNode = { computed?: boolean; key?: ESTree.Node };
 
 /** The Identifier key name of a non-computed pattern/type member, else `null`. */
-function memberKeyName(node: KeyedNode): string | null {
+export function memberKeyName(node: KeyedNode): string | null {
   if (node.computed === true) return null;
   return node.key?.type === 'Identifier' ? node.key.name : null;
 }

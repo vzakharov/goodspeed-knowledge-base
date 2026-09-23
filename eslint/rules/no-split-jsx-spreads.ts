@@ -253,16 +253,7 @@ function adjacentRuns(attributes: Attribute[]): JSXSpreadAttribute[][] {
 
 /** Whether the spread names a React-reserved prop, which must never be moved. */
 function hasReservedKey(spread: JSXSpreadAttribute): boolean {
-  const { argument } = spread;
-  if (argument.type !== 'ObjectExpression') return false;
-
-  return argument.properties.some(
-    (property) =>
-      property.type === 'Property' &&
-      !property.computed &&
-      property.key.type === 'Identifier' &&
-      RESERVED_JSX_ATTRS.has(property.key.name),
-  );
+  return knownNames(spread).some((name) => RESERVED_JSX_ATTRS.has(name));
 }
 
 /** The keys a spread contributes that can be read off the syntax. */

@@ -1,7 +1,7 @@
 import type { Rule } from 'eslint';
 import type * as ESTree from 'estree';
 
-import type { WithStringType } from './estree-mixins';
+import { tsType, type WithStringType } from './estree-mixins';
 
 // Flags a redundant type alias — `type A = B` whose right-hand side is *just
 // another named type*, with no transformation. These accumulate as leftovers of
@@ -21,10 +21,6 @@ import type { WithStringType } from './estree-mixins';
 //   - generic instantiations (`type Props = Foo<Bar>`) — these name a
 //     specialization and carry real information;
 //   - generic aliases (`type Maybe<T> = T`) — the alias itself abstracts.
-
-/** Cast a TS-only node `type` string that @types/estree's union doesn't include. */
-const tsType = (name: string): ESTree.Node['type'] =>
-  name as ESTree.Node['type'];
 
 // Minimal shapes for the TS-specific nodes this rule reads — @types/estree's
 // union doesn't include them, so we describe just the fields we touch. Named
