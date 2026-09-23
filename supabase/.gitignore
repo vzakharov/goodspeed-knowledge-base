@@ -7,5 +7,5 @@
 .env.local
 .env.*.local
 
-# Local JWT signing key — `pnpm setup` generates it per machine.
+# Local JWT signing key — `pnpm bootstrap` generates it per machine.
 signing_keys.json

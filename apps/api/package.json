@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --watch --import ./register.js src/main.ts",
+    "dev": "node --env-file-if-exists=.env --watch --import ./register.js src/main.ts",
     "build": "swc src -d dist --strip-leading-paths --ignore \"**/*.test.ts\"",
-    "start": "node --enable-source-maps dist/main.js",
+    "start": "node --env-file-if-exists=.env --enable-source-maps dist/main.js",
     "typecheck": "tsc --noEmit",
     "test": "node --import ./register.js --test \"src/**/*.test.ts\"",
     "test:e2e": "node --import ./register.js --test --test-concurrency=1 \"test/**/*.e2e.test.ts\"",

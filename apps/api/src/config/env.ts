@@ -15,7 +15,7 @@ import {
  * variable that is missing or malformed stops the start with the variable's
  * name, rather than failing the first request that needs it.
  *
- * `.env.example` at the repository root documents each one.
+ * `apps/api/.env.example` documents each one.
  */
 
 // An empty variable means unset: `.env.example` lists every name with an

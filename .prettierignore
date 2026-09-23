@@ -54,7 +54,7 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
-# The Supabase CLI's own state: the per-machine signing key `pnpm setup`
+# The Supabase CLI's own state: the per-machine signing key `pnpm bootstrap`
 # writes and the CLI's cache, both ignored by supabase/.gitignore, which
 # Prettier does not read.
 supabase/signing_keys.json

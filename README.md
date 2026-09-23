@@ -14,9 +14,26 @@ documents by retrieving the passages relevant to each question (RAG).
 
 ## Setup
 
-_(to come — one command from a fresh clone. The local stack runs on Docker
-through the Supabase CLI, so Docker is the one prerequisite beyond Node and
-pnpm.)_
+Prerequisites: Node 24, pnpm 10, and Docker running — the local Supabase stack
+runs on it through the Supabase CLI, which installs with the rest.
+
+```bash
+pnpm bootstrap
+```
+
+That installs the dependencies, starts the local stack, applies the
+migrations, and writes `apps/api/.env` and `apps/web/.env` from the
+`.env.example` beside each. It ends by saying what is left to configure —
+with the defaults, an OpenAI key in `CHAT_API_KEY` and `EMBEDDING_API_KEY`.
+Set it, then:
+
+```bash
+pnpm dev
+```
+
+The web app is at <http://localhost:3000>, the API at <http://localhost:4000>,
+and Supabase Studio at <http://localhost:54323>. Re-running `pnpm bootstrap`
+is safe: it restarts nothing, resets no data, and keeps what you set.
 
 ## Architecture decisions
 

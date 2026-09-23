@@ -9,7 +9,7 @@ const statusSchema = z.object({
 });
 
 /**
- * The local stack `pnpm setup` started, read from the Supabase CLI itself so
+ * The local stack `pnpm bootstrap` started, read from the Supabase CLI itself so
  * a test needs no environment of its own. Throws with the command to run when
  * the stack is down.
  */
@@ -28,7 +28,7 @@ export function localSupabase() {
     );
   } catch (error) {
     throw new Error(
-      'The local Supabase stack is not running — start it with `pnpm db:start`',
+      'The local Supabase stack is not running — start it with `pnpm bootstrap`',
       { cause: error instanceof Error ? error : new Error(String(error)) },
     );
   }

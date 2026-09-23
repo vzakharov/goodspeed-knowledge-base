@@ -44,6 +44,9 @@ fi
 # temp directory. The squash check reads the proposal under
 # docs/remove-before-merging/, and the last reads the agent infrastructure,
 # neither of which anything else here touches.
+# The two database suites need the local stack `pnpm bootstrap` started, and
+# touch nothing but it: pgTAP rolls each file back, and the API's end-to-end run
+# signs up users of its own.
 scripts/run-parallel.sh \
   typecheck='pnpm typecheck' \
   eslint='pnpm exec eslint .' \
@@ -52,6 +55,8 @@ scripts/run-parallel.sh \
   fsd='pnpm lint:fsd' \
   type-overlap='pnpm type-overlap' \
   test='pnpm test' \
+  test-db='pnpm test:db' \
+  test-e2e='pnpm test:e2e' \
   squash='scripts/check-squash-message.sh' \
   skills='scripts/check-skill-catalog.sh' || status=1
 

@@ -24,7 +24,7 @@ export class InvalidTokenError extends Error {
  * Verifies a Supabase access token locally, against the project's published
  * signing keys: signature, issuer, audience and expiry. Only asymmetric keys
  * can be verified this way, which is what a Supabase project signs with by
- * default and what `pnpm setup` configures the local one to use.
+ * default and what `pnpm bootstrap` configures the local one to use.
  *
  * The key set is fetched on first use and cached, and fetched again when a
  * token names a key it does not hold — so a key rotation needs no restart.

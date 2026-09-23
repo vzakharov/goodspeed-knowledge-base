@@ -15,8 +15,9 @@ This file is intentionally bare. It carries only the conventions that hold true 
 ## Repository layout
 
 - **`apps/web/`** — the Next.js app. `app/` is **routing only**; `src/` holds every module in Feature-Sliced Design layers — `shared/`, `entities/`, `features/`, `widgets/`, `pages/`, `app/` — and `@.claude/rules/fsd.md` carries the conventions, which both checkers enforce. `pages/` beside `app/` is an empty Pages Router that keeps Next away from the FSD pages layer. `styles/` holds the Sass partials: `_mantine.scss` (counterparts to the mixins Mantine documents as a PostCSS preset) plus the two `pnpm styles:codegen` writes — `_tokens.scss` from `src/shared/ui/css-color.ts` and `_breakpoints.scss` from `src/app/styles/breakpoints.ts`. They sit outside `src/` because a Sass partial is not an FSD module — it has no import graph for the layer checkers to reason about.
-- **`apps/api/`** — the NestJS service.
-- **`packages/`** — workspaces both apps share.
+- **`apps/api/`** — the NestJS service. Its tsconfig turns decorator metadata on, which `tsx` cannot emit, so it runs and tests under `@swc-node/register` (`register.js`).
+- **`packages/`** — workspaces both apps share; `contracts` (`@kb/contracts`) holds every wire shape the two exchange, and resolves to its build output, so a task that runs an app depends on `^build`.
+- **`supabase/`** — the Supabase CLI's own layout: `config.toml`, `migrations/`, pgTAP suites in `tests/`. The local stack runs on Docker; `pnpm bootstrap` (`scripts/bootstrap.ts`) starts it, generates the per-machine signing key, and writes each app's `.env` from the `.env.example` beside it.
 - **`eslint/`** — the lint ruleset `eslint.config.ts` orchestrates: `rule-groups/` by plugin family, `rules/` for the project-local `vova/*` rules. Linted like any other source; see `.claude/rules/eslint.md`.
 - **`.claude/costs/`** — what the work here would cost at Claude API rates: `prices.json`, the hand-maintained rate table, and `sessions/<YYYY-MM>/<session-id>.json`, one row per session, written by a `Stop` hook and carried to the trunk by the branch's merge. `pnpm costs` sums them on demand and writes nothing. `@.claude/rules/costs.md` carries how a transcript is priced, what checks the arithmetic, and how that hook shares the event with the harness's own.
 - **`scripts/`** — agent-facing shell/Python tooling; `vet.sh` is the entrypoint below. `type-overlap-check.ts` (`type-overlap-check.README.md` is its reference) runs under `tsx`; `generate-styles.ts` under bare Node's type stripping.
@@ -43,7 +44,9 @@ pnpm format:check               # prettier --check .            │
 pnpm lint:css                   # stylelint, check-only         │ concurrent
 pnpm lint:fsd                   # steiger apps/web/src          │
 pnpm type-overlap               # scripts/type-overlap-check.ts │
-pnpm test                       # node --test over **/*.test.ts │
+pnpm test                       # root + turbo unit tests       │
+pnpm test:db                    # pgTAP over the local stack    │
+pnpm test:e2e                   # the API over the local stack  │
 scripts/check-squash-message.sh # squash proposal size          │
 scripts/check-skill-catalog.sh  # skill @-references            ┘
 ```
@@ -51,6 +54,7 @@ scripts/check-skill-catalog.sh  # skill @-references            ┘
 What about that list is deliberate:
 
 - **`pnpm build` is the check that covers the apps themselves** — the static export renders every route, so it catches a broken page, route or import.
+- **Vet needs the local stack running.** `test:db` and `test:e2e` run against it, and each fails naming `pnpm bootstrap` when it is down. In a cloud session Docker is not started for you: `dockerd` is started by hand (in the background, outside the tool's own background mode), and the CLI pulls its images from `public.ecr.aws`.
 - **Never call `pnpm lint` from vet.** That script is `eslint . --fix`, and a fix it picks is a judgment about source someone wrote. `pnpm exec eslint .` is the checking form, and `pnpm lint:css` is stylelint's. `pnpm styles:codegen` is the one exception, because a generated partial has exactly one correct content.
 - **The build and the codegen run alone, in that order, before the concurrent rest.** `next build` regenerates `apps/web/.next/types/`, which that workspace's tsconfig includes, so a type check overlapping it intermittently reads a route-type module the build hasn't finished writing. **Pre-generating with `next typegen` does not fix this and makes it worse** — typegen emits a `cache-life.d.ts` that the build then deletes, so the type check fails every time on a file it has already globbed. The codegen _writes_ two `.scss` files that `lint:css` and `format:check` glob. The rest touch nothing each other reads, so `scripts/run-parallel.sh` fans them out; a check added there has to be independent of whatever it runs beside.
 - **Only failures are printed.** `run-parallel.sh` buffers each check under `tmp/run-parallel/` and replays just the ones that failed, ending in the path to the verbatim log; the build does the same through `tmp/vet-build.log`. The runner also flags a tree that was clean before the run and is dirty after — an autofix step that rewrote files and still exited 0.
@@ -135,7 +139,11 @@ Never hand-write a type or schema whose shape tracks another declaration — der
 
 ## Testing
 
-`pnpm test` runs **Node's built-in test runner** (`node --import tsx --test`) over every `**/*.test.ts`. A test imports `node:test` and `node:assert/strict` directly, sits beside the module it covers, and is picked up by the glob. Keep it that way unless something genuinely needs a framework.
+Every suite runs on **Node's built-in test runner**. A test imports `node:test` and `node:assert/strict` directly, sits beside the module it covers as `*.test.ts`, and is picked up by its workspace's glob. Keep it that way unless something genuinely needs a framework.
+
+- **`pnpm test`** — the unit tests: the root's `scripts/**/*.test.ts` under `tsx`, then `turbo run test`, each workspace's own `src/**/*.test.ts` (the API's under `@swc-node/register`).
+- **`pnpm test:e2e`** — the API end to end, `apps/api/test/**/*.e2e.test.ts`: the real app over the local stack, a fake model provider on the HTTP boundary (`test/fake-openai.ts`), and two users so every read is also checked from the side it must not reach.
+- **`pnpm test:db`** — pgTAP, `supabase/tests/**/*.test.sql`, over the policies and database functions.
 
 `scripts/type-overlap-check.test.ts` is the pattern to copy for a CLI: it materializes a throwaway source tree under the OS temp directory, runs the real script against it, and asserts on exit code and report text — so what is under test is the artifact itself, with no seam opened in production code for the test's benefit.
 
