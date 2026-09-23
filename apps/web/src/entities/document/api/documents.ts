@@ -9,6 +9,7 @@ import {
 import { queryOptions } from '@tanstack/react-query';
 
 import { api, queryClient } from '@/shared/api';
+import { withSearchParam } from '@/shared/lib/search-param';
 
 /** Every document query sits under this key, so one invalidation reaches all of them. */
 const DOCUMENTS = ['documents'] as const;
@@ -19,9 +20,7 @@ export const documentQueries = {
       queryKey: [...DOCUMENTS, 'list', tag],
       queryFn: async ({ signal }) =>
         api.request(
-          tag === null
-            ? '/documents'
-            : `/documents?${new URLSearchParams({ tag })}`,
+          withSearchParam('/documents', 'tag', tag),
           documentListSchema,
           { signal },
         ),

@@ -10,3 +10,14 @@ export function useSearchParam(name: string): string | null {
   // Next's types cover both.
   return useSearchParams()?.get(name) ?? null;
 }
+
+/** `path` carrying the parameter, or bare when there is no value. */
+export function withSearchParam(
+  path: string,
+  name: string,
+  value: string | null,
+): string {
+  return value === null
+    ? path
+    : `${path}?${new URLSearchParams({ [name]: value })}`;
+}
