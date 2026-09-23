@@ -11,8 +11,8 @@ import { embeddingExplanation, reembedDocument } from '@/entities/document';
 type EmbeddingNoticeProps = WithId & Pick<Document, 'embedding'>;
 
 /**
- * Offers a retry wherever the chat cannot reach the document. A save embeds
- * again on its own, so this is for a document whose content has not changed.
+ * Offers a retry wherever the chat cannot reach the document. A save
+ * re-embeds only changed content, so this is the retry for unchanged content.
  */
 export function EmbeddingNotice({ id, embedding }: EmbeddingNoticeProps) {
   const reembed = useMutation({ mutationFn: async () => reembedDocument(id) });

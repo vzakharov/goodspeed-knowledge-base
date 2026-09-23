@@ -14,8 +14,8 @@ export function TagFilter({ selected }: TagFilterProps) {
   const tags = useQuery(documentQueries.tags());
   const router = useRouter();
 
-  // The list below reports a failed load; a filter with no tags to offer
-  // simply does not appear.
+  // The list below reports a failed load; with no tags to offer, the filter
+  // does not appear.
   if (!tags.isSuccess || tags.data.tags.length === 0) return null;
 
   return (
