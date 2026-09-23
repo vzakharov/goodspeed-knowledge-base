@@ -1,7 +1,6 @@
-// Member signatures shared across the project-local ESLint rules. AST vocabulary
-// lives here rather than `apps/web/src/shared/typings` because it has no business in the
-// app's type catalog; a member the catalog already homes is re-exported from it
-// instead, so `pnpm type-overlap` still sees exactly one declaration of it.
+// AST vocabulary the project-local rules share. A member the app's type catalog
+// already declares is re-exported from it, so `pnpm type-overlap` sees one
+// declaration.
 
 import type * as ESTree from 'estree';
 

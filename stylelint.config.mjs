@@ -1,9 +1,8 @@
 /** @type {import('stylelint').Config} */
 const config = {
   extends: ['stylelint-config-standard-scss'],
-  // Build output and the scratch tree. Each app builds into its own directory,
-  // hence the leading `**`; `tmp/` is where every dev artifact goes (CLAUDE.md),
-  // including vet's own logs — nothing authored, nothing to lint.
+  // Build output (each app builds into its own directory, hence the leading
+  // `**`) and `tmp/`, where dev artifacts and vet's logs go — nothing authored.
   ignoreFiles: [
     '**/.next/**',
     '**/out/**',

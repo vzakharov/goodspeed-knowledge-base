@@ -54,7 +54,6 @@ const rule: Rule.RuleModule = {
             continue;
           }
 
-          // Collect consecutive shorthand-eligible attributes into a run.
           const runStart = i;
           while (i < attrs.length && isShorthandEligible(attrs[i]!)) {
             i++;

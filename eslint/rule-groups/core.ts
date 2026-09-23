@@ -2,10 +2,7 @@ import type { Linter } from 'eslint';
 
 import { withSeverity } from './rule-severity';
 
-// Core ESLint rules not covered by eslint-config-next or TypeScript:
-// security, correctness, and code quality. Plain-'error' rules are listed by
-// name; rules turned 'off' (superseded or wrong for this project) and rules
-// with options stay explicit with their rationale.
+// Core ESLint rules not covered by eslint-config-next or TypeScript.
 export const coreRules = {
   ...withSeverity('error', [
     // Security
@@ -13,7 +10,7 @@ export const coreRules = {
     'no-eval',
     'no-new-func',
     'no-script-url',
-    'no-console', // the API logs through Nest's `Logger`, which carries the level and the context; the static export has no log destination at all. A CLI whose stdout is its interface disables it at the top of the file
+    'no-console', // the API logs through Nest's `Logger`, which carries level and context; the static export has nowhere to log
 
     // Correctness
     'array-callback-return',
@@ -149,6 +146,6 @@ export const coreRules = {
     // False positive or superseded by TypeScript:
     'new-cap', // false positive on JSX components (e.g. <ThemeProvider>)
     'no-undef', // superseded by TypeScript — tsc catches undefined references at compile time
-    'no-unused-vars', // superseded by @typescript-eslint/no-unused-vars
+    'no-unused-vars', // superseded by noUnusedLocals and noUnusedParameters in tsconfig.json
   ]),
 } satisfies Linter.RulesRecord;

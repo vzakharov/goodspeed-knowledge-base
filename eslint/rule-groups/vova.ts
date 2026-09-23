@@ -2,8 +2,7 @@ import type { Linter } from 'eslint';
 
 import { withSeverity } from './rule-severity';
 
-// vova (project-local rules, implemented under eslint/rules/). The trailing comment on
-// each documents what the custom rule enforces and why.
+// vova — the project-local rules under eslint/rules/.
 export const vovaRules = {
   ...withSeverity('error', [
     'vova/no-default-true', // boolean params must default off — invert (enabled=true → disabled=false) instead of defaulting true

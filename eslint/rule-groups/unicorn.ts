@@ -2,10 +2,8 @@ import type { Linter } from 'eslint';
 
 import { withSeverity } from './rule-severity';
 
-// eslint-plugin-unicorn — the recommended preset is spread in the orchestrator. Here we
-// enable non-recommended rules and disable the recommended/non-recommended ones that fight
-// this project's conventions. Rules with options stay explicit; the rest are grouped by
-// severity with per-rule rationale inline.
+// eslint-plugin-unicorn — the recommended preset is spread in eslint.config.ts; this
+// group adds non-recommended rules and turns off the ones that fight this project.
 export const unicornRules = {
   ...withSeverity('error', [
     // Non-recommended rules — enabled:

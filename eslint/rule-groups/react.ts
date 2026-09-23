@@ -2,10 +2,8 @@ import type { Linter } from 'eslint';
 
 import { withSeverity } from './rule-severity';
 
-// @eslint-react (recommended-type-checked preset is spread in the orchestrator) plus the
-// eslint-plugin-react rules @eslint-react does NOT supersede. The preset defaults many
-// rules to warn; we upgrade them to error. Rules with options stay explicit; the rest are
-// grouped by severity with per-rule rationale inline.
+// @eslint-react (its recommended-type-checked preset is spread in eslint.config.ts) plus
+// the eslint-plugin-react rules @eslint-react does not supersede.
 export const reactRules = {
   ...withSeverity('error', [
     // --- @eslint-react: upgraded from warn → error (preset defaults them to warn) ---
@@ -41,6 +39,7 @@ export const reactRules = {
     '@eslint-react/naming-convention-context-name',
     '@eslint-react/naming-convention-id-name',
     '@eslint-react/naming-convention-ref-name',
+    '@eslint-react/no-array-index-key',
     // @eslint-react upgrades with React 19-specific rationale:
     '@eslint-react/no-context-provider', // was warn in preset — React 19 removes Provider wrapper
     '@eslint-react/no-forward-ref', // was warn in preset — React 19 passes ref as prop
@@ -66,7 +65,6 @@ export const reactRules = {
   ],
 
   ...withSeverity('off', [
-    '@eslint-react/no-array-index-key', // the CV renders fixed, statically-authored lists from the message catalogs — the index is stable
     'react/jsx-no-bind', // inline handlers are idiomatic in React 19; blanket ban adds ceremony
     'react/no-multi-comp', // co-locating a small helper component with its only consumer beats a file per component
     'react/prefer-stateless-function', // class components don't exist; rule is irrelevant

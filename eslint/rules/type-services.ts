@@ -13,9 +13,8 @@ export type TypeServices = {
 };
 
 /**
- * Narrows the `any`-typed `parserServices` cast-free via the type predicate. Both
- * members come from the same project-service setup, so requiring `program` costs a
- * rule that only reads types nothing and hands it the checker for free.
+ * Requires `program` too: both members come from the same project-service setup,
+ * so it costs a rule that only reads types nothing and hands it the checker.
  */
 export function hasTypeServices(services: unknown): services is TypeServices {
   if (typeof services !== 'object' || services === null) return false;

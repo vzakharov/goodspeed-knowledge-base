@@ -2,7 +2,7 @@ import type * as ESTree from 'estree';
 
 import type { AstNode } from './estree-mixins';
 
-/** Depth-first visit of every `.type`-bearing node under `root` (skips cycles). */
+/** Visits every `.type`-bearing node under `root`, in no particular order. */
 export function walkAst(
   root: ESTree.Node,
   visit: (node: AstNode) => void,

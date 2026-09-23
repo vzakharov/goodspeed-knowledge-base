@@ -27,7 +27,6 @@ const rule: Rule.RuleModule = {
 
           const { key, value } = prop;
 
-          // Get the key name from either an Identifier or a string Literal.
           let keyName;
           if (key.type === 'Identifier') {
             keyName = key.name;
@@ -37,7 +36,6 @@ const rule: Rule.RuleModule = {
             continue;
           }
 
-          // Value must be a non-computed MemberExpression whose property name matches the key.
           if (
             value.type !== 'MemberExpression' ||
             value.computed ||
@@ -68,7 +66,6 @@ const rule: Rule.RuleModule = {
         if (node.value?.type !== 'JSXExpressionContainer') return;
         const { expression } = node.value;
 
-        // Value must be a non-computed MemberExpression whose property name matches the attr.
         if (
           expression.type !== 'MemberExpression' ||
           expression.computed ||

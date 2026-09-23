@@ -2,11 +2,8 @@ import type { Linter } from 'eslint';
 
 import { withSeverity } from './rule-severity';
 
-// @typescript-eslint. Rules already provided by eslint-config-next/typescript are
-// listed here for transparency and to upgrade warn → error where needed. Rules with
-// options stay declared explicitly; everything else is grouped by severity, with each
-// rule's rationale (supersession, core-rule replacement, why-off) kept as an inline
-// comment.
+// @typescript-eslint. Rules eslint-config-next/typescript already provides are
+// re-listed, upgrading warn → error where needed.
 export const typescriptRules = {
   ...withSeverity('error', [
     // From recommended (already enabled by nextTs spread — listed for transparency):
@@ -32,16 +29,16 @@ export const typescriptRules = {
     '@typescript-eslint/prefer-ts-expect-error', // prefer ts-expect-error: self-documenting, whereas ts-ignore silently stays stale
 
     // Replace the corresponding core rule (core copy is turned 'off' in core.ts):
-    '@typescript-eslint/default-param-last', // replaces core default-param-last
-    '@typescript-eslint/no-empty-function', // replaces core no-empty-function
-    '@typescript-eslint/no-implied-eval', // replaces core no-implied-eval
-    '@typescript-eslint/no-loop-func', // replaces core no-loop-func
-    '@typescript-eslint/no-loss-of-precision', // replaces core no-loss-of-precision
-    '@typescript-eslint/no-unused-private-class-members', // replaces core no-unused-private-class-members
-    '@typescript-eslint/no-useless-constructor', // replaces core no-useless-constructor
+    '@typescript-eslint/default-param-last',
+    '@typescript-eslint/no-empty-function',
+    '@typescript-eslint/no-implied-eval',
+    '@typescript-eslint/no-loop-func',
+    '@typescript-eslint/no-loss-of-precision',
+    '@typescript-eslint/no-unused-private-class-members',
+    '@typescript-eslint/no-useless-constructor',
     '@typescript-eslint/only-throw-error', // replaces core no-throw-literal
-    '@typescript-eslint/prefer-promise-reject-errors', // replaces core prefer-promise-reject-errors
-    '@typescript-eslint/require-await', // replaces core require-await
+    '@typescript-eslint/prefer-promise-reject-errors',
+    '@typescript-eslint/require-await',
 
     // Correctness (no type-checking required):
     '@typescript-eslint/no-array-delete',

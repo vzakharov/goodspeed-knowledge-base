@@ -21,29 +21,15 @@ import {
 } from './type-params';
 
 // Prohibits inline object type literals (`{ … }`) used directly as a function
-// parameter's type annotation. Inline shapes can't be referenced, reused, or
-// named at call sites and bloat signatures; a named `type` alias reads better
-// and is reusable.
+// parameter's type annotation: an inline shape can't be referenced or reused.
 //
 // Autofix (only when exactly one parameter is object-typed and a name can be
 // derived for the alias). Two shapes:
-//   - When the annotation is redundant — a destructured param whose fields all
-//     have defaults and which itself defaults to `{}` — the fix drops the
-//     annotation entirely (TypeScript infers the same shape from the defaults).
-//   - Otherwise the literal is extracted to an alias named `<Base><Suffix>`:
-//     - Base is the nearest enclosing name walking out from the function — its
-//       own name (`FunctionDeclaration`/named-`FunctionExpression` id, or the
-//       `const … = …` declarator), else a class/object **method** key
-//       (`createProvider(settings:{…})` → `CreateProviderSettings`), a
-//       `constructor` mapping to the enclosing class name, else the nearest
-//       enclosing declarator/method/function name (covers nameless callbacks,
-//       returned arrows, ternaries, curry chains — no library-specific casing).
-//     - Suffix prefers the parameter's own name (`writeCsv(options:{…})` →
-//       `WriteCsvOptions`), after stripping leading underscores (`_settings` →
-//       `Settings`) and normalizing abbreviations (`opts` → `Options`, `ctx` →
-//       `Context`); destructured-in-place / single-letter params fall back to a
-//       role suffix (`Props` for a PascalCase/component base, else
-//       `Options`/`Params`).
+//   - When the annotation is redundant (`isRedundantDefaultedObjectParam`), the
+//     fix drops it and TypeScript infers the same shape from the defaults.
+//   - Otherwise the literal is extracted to an alias named `<Base><Suffix>`
+//     (`deriveBaseName`, `deriveSuffix`): `writeCsv(options: {…})` →
+//     `WriteCsvOptions`.
 //
 // The alias is inserted before the nearest top-level statement (always a legal
 // spot for a `type`). Generic functions are handled precisely: if the literal
@@ -106,8 +92,6 @@ const rule: Rule.RuleModule = {
         paramDefault,
       } = objectParams[0]!;
 
-      // Redundant annotation: destructured param, all fields defaulted, `= {}`.
-      // Drop the annotation instead of extracting an alias.
       if (isRedundantDefaultedObjectParam(carrier, paramDefault, literal)) {
         context.report({
           node: literal,
@@ -128,9 +112,8 @@ const rule: Rule.RuleModule = {
         deriveSuffix(paramName, base, optional),
       );
 
-      // Collision guard: skip if the alias name is already declared at module
-      // scope or claimed by an earlier report in this pass — extracting would
-      // shadow/duplicate it. Report without a fix.
+      // A name already declared at module scope or claimed earlier in this pass
+      // would collide, so report without a fix.
       if (
         collectDeclaredNames(sourceCode.ast).has(aliasName) ||
         claimedAliasNames.has(aliasName)

@@ -2,9 +2,8 @@ import type { Linter } from 'eslint';
 
 import { withSeverity } from './rule-severity';
 
-// eslint-plugin-jsx-a11y — all 39 rules enabled as error. eslint-config-next enables only
-// 6 at warn; we upgrade and add the rest. Rules with options or a deprecation note stay
-// explicit.
+// eslint-plugin-jsx-a11y — every rule enabled as error, including those
+// eslint-config-next sets to warn.
 export const jsxA11yRules = {
   ...withSeverity('error', [
     // Upgraded from warn (eslint-config-next default) to error:

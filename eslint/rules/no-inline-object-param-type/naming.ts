@@ -123,7 +123,6 @@ export function deriveSuffix(
   return optional ? 'Options' : 'Params';
 }
 
-/** `<Base><Suffix>`. */
 export function buildAliasName(base: string, suffix: string): string {
   return `${capitalize(base)}${suffix}`;
 }

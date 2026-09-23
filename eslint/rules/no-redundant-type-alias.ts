@@ -4,12 +4,9 @@ import type * as ESTree from 'estree';
 import { tsType, type WithStringType } from './estree-mixins';
 
 // Flags a redundant type alias — `type A = B` whose right-hand side is *just
-// another named type*, with no transformation. These accumulate as leftovers of
-// our other type-shaping gates (e.g. `no-inline-object-param-type` extracts an
-// inline literal to a named alias; type-overlap / `no-zod-parse-typed-input`
-// cleanups leave a param type pointing at an already-named type), so the alias
-// is a second name for one type that drifts silently. Use the referenced type
-// directly at the use site and delete the alias.
+// another named type*. Such aliases are what the other type-shaping gates
+// (`no-inline-object-param-type`, `pnpm type-overlap`) leave behind: a second
+// name for one type.
 //
 // Only the pure-rename shape is flagged: `type A = B;` and `type A = Ns.B;`.
 // Deliberately NOT flagged, because each is a real definition rather than a
@@ -67,9 +64,7 @@ const rule: Rule.RuleModule = {
         if (alias.typeAnnotation?.type !== tsType('TSTypeReference')) return;
         const rhs = alias.typeAnnotation as unknown as TSTypeReferenceNode;
 
-        // A generic instantiation (`type Props = Foo<Bar>`) names a
-        // specialization — the field is `typeArguments` (newer parser) or
-        // `typeParameters` (older); either present means it's not a bare rename.
+        // A generic instantiation (`type Props = Foo<Bar>`) names a specialization.
         if (rhs.typeArguments !== undefined || rhs.typeParameters !== undefined)
           return;
 

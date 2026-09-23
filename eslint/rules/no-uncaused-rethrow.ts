@@ -67,9 +67,8 @@ function hasSpread(node: ESTree.ObjectExpression): boolean {
  *   catch (error) { throw new UserFacingError(msg, { cause: error }) }        // causeNotError
  *
  * A wrapper thrown without `{ cause }` starts its stack at the `throw` site, so
- * the failure that triggered it is gone from the logs. Interpolating
- * `getErrorMessage(error)` into the message is not a substitute: it keeps one line
- * and drops the original frames.
+ * the failure that triggered it is gone from the logs. Interpolating the caught
+ * error's message is not a substitute: it keeps one line and drops the frames.
  *
  * Checking the cause's *type*, not just its presence, is what makes the rule worth
  * having: a non-Error cause carries no stack, and under

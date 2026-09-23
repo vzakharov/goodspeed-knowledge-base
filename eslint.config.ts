@@ -4,23 +4,10 @@
 // any 'warn' entries to 'error'. Severity is 'error' or 'off', never 'warn'; the policy
 // and how to grandfather a rule live in .claude/rules/eslint.md.
 //
-// The rule set is split by plugin family into eslint/rule-groups/*.ts. Each group lists
-// the rules that share a severity as a name array (squeezed through the strictly-typed
-// `fromEntries` helper via `withSeverity`), and keeps rules with options / a per-rule
-// rationale declared explicitly. This file orchestrates the groups: preset spreads,
-// plugin registration, the merged rule set, and the scoped overrides.
-//
-// Rule sources:
-//   - eslint-config-next/core-web-vitals  — @next/next, react, react-hooks, jsx-a11y, import
-//   - eslint-config-next/typescript       — @typescript-eslint (recommended preset)
-//   - @eslint-react/eslint-plugin         — TypeScript-native React rules (replaces eslint-plugin-react for most rules)
-//   - eslint-plugin-react-compiler        — React Compiler compatibility (Next.js 16)
-//   - eslint-plugin-unicorn               — code quality, filename enforcement
-//   - Core ESLint rules                   — security, correctness, code quality
-//
-// Type-aware linting is enabled via parserOptions.projectService. This allows the
-// full @typescript-eslint rule set including rules that require type information
-// (no-floating-promises, no-unsafe-*, strict-boolean-expressions, etc.).
+// The rule set is split by plugin family into eslint/rule-groups/*.ts, each group
+// listing a severity's rules via `withSeverity` and its rules with options
+// explicitly. This file orchestrates the groups: preset spreads, plugin
+// registration, the merged rule set, and the scoped overrides.
 //
 // Formatting is Prettier's alone: eslint-config-prettier disables the rules that
 // would fight it, and `pnpm format:check` is the check that enforces it.
@@ -78,8 +65,7 @@ const SHARED_LIB_ENTRY = {
 // routing directory `apps/web/app/` sits above every slice, so it imports
 // downward by definition.
 //
-// `boundaries/dependencies` carries all of it: v7 folds the former `entry-point`
-// and `external` rules into its policies.
+// `boundaries/dependencies` carries all of it, entry points included.
 const boundariesConfig: Config = {
   plugins: { boundaries: boundariesPlugin },
   files: ['apps/web/src/**/*.{ts,tsx}'],
@@ -166,10 +152,9 @@ const boundariesConfig: Config = {
               },
             },
           ]),
-          // Shared is a layer and a slice at once — FSD's own exception, which
-          // is why every file in it reaches every other directly, the way the
-          // app layer's segments do. The public API it exposes is the one the
-          // layers above enter by, not a wall between its own segments.
+          // Shared is a layer and a slice at once (FSD's own exception), so its
+          // files reach each other directly; its public API is for the layers
+          // above.
           {
             from: { element: { type: 'shared' } },
             allow: { to: { element: { type: 'shared' } } },
@@ -309,9 +294,7 @@ const eslintConfig = defineConfig([
   // rules look for its `app/` and `pages/` from here.
   { settings: { next: { rootDir: 'apps/web/' } } },
 
-  // --- @eslint-react: TypeScript-native, React 19-aware, type-checked ---
-  // Replaces most eslint-plugin-react rules with faster, type-aware equivalents.
-  // Also covers react-hooks rules (exhaustive-deps, rules-of-hooks, etc.).
+  // --- @eslint-react: supersedes most eslint-plugin-react and react-hooks rules ---
   eslintReact.configs['recommended-type-checked'],
   // Turn off react/* rules that @eslint-react supersedes (avoids duplicate diagnostics):
   eslintReact.configs['disable-conflict-eslint-plugin-react'],
@@ -324,7 +307,7 @@ const eslintConfig = defineConfig([
   // --- Unicorn: code quality, filename-case, modern JS patterns ---
   unicornPlugin.configs.recommended,
 
-  // Prettier must come after all other configs to override formatting rules.
+  // Prettier must follow every preset above, to switch off their formatting rules.
   prettierConfig,
   boundariesConfig,
   apiBoundariesConfig,
@@ -354,9 +337,8 @@ const eslintConfig = defineConfig([
     files: ['**/*.{js,jsx,mjs,ts,tsx,mts,cts}'],
     languageOptions: {
       parserOptions: {
-        // Enable type-aware linting. Auto-discovers tsconfig.json via projectService.
-        // This makes ~35 additional @typescript-eslint rules available that require
-        // TypeScript type information (e.g. no-floating-promises, no-unsafe-*).
+        // Type information, which the type-aware rules (no-floating-promises,
+        // no-unsafe-*, the vova ones that read types) need.
         projectService: true,
       },
     },
@@ -386,9 +368,8 @@ const eslintConfig = defineConfig([
       // Type-guard predicates are passed by reference to .filter()/.map() so the
       // result is narrowed — inlining them as arrows would drop the narrowing.
       'unicorn/no-array-callback-reference': 'off',
-      // Rule implementations that work with TypeScript's internal type system must
-      // cast ts.Type to narrower subtypes (e.g. ts.TypeReference) to access fields
-      // that only exist on those subtypes — there is no TypeScript-safe alternative.
+      // @types/estree does not model the TS-only node kinds rule code reads, so
+      // narrowing a node to one is an assertion with no type-safe alternative.
       '@typescript-eslint/no-unsafe-type-assertion': 'off',
     },
   },
@@ -401,7 +382,6 @@ const eslintConfig = defineConfig([
       '@eslint-react/no-unnecessary-use-prefix': 'off',
     },
   },
-  // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next, re-stated for `apps/*` because each
     // app builds into its own directory rather than the repository root, plus

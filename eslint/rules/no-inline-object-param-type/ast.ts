@@ -20,11 +20,8 @@ export const isTypeLiteral = (node: ESTree.Node | undefined): boolean =>
   node?.type === tsType('TSTypeLiteral');
 
 /**
- * The node that actually carries the type annotation for a parameter, plus
- * whether the parameter is optional at the call site and the parameter's own
- * default value (the `= …` right-hand side, `null` when the parameter isn't
- * defaulted). Unwraps `AssignmentPattern` (a defaulted param) to its `.left`,
- * and treats a default value as "optional".
+ * Unwraps a defaulted param (`AssignmentPattern`) to the node carrying its
+ * annotation; a default makes the param optional at the call site.
  */
 export function annotationCarrier(param: ESTree.Node): {
   carrier: AnnotatedNode;
@@ -59,11 +56,6 @@ export type ObjectTypedParam = WithAnnotation & {
   paramDefault: ESTree.Node | null;
 };
 
-/**
- * Object-literal-typed params, keeping the literal node, the annotation wrapper,
- * the carrier, optionality, the parameter's own name (`null` when destructured
- * in place — an `ObjectPattern` has no single name), and its default value.
- */
 export function objectTypedParams(fn: FunctionNode): ObjectTypedParam[] {
   const result: ObjectTypedParam[] = [];
   for (const param of fn.params) {
@@ -108,16 +100,11 @@ export function memberKeyName(node: KeyedNode): string | null {
 }
 
 /**
- * Whether a destructured object parameter's inline type annotation is redundant:
- * every destructured field has a default, the parameter itself defaults to an
- * empty `{}`, and every annotated field is an optional primitive
- * (`string`/`number`/`boolean`) keyed exactly to the destructured fields. Under
- * those conditions TypeScript infers precisely the same `{ field?: T; … }` from
- * the field defaults, so the annotation adds nothing — the fix drops it rather
- * than extracting an alias. The primitive/optional/same-keys guard is what keeps
- * it from firing where the annotation actually narrows inference (a literal
- * union like `'month' | 'year'`, a `Record<…>`, a required field), which would
- * silently widen the type.
+ * Whether a destructured param's inline annotation is redundant: every field is
+ * defaulted, the param defaults to `{}`, and the annotation is exactly those keys
+ * as optional `string`/`number`/`boolean` — what TypeScript infers from the
+ * defaults anyway. Anything narrower (a literal union, a `Record`, a required
+ * field) would silently widen if dropped, so it never qualifies.
  */
 export function isRedundantDefaultedObjectParam(
   carrier: AnnotatedNode,

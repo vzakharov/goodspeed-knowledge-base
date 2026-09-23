@@ -2,8 +2,8 @@ import type { Linter } from 'eslint';
 
 import { withSeverity } from './rule-severity';
 
-// @next/next — all 21 rules listed explicitly as error. eslint-config-next/core-web-vitals
-// already enables most; we make them all visible and upgrade any remaining warns.
+// @next/next — every rule listed as error, including those
+// eslint-config-next/core-web-vitals leaves at warn.
 export const nextRules = {
   ...withSeverity('error', [
     // Already error in eslint-config-next (listed for transparency):
