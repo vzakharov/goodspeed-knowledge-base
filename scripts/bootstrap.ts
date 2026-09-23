@@ -34,13 +34,31 @@ import { localSupabase } from '../apps/api/test/local-supabase.ts';
 
 const root = path.join(import.meta.dirname, '..');
 
-/** Runs the Supabase CLI and returns its stdout; its progress goes to stderr. */
+/**
+ * Runs the Supabase CLI with its progress, on stderr, passed through, and its
+ * stdout — a JSON dump on success — held back. A failure's reason is in that
+ * stdout too, so a failing command prints it and exits.
+ */
 function supabase(args: string[]) {
-  return execFileSync('pnpm', ['exec', 'supabase', ...args], {
-    cwd: root,
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'inherit'],
-  });
+  try {
+    execFileSync('pnpm', ['exec', 'supabase', ...args], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'inherit'],
+    });
+  } catch (error) {
+    const stdout =
+      error instanceof Error &&
+      'stdout' in error &&
+      typeof error.stdout === 'string'
+        ? error.stdout.trim()
+        : '';
+
+    console.error(
+      `\`supabase ${args.join(' ')}\` failed${stdout === '' ? '' : `:\n${stdout}`}`,
+    );
+    process.exit(1);
+  }
 }
 
 function ensureSigningKey() {
