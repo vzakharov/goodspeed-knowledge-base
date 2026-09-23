@@ -1,29 +1,34 @@
 Proposed squash title/body:
 
 ```
-feat: carry the frontend foundation into a Turborepo layout (pr #1)
+feat: knowledge base foundation, database, API and local stack (pr #1)
 ```
 
 ```
 The repository is the answer to Goodspeed's assessment brief, an
-AI-powered knowledge base, spun off from vzakharov/vovazakharov.com to
-reuse its frontend discipline. This lands that foundation in the
-monorepo shape the brief asks for, so the product is built on it.
+AI-powered knowledge base with a RAG chat over the user's documents.
+This lands everything beneath the web app: the monorepo, the schema,
+the API and one command that brings the stack up locally.
 
-apps/web is a Next.js 16 static export whose Feature-Sliced src/ is
-the source's design system without its product: the Mantine theme,
-the colour tokens and their Sass codegen, shared/ui and the theme
-switch. An empty apps/web/pages/ keeps Next from reading the FSD pages
-layer as a Pages Router, a trap the monorepo layout exposes. The
-ESLint ruleset with its vova/* rules and FSD boundaries, Steiger,
-stylelint, Prettier, type-overlap, the Mantine stylesheet check and
-the cost ledger run from the root over every workspace, and vet.sh
-runs them all. turbo.json passes the proxy and CA variables through,
-since Turborepo's strict environment otherwise hides them from
-next/font.
+apps/web is a Next.js 16 static export carrying the design system of
+vzakharov/vovazakharov.com without its product, settled for pages that
+render only after sign-in. Lint, FSD boundaries, type-overlap and the
+cost ledger run from the root over every workspace.
 
-CLAUDE.md, the path-scoped rules, /preview and the pnpm install hook
-are written for this repo.
+supabase/ holds the schema: documents, chunks as vector(1536) under
+HNSW, conversations and append-only usage events, with row-level
+security on every table and a security-invoker search function, so
+the caller's own policies scope retrieval. pgTAP checks a second user
+and an anonymous caller reach nothing of the first user's.
+
+apps/api is NestJS over @kb/contracts, the Zod home of every wire
+shape. It verifies the Supabase token against JWKS and queries as that
+user, so RLS is the enforcement and no service-role key exists. Chat
+and embeddings are configured apart over one OpenAI-compatible client,
+providers being preset rows; ingestion chunks markdown-aware and
+embeds in batches, and chat retrieves, cites [n] and streams over
+server-sent events. pnpm bootstrap starts the stack and writes each
+app's .env, and vet runs the database and end-to-end suites.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
