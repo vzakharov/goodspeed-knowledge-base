@@ -48,7 +48,7 @@ export function SignInPage() {
                 Your documents, and a chat that answers from them.
               </Text>
             </Stack>
-            <ThemeToggle label="Toggle theme" />
+            <ThemeToggle />
           </Group>
           <SignInForm />
         </Stack>

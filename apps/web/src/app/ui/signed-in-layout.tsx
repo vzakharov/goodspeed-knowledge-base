@@ -81,23 +81,27 @@ export function SignedInLayout({ children }: WithChildren) {
         <Group h="100%" px="md" justify="space-between" wrap="nowrap">
           <Group component="nav" gap="lg" wrap="nowrap">
             <Text fw={700}>Knowledge Base</Text>
-            {NAV.map(({ label, href }) => (
-              <InternalLink
-                key={href}
-                {...{ href }}
-                size="sm"
-                fw={pathname === href ? 700 : 400}
-                aria-current={pathname === href ? 'page' : undefined}
-              >
-                {label}
-              </InternalLink>
-            ))}
+            {NAV.map(({ label, href }) => {
+              const current = pathname === href;
+
+              return (
+                <InternalLink
+                  key={href}
+                  {...{ href }}
+                  size="sm"
+                  fw={current ? 700 : 400}
+                  aria-current={current ? 'page' : undefined}
+                >
+                  {label}
+                </InternalLink>
+              );
+            })}
           </Group>
           <Group gap="sm" wrap="nowrap">
             <Text size="sm" c="dimmed" visibleFrom="sm" truncate>
               {session.session.user.email}
             </Text>
-            <ThemeToggle label="Toggle theme" />
+            <ThemeToggle />
             <SignOutButton />
           </Group>
         </Group>
