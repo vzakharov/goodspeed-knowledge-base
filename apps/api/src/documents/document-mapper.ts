@@ -1,6 +1,6 @@
 import type { Document, DocumentSummary, EmbeddingState } from '@kb/contracts';
 
-import { type Tables, toIso } from '../database/database.ts';
+import { type Tables, toTimestamps } from '../database/database.ts';
 
 type DocumentRow = Tables<'documents'>;
 
@@ -33,14 +33,7 @@ export function toEmbeddingState(
 }
 
 export function toDocument(row: DocumentRow, currentModel: string): Document {
-  const {
-    id,
-    title,
-    content,
-    tags,
-    created_at: createdAt,
-    updated_at: updatedAt,
-  } = row;
+  const { id, title, content, tags } = row;
 
   return {
     id,
@@ -48,8 +41,7 @@ export function toDocument(row: DocumentRow, currentModel: string): Document {
     content,
     tags,
     embedding: toEmbeddingState(row, currentModel),
-    createdAt: toIso(createdAt),
-    updatedAt: toIso(updatedAt),
+    ...toTimestamps(row),
   };
 }
 
@@ -57,14 +49,7 @@ export function toDocumentSummary(
   row: DocumentSummaryRow,
   currentModel: string,
 ): DocumentSummary {
-  const {
-    id,
-    title,
-    excerpt,
-    tags,
-    created_at: createdAt,
-    updated_at: updatedAt,
-  } = row;
+  const { id, title, excerpt, tags } = row;
 
   return {
     id,
@@ -72,7 +57,6 @@ export function toDocumentSummary(
     excerpt,
     tags,
     embedding: toEmbeddingState(row, currentModel),
-    createdAt: toIso(createdAt),
-    updatedAt: toIso(updatedAt),
+    ...toTimestamps(row),
   };
 }

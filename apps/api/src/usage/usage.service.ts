@@ -5,7 +5,7 @@ import {
 } from '@kb/contracts';
 import { Injectable } from '@nestjs/common';
 
-import type { ModelIdentity } from '../ai/index.ts';
+import type { ModelIdentity, PromptTokens } from '../ai/index.ts';
 import type { Reader } from '../auth/index.ts';
 import { rows } from '../database/database.ts';
 
@@ -39,12 +39,12 @@ export class UsageService {
   async recordEmbedding(
     reader: Reader,
     identity: ModelIdentity,
-    promptTokens: number | null,
+    usage: PromptTokens | null,
   ) {
     return this.record(reader, {
       ...identity,
       kind: 'embedding',
-      promptTokens,
+      promptTokens: usage?.promptTokens ?? null,
       completionTokens: null,
     });
   }

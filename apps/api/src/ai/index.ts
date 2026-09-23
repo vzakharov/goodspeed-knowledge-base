@@ -5,6 +5,7 @@ export type {
   ChatModel,
   EmbeddingModel,
   ModelIdentity,
+  PromptTokens,
   TokenUsage,
   WithDimensions,
 } from './models.ts';

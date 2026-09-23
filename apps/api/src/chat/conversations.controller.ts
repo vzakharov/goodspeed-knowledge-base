@@ -5,7 +5,6 @@ import {
   type ConversationInput,
   conversationInputSchema,
   type ConversationList,
-  idSchema,
   type QuestionInput,
   questionInputSchema,
 } from '@kb/contracts';
@@ -26,11 +25,9 @@ import type { Response } from 'express';
 import { AiProviderError } from '../ai/index.ts';
 import { CurrentReader, type Reader } from '../auth/index.ts';
 import { toApiError } from '../http/error.filter.ts';
-import { ZodPipe } from '../http/zod.pipe.ts';
+import { idPipe, ZodPipe } from '../http/zod.pipe.ts';
 import { AnswerService } from './answer.service.ts';
 import { ConversationsService } from './conversations.service.ts';
-
-const idPipe = new ZodPipe(idSchema);
 
 function send(response: Response, event: AnswerEvent) {
   response.write(`data: ${JSON.stringify(event)}\n\n`);

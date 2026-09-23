@@ -4,6 +4,7 @@ import {
   conversationDetailSchema,
   conversationSchema,
   type Document,
+  type DocumentInput,
   documentListSchema,
   documentSchema,
   reembedResultSchema,
@@ -32,7 +33,7 @@ import { localSupabase, signUp } from './local-supabase.ts';
 
 const DIMENSIONS = 1536;
 
-type Session = { id: string; token: string };
+type Session = Awaited<ReturnType<typeof signUp>>;
 
 let app: INestApplication;
 let fake: FakeOpenAi;
@@ -104,7 +105,8 @@ async function json(response: Response, status = 200): Promise<unknown> {
   return text === '' ? undefined : (JSON.parse(text) as unknown);
 }
 
-type CreateInput = { title: string; content: string; tags?: string[] };
+type CreateInput = Omit<DocumentInput, 'tags'> &
+  Partial<Pick<DocumentInput, 'tags'>>;
 
 async function create(session: Session, input: CreateInput) {
   return documentSchema.parse(
@@ -112,6 +114,12 @@ async function create(session: Session, input: CreateInput) {
       await call(session, 'POST', '/documents', { tags: [], ...input }),
       201,
     ),
+  );
+}
+
+async function createConversation(session: Session, title: string) {
+  return conversationSchema.parse(
+    await json(await call(session, 'POST', '/conversations', { title }), 201),
   );
 }
 
@@ -306,12 +314,7 @@ describe('the API', () => {
     let conversationId: string;
 
     before(async () => {
-      ({ id: conversationId } = conversationSchema.parse(
-        await json(
-          await call(alice, 'POST', '/conversations', { title: 'Coffee' }),
-          201,
-        ),
-      ));
+      ({ id: conversationId } = await createConversation(alice, 'Coffee'));
     });
 
     it('answers from the nearest chunk, streamed, citing it', async () => {
@@ -361,12 +364,7 @@ describe('the API', () => {
     });
 
     it('says so, citing nothing, when no document matches', async () => {
-      const { id } = conversationSchema.parse(
-        await json(
-          await call(alice, 'POST', '/conversations', { title: 'Other' }),
-          201,
-        ),
-      );
+      const { id } = await createConversation(alice, 'Other');
       const done = (await ask(alice, id, 'Qwerty zxcvb?')).at(-1);
 
       assert.equal(done?.type, 'done');

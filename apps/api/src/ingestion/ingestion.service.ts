@@ -63,11 +63,7 @@ export class IngestionService {
 
     const { model } = this.embeddings;
 
-    await this.usage.recordEmbedding(
-      reader,
-      this.embeddings,
-      embedded.usage?.promptTokens ?? null,
-    );
+    await this.usage.recordEmbedding(reader, this.embeddings, embedded.usage);
 
     // `false` means the document changed while this ran; the request that
     // changed it runs its own ingestion, whose result is the one that counts.

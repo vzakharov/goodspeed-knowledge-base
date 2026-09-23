@@ -5,7 +5,6 @@ import {
   type DocumentList,
   type DocumentListQuery,
   documentListQuerySchema,
-  idSchema,
   type ReembedResult,
   type TagList,
 } from '@kb/contracts';
@@ -23,10 +22,8 @@ import {
 } from '@nestjs/common';
 
 import { CurrentReader, type Reader } from '../auth/index.ts';
-import { ZodPipe } from '../http/zod.pipe.ts';
+import { idPipe, ZodPipe } from '../http/zod.pipe.ts';
 import { DocumentsService } from './documents.service.ts';
-
-const idPipe = new ZodPipe(idSchema);
 
 /**
  * A write answers once the document is embedded, so its response already

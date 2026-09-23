@@ -12,7 +12,12 @@ import { z } from 'zod';
 
 import type { ModelIdentity } from '../ai/index.ts';
 import type { Reader } from '../auth/index.ts';
-import { rows, type Tables, toIso } from '../database/database.ts';
+import {
+  rows,
+  type Tables,
+  toIso,
+  toTimestamps,
+} from '../database/database.ts';
 import type { Turn } from './prompt.ts';
 
 /** How much of the conversation an answer's prompts replay. */
@@ -20,18 +25,10 @@ const HISTORY_TURNS = 8;
 
 const citationsSchema = z.array(citationSchema);
 
-function toConversation({
-  id,
-  title,
-  created_at: createdAt,
-  updated_at: updatedAt,
-}: Tables<'conversations'>): Conversation {
-  return {
-    id,
-    title,
-    createdAt: toIso(createdAt),
-    updatedAt: toIso(updatedAt),
-  };
+function toConversation(row: Tables<'conversations'>): Conversation {
+  const { id, title } = row;
+
+  return { id, title, ...toTimestamps(row) };
 }
 
 function toMessage({

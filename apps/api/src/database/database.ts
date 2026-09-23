@@ -4,7 +4,7 @@ import {
   type SupabaseClient,
 } from '@supabase/supabase-js';
 
-import type { Database } from './database.types.ts';
+import type { Database, Tables } from './database.types.ts';
 
 /**
  * The API's only route to Postgres: PostgREST, under the key the web app also
@@ -65,6 +65,13 @@ export function rows<T>(result: PostgrestSingleResponse<T>): T {
 /** A `timestamptz` as PostgREST writes it, as the wire's ISO 8601 in UTC. */
 export function toIso(timestamp: string) {
   return new Date(timestamp).toISOString();
+}
+
+export function toTimestamps({
+  created_at: createdAt,
+  updated_at: updatedAt,
+}: Pick<Tables<'documents'>, 'created_at' | 'updated_at'>) {
+  return { createdAt: toIso(createdAt), updatedAt: toIso(updatedAt) };
 }
 
 /** The pgvector text form, which a `vector` parameter or column accepts. */

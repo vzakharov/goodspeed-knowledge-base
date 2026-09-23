@@ -14,13 +14,13 @@ import {
   createEmbeddingModel,
   type ModelSettings,
 } from './openai-compatible.ts';
-import { PROVIDER_PRESETS } from './providers.ts';
+import { PROVIDER_PRESETS, type ProviderName } from './providers.ts';
 
 const DIMENSIONS = 8;
 
 function settings(
   { baseUrl }: FakeOpenAi,
-  preset: keyof typeof PROVIDER_PRESETS = 'openai',
+  preset: ProviderName = 'openai',
 ): ModelSettings {
   return {
     provider: preset,
@@ -167,7 +167,7 @@ type EmbeddingsOverrides = { dimensions?: number; batchSize?: number };
 const embeddings = (
   server: FakeOpenAi,
   overrides: EmbeddingsOverrides = {},
-  preset: keyof typeof PROVIDER_PRESETS = 'openai',
+  preset: ProviderName = 'openai',
 ) =>
   createEmbeddingModel({
     ...settings(server, preset),
@@ -231,11 +231,7 @@ describe('createEmbeddingModel against a server that reports no usage', () => {
   const fake = withFake({ omitUsage: true });
 
   it('reports none rather than zero', async () => {
-    const { usage } = await createEmbeddingModel({
-      ...settings(fake()),
-      dimensions: DIMENSIONS,
-      batchSize: 64,
-    }).embed(['x']);
+    const { usage } = await embeddings(fake()).embed(['x']);
 
     assert.equal(usage, null);
   });

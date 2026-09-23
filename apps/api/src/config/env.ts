@@ -4,11 +4,8 @@ import type {
   EmbeddingSettings,
   ModelSettings,
 } from '../ai/openai-compatible.ts';
-import {
-  PROVIDER_NAMES,
-  PROVIDER_PRESETS,
-  type ProviderName,
-} from '../ai/providers.ts';
+import { PROVIDER_NAMES, PROVIDER_PRESETS } from '../ai/providers.ts';
+import type { SupabaseSettings } from '../database/database.ts';
 
 /**
  * Everything the API reads from its environment, parsed once at boot. A
@@ -60,10 +57,7 @@ type Env = z.infer<typeof envSchema>;
 export type AppConfig = {
   port: number;
   webOrigin: string;
-  supabase: {
-    url: string;
-    publishableKey: string;
-  };
+  supabase: SupabaseSettings;
   chat: ModelSettings;
   embedding: EmbeddingSettings;
 };
@@ -77,12 +71,13 @@ export class ConfigError extends Error {
 }
 
 function modelSettings(
+  env: Env,
   capability: 'CHAT' | 'EMBEDDING',
-  provider: ProviderName,
-  model: string,
-  apiKey: string | undefined,
-  baseUrl: string | undefined,
 ): ModelSettings {
+  const provider = env[`${capability}_PROVIDER`];
+  const model = env[`${capability}_MODEL`];
+  const apiKey = env[`${capability}_API_KEY`];
+  const baseUrl = env[`${capability}_BASE_URL`];
   const preset = PROVIDER_PRESETS[provider];
   const resolvedBaseUrl = baseUrl ?? preset.baseUrl;
 
@@ -117,21 +112,9 @@ function toConfig(env: Env): AppConfig {
       url: env.SUPABASE_URL,
       publishableKey: env.SUPABASE_PUBLISHABLE_KEY,
     },
-    chat: modelSettings(
-      'CHAT',
-      env.CHAT_PROVIDER,
-      env.CHAT_MODEL,
-      env.CHAT_API_KEY,
-      env.CHAT_BASE_URL,
-    ),
+    chat: modelSettings(env, 'CHAT'),
     embedding: {
-      ...modelSettings(
-        'EMBEDDING',
-        env.EMBEDDING_PROVIDER,
-        env.EMBEDDING_MODEL,
-        env.EMBEDDING_API_KEY,
-        env.EMBEDDING_BASE_URL,
-      ),
+      ...modelSettings(env, 'EMBEDDING'),
       dimensions: env.EMBEDDING_DIMENSIONS,
       batchSize: env.EMBEDDING_BATCH_SIZE,
     },

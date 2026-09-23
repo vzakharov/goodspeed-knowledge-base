@@ -152,11 +152,7 @@ export class AnswerService {
       usage,
     } = await this.embeddings.embed([query], { signal });
 
-    await this.usage.recordEmbedding(
-      reader,
-      this.embeddings,
-      usage?.promptTokens ?? null,
-    );
+    await this.usage.recordEmbedding(reader, this.embeddings, usage);
 
     const { model } = this.embeddings;
     const matches = rows(

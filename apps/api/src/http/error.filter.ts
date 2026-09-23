@@ -40,33 +40,29 @@ function httpMessage(exception: HttpException) {
   return typeof message === 'string' ? message : exception.message;
 }
 
+function apiError(statusCode: number, message: string): ApiError {
+  return { statusCode, error: REASON_PHRASES[statusCode] ?? 'Error', message };
+}
+
 /** Every error response in one shape, `@kb/contracts`' `ApiError`. */
 export function toApiError(exception: unknown): ApiError {
   if (exception instanceof HttpException) {
-    const statusCode = exception.getStatus();
-
-    return {
-      statusCode,
-      error: REASON_PHRASES[statusCode] ?? 'Error',
-      message: httpMessage(exception),
-    };
+    return apiError(exception.getStatus(), httpMessage(exception));
   }
 
   // A reader can act on a provider's refusal — a key, a model name, a quota —
   // so its message goes out whole. It is the API's configuration, not a secret.
   if (exception instanceof AiProviderError) {
-    return {
-      statusCode: HttpStatus.BAD_GATEWAY,
-      error: 'Bad Gateway',
-      message: `The model provider failed: ${exception.message}`,
-    };
+    return apiError(
+      HttpStatus.BAD_GATEWAY,
+      `The model provider failed: ${exception.message}`,
+    );
   }
 
-  return {
-    statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-    error: 'Internal Server Error',
-    message: 'Something failed on the server; its log has the details.',
-  };
+  return apiError(
+    HttpStatus.INTERNAL_SERVER_ERROR,
+    'Something failed on the server; its log has the details.',
+  );
 }
 
 @Catch()

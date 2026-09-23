@@ -1,3 +1,4 @@
+import { idSchema } from '@kb/contracts';
 import { BadRequestException, type PipeTransform } from '@nestjs/common';
 import { z } from 'zod';
 
@@ -21,3 +22,5 @@ export class ZodPipe<Schema extends z.ZodType> implements PipeTransform {
     return parsed.data;
   }
 }
+
+export const idPipe = new ZodPipe(idSchema);
