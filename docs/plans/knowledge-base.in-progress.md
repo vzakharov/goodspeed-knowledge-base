@@ -2,9 +2,9 @@
 
 The product this repository exists for: Goodspeed's technical assessment, an
 AI-powered knowledge base (documents + a RAG chat over them). The brief is
-committed beside this plan as
-[`goodspeed-assessment.md`](goodspeed-assessment.md) and is the acceptance test
-— every requirement row in it has a step below.
+[`docs/assessment.md`](../assessment.md), outside `docs/plans/` so it survives
+the squash, and is the acceptance test — every requirement row in it has a step
+below.
 
 This plan was written by the `/spinoff` session in `vzakharov/vovazakharov.com`
 that seeded the repo, and is left `paused`: the seed carried the foundation,
