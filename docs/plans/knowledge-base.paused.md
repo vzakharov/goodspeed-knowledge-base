@@ -58,15 +58,50 @@ database and the API, which no chunk polished.
 
 ## Progress
 
-Steps 1–4 are done; step 5 (the web app) and step 6 have not started. `vet`
-is green at the pause and now runs `test:db` (pgTAP) and `test:e2e` (the API
-over the local stack, two users) itself, so it needs the stack up — `pnpm
-bootstrap` in a fresh session, after starting `dockerd` by hand.
+Steps 1–4 are done, and so are step 2's knip and step 5's foundation; the
+documents, chat and usage pages and step 6 have not started. `vet` is green
+at the pause and needs the stack up — `pnpm bootstrap` in a fresh session,
+after starting `dockerd` by hand.
+
+**The fourth session** landed knip and the web app's foundation:
+
+- `pnpm knip` runs in vet over every workspace (`knip.jsonc`). Its first run
+  deleted the caller's leftover UI (`ChipNav`, `SummaryCard`, `CardLink`,
+  `Subheading`, `hoverDim`, `class-names`) and the unused typings, and took
+  `export` off what only its own file uses. `@tobeused` survives on
+  `InternalButton` (the documents list's "new document") and `pick`.
+- `shared/api`: the env parse, the Supabase client (Auth only),
+  `createApiClient` — `request(path, schema, init)` parses with the
+  contract, `send` returns the raw 2xx `Response` for a 204 or the chat's
+  stream — and the `QueryClient`. `entities/session` has `useSession` and
+  `signOut`.
+- `/sign-in` (sign-in and sign-up, `?next=` back to where the guard sent
+  it), the `(signed-in)` route group inside `SignedInLayout` (guard plus an
+  `AppShell` header), and `/` as an overview reading `/settings/ai`. The
+  header's links are the `NAV` array in `signed-in-layout.tsx`; each page
+  adds its row.
+- Previewed end to end in both themes and at 500px: guard → sign-in →
+  sign-up → overview → sign-out. `/preview` says how to capture behind the
+  guard.
+
+**Next session's chunk:** the documents pages — list with the tag filter,
+create/edit with a markdown preview, delete with confirmation, embedding
+status. It starts from `InternalButton` and `api.send` for the delete, and
+two things this chunk left for it to decide:
+
+- Error display is an `Alert` written out in the sign-in form and the
+  overview; the documents pages make it three, which is the point to lift it
+  into `shared/ui`.
+- `PageShell`'s 80px padding sits inside the `AppShell`'s own, which reads
+  roomy on the overview; revisit it once a dense page (the list) exists.
+
+Chat and usage are a chunk each after that.
 
 **The third session was a full `/polish` and nothing else** (the operator's
-call, on budget). Its `polish:` commits are the branch's floor, so the next
-`/polish` reads only what came after them; `vet` is green on its last commit.
-`/dry` left these for the operator, none blocking:
+call, on budget). Its `polish:` commits are the branch's floor; the fourth
+session's are `polish(chunk: …)` and skipped by the lookup, so the next full
+`/polish` reads from the third session's floor. `/dry` left these for the
+operator, none blocking:
 
 - API: an owned-row lookup/delete/404 helper shared by the conversation and
   document services; a `NamedError` base for the four error classes; one
@@ -79,22 +114,14 @@ call, on budget). Its `polish:` commits are the branch's floor, so the next
   build-output ignore globs in both ESLint and stylelint.
 - Web: `defaultColorScheme="auto"` in the root layout and the provider (the
   `'use client'` boundary decides where a shared const could live); the
-  `150ms ease` hover timing in three stylesheets; `prose.scss`'s blockquote
+  `150ms ease` hover timing in two stylesheets; `prose.scss`'s blockquote
   bar equal to `--color-border-hairline-strong`; its `1.25em` flow space.
-  `shared/ui`'s `ChipNav`, `SummaryCard`, `InternalButton` and `hoverDim`
-  have no consumer yet — step 5 either uses them or drops them.
 - Tooling: the start-month slice in `session-cost.ts` and `cost-totals.ts`.
 - `.claude/rules/README.md` lost its "ships empty" line, and
   `watermark.json` lists it as adopted verbatim, so `/update-muthur` will
   show a diff there.
 - `apps/api/src/ingestion/chunker.ts` says "The README explains the numbers
   below" — true only once step 6's README lands.
-
-**Next session's chunk:** knip (step 2's last item), then step 5's
-foundation — Supabase Auth in the browser
-with the route guard, the typed API client under TanStack Query, and the
-signed-in shell — so the pages after it have something to hang on. Documents,
-chat and usage are a chunk each after that.
 
 **Still open from the second session:** whether to land the foundation and
 backend as they stand and build the web app in a PR of its own, or carry on
@@ -135,6 +162,14 @@ database layer is verified.
   `NEXT_PUBLIC_API_URL`.
 - `supabase/seed.sql` is dropped and seeding is off: a document is useful
   only embedded, which SQL cannot do.
+- `@steiger/toolkit` stays a devDependency knip is told to ignore: the
+  Steiger plugin's declarations import it.
+- The theme toggle lives in the signed-in header and on the sign-in card;
+  the fixed theme corner is gone. The sign-in card's heading is an `h2`,
+  since the theme's `h1` grows with the viewport past the card's width.
+- The overview at `/` is a real page — the configured models, from
+  `/settings/ai` — rather than a placeholder, so the typed client has a
+  consumer from the first chunk.
 
 ## Remaining work
 
@@ -178,7 +213,7 @@ Ordered so each step leaves `vet` green and the app runnable.
 - [x] Add each new workspace's checks to `vet.sh` and CLAUDE.md § "Vetting" in
       the same change.
 - [ ] Update `/preview` with the routes as they land (step 5).
-- [ ] Knip over every workspace — unused files, exports, dependencies — with
+- [x] Knip over every workspace — unused files, exports, dependencies — with
       its Next, NestJS, ESLint and Node-test plugins, joining `vet.sh` and
       CLAUDE.md § "Vetting" in the same change. An export kept for a later
       step carries a `@tobeused` JSDoc tag, which the config excludes
@@ -249,9 +284,9 @@ Ordered so each step leaves `vet` green and the app runnable.
 
 ### 5. Web
 
-- [ ] Supabase Auth in the browser (email/password sign-up, sign-in,
+- [x] Supabase Auth in the browser (email/password sign-up, sign-in,
       sign-out); a client-side guard around every authenticated route.
-- [ ] Server state through TanStack Query over an API client typed from
+- [x] Server state through TanStack Query over an API client typed from
       `@kb/contracts`; no second store for what the server owns.
 - [ ] **Routes use search params, not dynamic segments** — `/documents/edit?id=…`,
       `/chat?c=…`. A static export needs every dynamic segment's values at
