@@ -4,7 +4,7 @@ import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
 import type { Metadata } from 'next';
 import { JetBrains_Mono, Merriweather } from 'next/font/google';
 
-import { ThemeCorner } from './theme-corner';
+import { QueryProvider } from './query-provider';
 import { ThemeProvider } from './theme-provider';
 
 const merriweather = Merriweather({
@@ -46,8 +46,7 @@ export function RootLayout({
       </head>
       <body>
         <ThemeProvider>
-          <ThemeCorner />
-          {children}
+          <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>
       </body>
     </html>

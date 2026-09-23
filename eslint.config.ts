@@ -58,6 +58,14 @@ const SHARED_LIB_ENTRY = {
   fileInternalPath: '*.ts',
 };
 
+// A workspace under packages/, reached through its package name. It resolves
+// to its build through the workspace symlink, so to the checker it is a local
+// file rather than an external module.
+const WORKSPACE_PACKAGE = {
+  type: 'workspace-package',
+  pattern: ['packages/*/**'],
+};
+
 // Steiger (`pnpm lint:fsd`) checks the same directionality and public-API
 // discipline at CLI time; boundaries restates them as inline editor feedback,
 // which Steiger has no live extension for. Scoped to apps/web/src/ — the
@@ -90,6 +98,7 @@ const boundariesConfig: Config = {
         capture: ['segmentName'],
         partialMatch: false,
       },
+      WORKSPACE_PACKAGE,
     ],
   },
   rules: {
@@ -98,6 +107,12 @@ const boundariesConfig: Config = {
       {
         default: 'disallow',
         policies: [
+          {
+            from: {
+              element: { types: { anyOf: ['app', ...FSD_LAYERS, 'shared'] } },
+            },
+            allow: { to: { element: { type: 'workspace-package' } } },
+          },
           // The app layer sits above all of them, so it may import any,
           // through their public API.
           {
@@ -165,14 +180,6 @@ const boundariesConfig: Config = {
     'boundaries/no-unknown-dependencies': 'error',
     'boundaries/no-unknown-files': 'error',
   },
-};
-
-// A workspace under packages/, reached through its package name. It resolves
-// to its build through the workspace symlink, so to the checker it is a local
-// file rather than an external module.
-const WORKSPACE_PACKAGE = {
-  type: 'workspace-package',
-  pattern: ['packages/*/**'],
 };
 
 // The API's layout, lighter than the web's. Infrastructure — configuration,

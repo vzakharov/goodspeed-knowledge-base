@@ -10,12 +10,17 @@
     "test": "node --import tsx --test \"src/**/*.test.ts\""
   },
   "dependencies": {
+    "@kb/contracts": "workspace:*",
     "@mantine/core": "^9.6.0",
+    "@mantine/form": "^9.6.2",
     "@mantine/hooks": "^9.6.0",
+    "@supabase/supabase-js": "^2.117.1",
+    "@tanstack/react-query": "^5.103.2",
     "lucide-react": "^0.554.0",
     "next": "16.0.3",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/react": "^19",

@@ -47,9 +47,15 @@ There is deliberately no Playwright dependency — Chrome's own `--screenshot` i
 
 ## Routes
 
-| Route | Why  |
-| ----- | ---- |
-| `/`   | home |
+| Route      | Why                                                     |
+| ---------- | ------------------------------------------------------- |
+| `/sign-in` | sign-in and sign-up, the one route outside the guard    |
+| `/`        | the signed-in overview; signed out, it sends to sign-in |
+
+A route behind the guard renders only a loader until a session exists, so a
+bare `--screenshot` of it shows nothing. Sign up through `/sign-in` in a
+scripted browser first — the local stack confirms no email — and capture in
+that same browser context.
 
 Add a row per route a visual change can reach.
 
