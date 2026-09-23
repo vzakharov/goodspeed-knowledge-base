@@ -59,11 +59,40 @@ floor, and `/finalize`'s reads only what came after the last chunk.
 
 ## Progress
 
-Steps 1–4 are done, and so are step 5's foundation and documents pages; the
-chat and usage pages and step 6 have not started. `vet` is green at the pause
-and needs the stack up — `pnpm bootstrap` in a fresh session, after starting
+Steps 1–4 are done, and so are step 5's foundation, documents and chat pages;
+the usage page and step 6 have not started. `vet` is green at the pause and
+needs the stack up — `pnpm bootstrap` in a fresh session, after starting
 `dockerd` by hand. The API boots only with a model provider configured;
 `/preview` says how to point it at the fake one.
+
+**The sixth session** landed the chat:
+
+- `/chat` and `/chat?c=…` — the conversation list beside the open thread
+  (below `sm` the thread takes the width, the list a link away), answers
+  streaming as they are written, each stored answer's sources linking to
+  their documents, Stop, and "Ask again" on a failed or stopped question.
+  A first question creates the conversation, titled after it, and moves the
+  address; `useAsking` lives above the address read so the stream survives
+  that.
+- `shared/lib/event-stream.ts`: `readEvents`, tested, parses the answer
+  stream. `ReadableStream` is wrapped as an async iterable by hand, Safari
+  lacking the built-in one.
+- `Markdown` and `ConfirmDelete` (the delete modal) joined `shared/ui` at
+  their second consumers; `withSearchParam` joined `search-param.ts`, the one
+  spelling of every `?param` address.
+- The header hides its brand below `sm`, beside the email, so the links fit
+  at phone width; the usage row will need that room too.
+- Driven end to end in Chromium at 1280 and 500px in both themes: ask,
+  follow-up, an uncovered question, Stop mid-answer, ask again — through a
+  throwaway CDP driver over Node's global `WebSocket` (gitignored `tmp/`, so
+  gone with the container). `/preview` now names the latency trick that
+  makes Stop catchable against the fake.
+- `/dry` left for the operator, none blocking: `updatedFormat` (the medium
+  date) spelled in `document-row.tsx` and `conversation-list.tsx`; the
+  pending → `Loader`, error → `ErrorAlert` query guard, now in three pages.
+- Stopping a conversation's first question leaves it existing and empty — in
+  the list, deletable, asked again in place. Accepted rather than deleting
+  it behind the reader's back.
 
 **The fifth session** landed the documents pages:
 
@@ -105,21 +134,11 @@ and needs the stack up — `pnpm bootstrap` in a fresh session, after starting
   sign-up → overview → sign-out. `/preview` says how to capture behind the
   guard.
 
-**Next session's chunk:** the chat — conversation list, a streaming answer
-read with `fetch` from `api.send`, citations linking back through
-`documentHref`, history kept across sessions, and a `Chat` row in `NAV`. It
-starts from:
-
-- `Markdown` in `pages/document-editor/ui/markdown.tsx`: the chat's answers
-  are its second consumer, which is the point to lift it into `shared/ui`.
-- The route is `/chat?c=…`, read with `useSearchParam` inside a `Suspense`.
-- Mantine's tinted variants lose their text on the monochrome palette
-  (`.claude/rules/styling.md` § `white` and `black`); a neutral block is a
-  `Card`.
-
-Usage is the chunk after that.
-
-Chat and usage are a chunk each after that.
+**Next session's chunk:** the usage page — `/usage` over `GET /usage`
+(`usageReportSchema`, `USAGE_WINDOW_DAYS`), tokens per model per day with the
+kinds (`chat`, `condense`, `embedding`) told apart, a `Usage` row in `NAV`,
+and its row in `/preview`. Load `dataviz` before drawing any chart. Then
+step 6, the README and `/finalize`, is the chunk after.
 
 **The third session was a full `/polish` and nothing else** (the operator's
 call, on budget). The fourth session's polish covered everything after it and
@@ -320,7 +339,7 @@ Ordered so each step leaves `vet` green and the app runnable.
       build time, and user data has none.
 - [x] Documents: list with tag filter, create/edit with a markdown preview,
       delete with confirmation, embedding status visible.
-- [ ] Chat: conversation list, streaming answer, citations linking back to
+- [x] Chat: conversation list, streaming answer, citations linking back to
       the chunk's document, history kept across sessions.
 - [ ] Usage page.
 - [ ] Stretch, last and only if time allows: PDF/TXT upload with text
