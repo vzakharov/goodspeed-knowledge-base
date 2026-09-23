@@ -1,7 +1,7 @@
 import {
-  USAGE_WINDOW_DAYS,
   type UsageKind,
   type UsageReport,
+  usageWindowStart,
 } from '@kb/contracts';
 import { Injectable } from '@nestjs/common';
 
@@ -15,8 +15,6 @@ export type UsageRecord = ModelIdentity & {
   promptTokens: number | null;
   completionTokens: number | null;
 };
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class UsageService {
@@ -49,11 +47,9 @@ export class UsageService {
     });
   }
 
-  /** The last `USAGE_WINDOW_DAYS` UTC days, today included. */
+  /** The usage window ending today. */
   async report(reader: Reader, now = new Date()): Promise<UsageReport> {
-    const since = new Date(now.getTime() - (USAGE_WINDOW_DAYS - 1) * DAY_MS)
-      .toISOString()
-      .slice(0, 10);
+    const since = usageWindowStart(now);
     const days = rows(await reader.db.rpc('usage_by_day', { since }));
 
     return {

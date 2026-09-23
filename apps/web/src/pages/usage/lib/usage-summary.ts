@@ -1,10 +1,4 @@
-import {
-  USAGE_WINDOW_DAYS,
-  type UsageDay,
-  type UsageKind,
-} from '@kb/contracts';
-
-const DAY_MS = 24 * 60 * 60 * 1000;
+import { type UsageDay, type UsageKind, usageWindow } from '@kb/contracts';
 
 type Counted = Pick<UsageDay, 'promptTokens' | 'completionTokens'>;
 
@@ -28,23 +22,19 @@ function sum(values: readonly number[]): number {
   return values.reduce((total, value) => total + value, 0);
 }
 
-function isoDay(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
 /**
- * The report's window, oldest day first. It ends on the later of `now`'s UTC
- * day and the newest day reported, so a reader's clock running behind the
- * API's still shows every reported day.
+ * The report's window. It ends on the later of `now`'s UTC day and the newest
+ * day reported, so a reader's clock running behind the API's still shows
+ * every reported day.
  */
 function windowDays(days: readonly UsageDay[], now: Date): string[] {
-  let newest = isoDay(now);
-  for (const { day } of days) if (day > newest) newest = day;
-  const end = new Date(newest).getTime();
+  let end = now;
+  for (const { day } of days) {
+    const date = new Date(day);
+    if (date > end) end = date;
+  }
 
-  return Array.from({ length: USAGE_WINDOW_DAYS }, (_, index) =>
-    isoDay(new Date(end - (USAGE_WINDOW_DAYS - 1 - index) * DAY_MS)),
-  );
+  return usageWindow(end);
 }
 
 /** Tokens per day of the window, every day present, a day without calls at zero. */

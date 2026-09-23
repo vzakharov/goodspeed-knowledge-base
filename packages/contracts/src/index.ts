@@ -59,4 +59,6 @@ export {
   usageKindSchema,
   type UsageReport,
   usageReportSchema,
+  usageWindow,
+  usageWindowStart,
 } from './usage.ts';
