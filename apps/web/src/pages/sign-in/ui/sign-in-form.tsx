@@ -84,9 +84,9 @@ export function SignInForm() {
       })}
     >
       <Stack gap="md">
-        {/* The primary colour inverts the indicator, as the primary button
-            is; unset, the active label is the theme's `white`, which is the
-            background token and unreadable on the dark indicator. */}
+        {/* Unset, the active label is the theme's `white` — the background
+            token — and vanishes on the dark indicator. The primary colour
+            inverts the pair, as on the primary button. */}
         <SegmentedControl
           fullWidth
           color="monochrome"

@@ -23,7 +23,6 @@ import { ThemeToggle } from '@/features/switch-theme';
 
 const HEADER_HEIGHT = 56;
 
-/** The signed-in app's sections, in the header's order. */
 const NAV: LabeledLink[] = [{ label: 'Overview', href: '/' }];
 
 function SignOutButton() {

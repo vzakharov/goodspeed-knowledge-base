@@ -58,7 +58,6 @@ export function createApiClient({ apiUrl, accessToken }: ApiClientOptions) {
     return response;
   }
 
-  /** The response body, parsed with the contract's schema. */
   async function request<Schema extends z.ZodType>(
     path: string,
     schema: Schema,
