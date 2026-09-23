@@ -10,8 +10,9 @@ const statusSchema = z.object({
 
 /**
  * The local stack `pnpm bootstrap` started, read from the Supabase CLI itself so
- * a test needs no environment of its own. Throws with the command to run when
- * the stack is down.
+ * a test needs no environment of its own — and the source bootstrap writes
+ * each app's `.env` from. Throws with the command to run when the stack is
+ * down.
  */
 export function localSupabase() {
   let output: string;

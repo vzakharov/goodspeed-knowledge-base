@@ -28,9 +28,9 @@ import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { z } from 'zod';
 
 import { ConfigError, loadConfig } from '../apps/api/src/config/env.ts';
+import { localSupabase } from '../apps/api/test/local-supabase.ts';
 
 const root = path.join(import.meta.dirname, '..');
 
@@ -68,11 +68,6 @@ function ensureSigningKey() {
   });
   console.log(`Generated ${path.relative(root, file)}`);
 }
-
-const statusSchema = z.object({
-  API_URL: z.url(),
-  PUBLISHABLE_KEY: z.string().min(1),
-});
 
 const ASSIGNMENT = /^[A-Z][\dA-Z_]*=/;
 
@@ -147,18 +142,16 @@ ensureSigningKey();
 supabase(['start']);
 supabase(['migration', 'up', '--local']);
 
-const status = statusSchema.parse(
-  JSON.parse(supabase(['status', '-o', 'json'])),
-);
+const { url, publishableKey } = localSupabase();
 
 const apiEnv = writeEnv('api', {
-  SUPABASE_URL: status.API_URL,
-  SUPABASE_PUBLISHABLE_KEY: status.PUBLISHABLE_KEY,
+  SUPABASE_URL: url,
+  SUPABASE_PUBLISHABLE_KEY: publishableKey,
 });
 
 writeEnv('web', {
-  NEXT_PUBLIC_SUPABASE_URL: status.API_URL,
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: status.PUBLISHABLE_KEY,
+  NEXT_PUBLIC_SUPABASE_URL: url,
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publishableKey,
 });
 
 try {
