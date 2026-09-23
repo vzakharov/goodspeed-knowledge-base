@@ -59,11 +59,32 @@ floor, and `/finalize`'s reads only what came after the last chunk.
 
 ## Progress
 
-Steps 1–4 are done, and so are step 5's foundation, documents and chat pages;
-the usage page and step 6 have not started. `vet` is green at the pause and
+Steps 1–5 are done bar the stretch upload; step 6 has not started. `vet` is
+green at the pause and
 needs the stack up — `pnpm bootstrap` in a fresh session, after starting
 `dockerd` by hand. The API boots only with a model provider configured;
 `/preview` says how to point it at the fake one.
+
+**The seventh session** landed the usage page:
+
+- `/usage` over `GET /usage`: a total per kind (Answers, Follow-up
+  rewriting, Embeddings) that is also the chart's legend, a note naming
+  calls the provider reported no counts for, a stacked column per UTC day
+  of the window with a hover or arrow-key tooltip, and the per-model,
+  per-day table the brief asks for. `Usage` joined `NAV`.
+- The chart is plain SVG measured with `useElementSize`, no chart library.
+  Its colours are new tokens `series-1..3` (the dataviz skill's first three
+  categorical slots, light and dark steps), validated for CVD separation
+  against `#fff` and `#000`; light-mode aqua sits under 3:1 contrast, which
+  the table view relieves.
+- `usageWindow` / `usageWindowStart` in `@kb/contracts` are the one
+  spelling of the 30-UTC-day window, shared by the API's `since` and the
+  chart's columns (the `/dry` pass).
+- Previewed at 1280 and 500px in both themes with a month of backdated
+  usage, hover tooltips at both edges included; `/preview` says how to seed
+  that history.
+- `/dry` left for the operator: the pending → `Loader`, error →
+  `ErrorAlert` query guard is now in four pages.
 
 **The sixth session** landed the chat:
 
@@ -134,11 +155,12 @@ needs the stack up — `pnpm bootstrap` in a fresh session, after starting
   sign-up → overview → sign-out. `/preview` says how to capture behind the
   guard.
 
-**Next session's chunk:** the usage page — `/usage` over `GET /usage`
-(`usageReportSchema`, `USAGE_WINDOW_DAYS`), tokens per model per day with the
-kinds (`chat`, `condense`, `embedding`) told apart, a `Usage` row in `NAV`,
-and its row in `/preview`. Load `dataviz` before drawing any chart. Then
-step 6, the README and `/finalize`, is the chunk after.
+**Next session's chunk:** step 6 — the README (setup, architecture
+decisions and why, provider swaps with one worked example per preset, what
+more time would buy, the Loom links as placeholders the operator fills),
+then the `@tobeused` sweep and `/finalize`. The stretch upload stays out
+unless the operator asks for it. The `/dry` leftovers listed below are the
+operator's call before `/finalize`, not the README's.
 
 **The third session was a full `/polish` and nothing else** (the operator's
 call, on budget). The fourth session's polish covered everything after it and
@@ -258,7 +280,7 @@ Ordered so each step leaves `vet` green and the app runnable.
 - [x] `.env.example` per app, every variable documented.
 - [x] Add each new workspace's checks to `vet.sh` and CLAUDE.md § "Vetting" in
       the same change.
-- [ ] Update `/preview` with the routes as they land (step 5).
+- [x] Update `/preview` with the routes as they land (step 5).
 - [x] Knip over every workspace — unused files, exports, dependencies — with
       its Next, NestJS, ESLint and Node-test plugins, joining `vet.sh` and
       CLAUDE.md § "Vetting" in the same change. An export kept for a later
@@ -341,7 +363,7 @@ Ordered so each step leaves `vet` green and the app runnable.
       delete with confirmation, embedding status visible.
 - [x] Chat: conversation list, streaming answer, citations linking back to
       the chunk's document, history kept across sessions.
-- [ ] Usage page.
+- [x] Usage page.
 - [ ] Stretch, last and only if time allows: PDF/TXT upload with text
       extraction into a new document.
 
