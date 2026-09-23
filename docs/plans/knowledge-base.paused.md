@@ -63,6 +63,33 @@ is green at the pause and now runs `test:db` (pgTAP) and `test:e2e` (the API
 over the local stack, two users) itself, so it needs the stack up — `pnpm
 bootstrap` in a fresh session, after starting `dockerd` by hand.
 
+**The third session was a full `/polish` and nothing else** (the operator's
+call, on budget). Its `polish:` commits are the branch's floor, so the next
+`/polish` reads only what came after them; `vet` is green on its last commit.
+`/dry` left these for the operator, none blocking:
+
+- API: an owned-row lookup/delete/404 helper shared by the conversation and
+  document services; a `NamedError` base for the four error classes; one
+  fixed-size-pieces helper for embedding batches and chunker runs; a shared
+  `' › '` heading trail for the chunker and the prompt; a `trimmed(max)`
+  title schema in `contracts/src/fields.ts`; one `loggable(error)` for the
+  error filter and the stream.
+- ESLint: the boundaries strictness rules spelled in both apps' blocks of
+  `eslint.config.ts`; the fully-defaulted-param check written in two rules;
+  build-output ignore globs in both ESLint and stylelint.
+- Web: `defaultColorScheme="auto"` in the root layout and the provider (the
+  `'use client'` boundary decides where a shared const could live); the
+  `150ms ease` hover timing in three stylesheets; `prose.scss`'s blockquote
+  bar equal to `--color-border-hairline-strong`; its `1.25em` flow space.
+  `shared/ui`'s `ChipNav`, `SummaryCard`, `InternalButton` and `hoverDim`
+  have no consumer yet — step 5 either uses them or drops them.
+- Tooling: the start-month slice in `session-cost.ts` and `cost-totals.ts`.
+- `.claude/rules/README.md` lost its "ships empty" line, and
+  `watermark.json` lists it as adopted verbatim, so `/update-muthur` will
+  show a diff there.
+- `apps/api/src/ingestion/chunker.ts` says "The README explains the numbers
+  below" — true only once step 6's README lands.
+
 **Next session's chunk:** step 5's foundation — Supabase Auth in the browser
 with the route guard, the typed API client under TanStack Query, and the
 signed-in shell — so the pages after it have something to hang on. Documents,
