@@ -1,34 +1,34 @@
 {
   "sessionId": "3c11dff7-2730-5767-8a4f-17e70bc3b4bb",
   "branch": "claude/relaxed-clarke-rxib1v",
-  "cwd": "/home/user/goodspeed-knowledge-base",
+  "cwd": "/home/user/goodspeed-knowledge-base/apps/api/src",
   "name": "NestJS crash course vs playgramapp",
   "openingPrompt": "я писал на nestjs пару лет назад но с тех пор совсем всё вылетело из головы. Можешь мне короткий креш-курс в приложении конкретно к этой репе. Что помню: контро…",
   "prs": [],
   "url": "https://claude.ai/code/session_01BnxR7MCt7pYkrZHoWAohvL",
   "firstResponseAt": "2026-09-23T23:36:32.334Z",
-  "lastResponseAt": "2026-09-23T23:38:55.405Z",
+  "lastResponseAt": "2026-09-23T23:43:32.978Z",
   "pricesAsOf": "2026-09-23",
   "claudeCodeTotalUsd": null,
   "total": {
-    "inputTokens": 34,
+    "inputTokens": 46,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 83499,
-    "cacheReadTokens": 1664280,
-    "outputTokens": 12655,
-    "thinkingTokens": 3205,
-    "responses": 16,
-    "costUsd": 1.254084
+    "cacheWrite1hTokens": 89421,
+    "cacheReadTokens": 2427881,
+    "outputTokens": 18104,
+    "thinkingTokens": 5868,
+    "responses": 22,
+    "costUsd": 1.5632082
   },
   "ownTurns": {
-    "inputTokens": 34,
+    "inputTokens": 46,
     "cacheWrite5mTokens": 0,
-    "cacheWrite1hTokens": 83499,
-    "cacheReadTokens": 1664280,
-    "outputTokens": 12655,
-    "thinkingTokens": 3205,
-    "responses": 16,
-    "costUsd": 1.254084
+    "cacheWrite1hTokens": 89421,
+    "cacheReadTokens": 2427881,
+    "outputTokens": 18104,
+    "thinkingTokens": 5868,
+    "responses": 22,
+    "costUsd": 1.5632082
   },
   "subagents": {
     "inputTokens": 0,
@@ -42,14 +42,14 @@
   },
   "byRate": {
     "claude-opus-5-5/standard": {
-      "inputTokens": 34,
+      "inputTokens": 46,
       "cacheWrite5mTokens": 0,
-      "cacheWrite1hTokens": 83499,
-      "cacheReadTokens": 1664280,
-      "outputTokens": 12655,
-      "thinkingTokens": 3205,
-      "responses": 16,
-      "costUsd": 1.254084
+      "cacheWrite1hTokens": 89421,
+      "cacheReadTokens": 2427881,
+      "outputTokens": 18104,
+      "thinkingTokens": 5868,
+      "responses": 22,
+      "costUsd": 1.5632082
     }
   },
   "warnings": []
