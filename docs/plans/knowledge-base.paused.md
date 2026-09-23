@@ -42,16 +42,21 @@ the file rather than from the conversation.
   rule (one language here), the markdown content pipeline, the CV, the
   multi-site mechanism, GitHub Pages deploy, the PDF/OG renders.
 
-## Progress (second session, paused here)
+## Progress
 
-Steps 1, 3 and 4 are done, and step 2 but for the setup script and
-`.env.example`; step 5 (the web app) and step 6 have not started. `vet` is
-green at the pause, and so are `pnpm test`, `pnpm test:e2e` (the API over the
-local stack, two users) and `pnpm test:db` (pgTAP).
+Steps 1–4 are done; step 5 (the web app) and step 6 have not started. `vet`
+is green at the pause and now runs `test:db` (pgTAP) and `test:e2e` (the API
+over the local stack, two users) itself, so it needs the stack up — `pnpm
+bootstrap` in a fresh session, after starting `dockerd` by hand.
 
-**Why paused:** the branch was growing from "the foundation" into the whole
-app in one PR. Open: whether to land the foundation and backend as they stand
-and build the web app in a PR of its own, or to carry on here.
+**Next session's chunk:** step 5's foundation — Supabase Auth in the browser
+with the route guard, the typed API client under TanStack Query, and the
+signed-in shell — so the pages after it have something to hang on. Documents,
+chat and usage are a chunk each after that.
+
+**Still open from the second session:** whether to land the foundation and
+backend as they stand and build the web app in a PR of its own, or carry on
+here. This session carried on here, as the operator's "давай продолжать" read.
 
 **Open questions, as taken:** 1 — the aggregate Mantine sheet, and
 `check:mantine-styles` retired. 2 — lint stays at the root. 3 — boundaries
@@ -77,13 +82,17 @@ database layer is verified.
   setup script's job.
 - API tests run under `@swc-node/register` (`apps/api/register.js`), since
   `tsx` cannot emit decorator metadata; `pnpm test` is now the root's own
-  tests plus `turbo run test`. CLAUDE.md § "Testing" and § "Vetting" still
-  describe the old single glob.
-
-**Left before the web app:** the `pnpm setup` script (start the stack,
-generate the signing key if missing, reset, write each app's `.env` from
-`supabase status -o env`), `.env.example`, `test:db` and `test:e2e` in
-`vet.sh`, and CLAUDE.md brought up to the new workspaces.
+  tests plus `turbo run test`.
+- The setup script is `pnpm bootstrap`, since `pnpm setup` is a pnpm
+  built-in. It applies pending migrations rather than resetting, so a re-run
+  keeps the reviewer's data, and it merges into an existing `.env` rather
+  than overwriting it.
+- `.env.example` is one per app, beside the `.env` each reads, rather than
+  one at the root. The web template already names the variables step 5
+  reads: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
+  `NEXT_PUBLIC_API_URL`.
+- `supabase/seed.sql` is dropped and seeding is off: a document is useful
+  only embedded, which SQL cannot do.
 
 ## Remaining work
 
@@ -119,14 +128,14 @@ Ordered so each step leaves `vet` green and the app runnable.
       confirmation off locally, or Mailpit documented), `migrations/`,
       `seed.sql`. The `supabase` npm package as a root devDependency, so no
       global install.
-- [ ] `pnpm setup`: install → `supabase start` → `supabase db reset` → write
-      each app's `.env` from `supabase status -o env` plus the AI defaults →
-      print what is left to configure. `pnpm dev` runs web and api through
-      Turborepo.
-- [ ] `.env.example` at the root, every variable documented, grouped by the
-      workspace that reads it.
-- [ ] Add each new workspace's checks to `vet.sh` and CLAUDE.md § "Vetting" in
-      the same change; update `/preview` with the routes as they land.
+- [x] `pnpm bootstrap`: install → signing key → `supabase start` → pending
+      migrations → write each app's `.env` from `supabase status` plus the AI
+      defaults → print what is left to configure. `pnpm dev` runs web and api
+      through Turborepo.
+- [x] `.env.example` per app, every variable documented.
+- [x] Add each new workspace's checks to `vet.sh` and CLAUDE.md § "Vetting" in
+      the same change.
+- [ ] Update `/preview` with the routes as they land (step 5).
 
 ### 3. Database
 
