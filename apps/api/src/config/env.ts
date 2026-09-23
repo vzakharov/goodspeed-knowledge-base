@@ -31,11 +31,9 @@ const providerSchema = z.enum(PROVIDER_NAMES);
 
 const envSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65_535).default(4000),
-  /** The web app's origin, the one the API accepts cross-origin calls from. */
   WEB_ORIGIN: urlSchema.default('http://localhost:3000'),
 
   SUPABASE_URL: urlSchema,
-  /** The publishable (anon) key: the API reaches the database as the reader, never as a service role. */
   SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
 
   CHAT_PROVIDER: providerSchema,
@@ -47,7 +45,6 @@ const envSchema = z.object({
   EMBEDDING_MODEL: z.string().min(1),
   EMBEDDING_API_KEY: optional(z.string()),
   EMBEDDING_BASE_URL: optional(urlSchema),
-  /** Has to equal the dimension of `document_chunks.embedding`. */
   EMBEDDING_DIMENSIONS: z.coerce.number().int().min(1),
   EMBEDDING_BATCH_SIZE: z.coerce.number().int().min(1).max(2048).default(64),
 });

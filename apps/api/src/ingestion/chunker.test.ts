@@ -99,7 +99,7 @@ describe('chunkDocument', () => {
       );
     }
 
-    // Every paragraph lands in some chunk, in order.
+    // Every paragraph lands in some chunk.
     const joined = chunks.map(({ markdown }) => markdown).join('\n\n');
 
     for (const paragraph of paragraphs) {

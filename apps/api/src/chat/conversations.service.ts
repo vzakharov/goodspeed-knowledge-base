@@ -54,7 +54,6 @@ function toMessage({
 const notFound = (id: string) =>
   new NotFoundException(`No conversation ${id} among yours`);
 
-/** An exchange to store: the question as asked, the answer as written, and the model that wrote it. */
 export type Exchange = Pick<ModelIdentity, 'model'> & {
   question: string;
   askedAt: Date;

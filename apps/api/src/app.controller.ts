@@ -6,6 +6,7 @@ import { Public } from './auth/index.ts';
 import { APP_CONFIG } from './config/config.module.ts';
 import type { AppConfig } from './config/env.ts';
 
+// Copies the two fields alone: the settings it reads from hold the API key.
 const identity = ({ provider, model }: ModelIdentity) => ({ provider, model });
 
 @Controller()
@@ -18,7 +19,6 @@ export class AppController {
     return { status: 'ok' };
   }
 
-  /** Which models answer and embed — what the reader is shown, never a key. */
   @Get('settings/ai')
   aiSettings(): AiSettings {
     const { chat, embedding } = this.config;

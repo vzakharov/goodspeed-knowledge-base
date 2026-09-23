@@ -41,7 +41,6 @@ type Retrieved = {
   citation: Omit<Citation, 'index'>;
 };
 
-/** The question is what becomes the reader's message. */
 export type Question = Pick<ChatMessage, 'content'> & {
   conversationId: string;
   history: Turn[];

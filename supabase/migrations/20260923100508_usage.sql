@@ -33,8 +33,7 @@ create policy "usage_events: insert own" on public.usage_events
 -- No update or delete policy: the record is append-only.
 
 -- Totals per UTC day, kind, provider and model since a given day, newest
--- first. A
--- function for the same reason as `list_document_summaries`.
+-- first. A function for the same reason as `list_document_summaries`.
 create function public.usage_by_day(since date)
 returns table (
   day date,

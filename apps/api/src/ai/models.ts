@@ -7,7 +7,6 @@ import type { ProviderName } from './providers.ts';
  * asked once per capability, and each is configured on its own.
  */
 
-/** Which model on which provider — what a usage record and a reader are told. */
 export type ModelIdentity = {
   provider: ProviderName;
   model: string;
@@ -20,7 +19,6 @@ export type ChatMessage = {
   content: string;
 };
 
-/** What a request may be cut short by — the reader closing the stream, for one. */
 export type Cancellable = { signal?: AbortSignal };
 
 export type PromptTokens = { promptTokens: number };
@@ -33,7 +31,6 @@ export type TokenUsage = PromptTokens & { completionTokens: number };
  */
 export type WithReportedUsage<Usage> = { usage: Usage | null };
 
-/** An answer's text is an assistant message's content. */
 export type ChatCompletion = Pick<ChatMessage, 'content'> &
   WithReportedUsage<TokenUsage>;
 

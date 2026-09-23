@@ -4,10 +4,10 @@
  * The unit is the markdown block — a paragraph, a list, a table, a fenced code
  * block — so a chunk ends mid-block only where one block alone outgrows a
  * chunk, and a heading inside a code fence is code. Blocks are packed greedily
- * up to a target size;
- * a heading of level 1 or 2 starts a new chunk, since it starts a new topic
- * and a chunk that straddles two answers neither well. A block too large for
- * one chunk is split by sentences, and a sentence too large by words.
+ * up to a target size; a heading of level 1 or 2 starts a new chunk, since it
+ * starts a new topic and a chunk that straddles two answers neither well. A
+ * block too large for one chunk is split by sentences, and a sentence too
+ * large by words.
  *
  * A chunk that continues the one before it — the split fell mid-section —
  * opens with the tail of that one, so a sentence that answers a question is

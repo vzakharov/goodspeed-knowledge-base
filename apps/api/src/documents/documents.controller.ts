@@ -46,7 +46,6 @@ export class DocumentsController {
     return this.documents.tags(reader);
   }
 
-  /** Re-embeds every document search cannot reach as it stands. */
   @Post('embeddings')
   @HttpCode(HttpStatus.OK)
   async reembedOutdated(

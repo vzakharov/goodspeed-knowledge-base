@@ -10,8 +10,6 @@ import {
   type TokenVerifier,
 } from './token-verifier.ts';
 
-// Stands in for a Supabase project: a signing key, and the JWKS endpoint that
-// publishes its public half.
 const USER_ID = '6f1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d';
 const SIGNED_IN = { sub: USER_ID, role: 'authenticated' };
 
@@ -23,6 +21,8 @@ let sign: (
   options?: { expiresIn?: string; issuer?: string; byStranger?: boolean },
 ) => Promise<string>;
 
+// Stands in for a Supabase project: a signing key, and the JWKS endpoint that
+// publishes its public half.
 before(async () => {
   const { publicKey, privateKey } = await generateKeyPair('ES256');
   const stranger = await generateKeyPair('ES256');

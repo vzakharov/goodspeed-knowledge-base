@@ -1,11 +1,8 @@
 /**
- * Every provider the API knows by name. A provider is a row of data, never a
- * class: the one implementation of each capability (`openai-compatible.ts`)
- * speaks the OpenAI API to all of them, and a preset only says where it lives
- * and which parts of that API it serves. Adding a provider adds a row.
- *
- * `custom` is the escape hatch — any other server speaking the specification,
- * a self-hosted vLLM or LiteLLM, whose base URL has to be configured.
+ * A provider is a row of data, never a class: `openai-compatible.ts` speaks the
+ * OpenAI API to all of them, and a preset says where it lives and which parts
+ * of that API it serves. `custom` is any other server speaking it — a
+ * self-hosted vLLM or LiteLLM — whose base URL has to be configured.
  */
 export const PROVIDER_NAMES = [
   'openai',

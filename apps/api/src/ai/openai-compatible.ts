@@ -13,10 +13,8 @@ import type {
 import type { ProviderPreset } from './providers.ts';
 
 /**
- * The one implementation of each capability, over the `openai` SDK pointed at
- * whichever base URL the configuration names. Nothing here branches on a
- * provider's name; what differs between providers arrives as a preset's
- * capability flags.
+ * Nothing here branches on a provider's name: what differs between providers
+ * arrives as a preset's capability flags.
  */
 
 export type ModelSettings = ModelIdentity & {

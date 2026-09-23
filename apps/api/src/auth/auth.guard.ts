@@ -32,7 +32,7 @@ type ReaderRequest = Request & { reader?: Reader };
 
 const PUBLIC = Symbol('public');
 
-/** Opens a route to callers who are not signed in. Every other route is closed to them. */
+/** Opens a route to callers who are not signed in. */
 export const Public = () => SetMetadata(PUBLIC, true);
 
 function bearerToken(header: string | undefined) {
@@ -42,10 +42,10 @@ function bearerToken(header: string | undefined) {
 }
 
 /**
- * Registered for every route, so a new endpoint is private unless it says
- * otherwise. A request passes with a valid Supabase access token, and carries
- * on as its reader: `@CurrentReader()` hands a handler that reader, whose
- * database client holds the same token.
+ * Registered for every route, so a new endpoint is private unless it is
+ * `@Public()`. A request passes with a valid Supabase access token, and
+ * `@CurrentReader()` hands its handler a reader whose database client holds
+ * that token.
  */
 @Injectable()
 export class AuthGuard implements CanActivate {

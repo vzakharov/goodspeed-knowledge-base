@@ -9,7 +9,7 @@ import { createChatModel, createEmbeddingModel } from './openai-compatible.ts';
 /**
  * The tokens the rest of the API injects a model by. Whatever is bound to them
  * is all a consumer knows of the provider behind it: the RAG code depends on
- * `ChatModel` and `EmbeddingModel`, and a test binds a fake to the same token.
+ * `ChatModel` and `EmbeddingModel` alone.
  */
 export const CHAT_MODEL = Symbol('ChatModel');
 export const EMBEDDING_MODEL = Symbol('EmbeddingModel');

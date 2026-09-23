@@ -14,8 +14,7 @@ create table public.document_chunks (
   content text not null check (char_length(content) > 0),
   -- The headings the chunk sits under, outermost first.
   heading_path text[] not null default '{}',
-  -- The dimension is the embedding model's: `EMBEDDING_DIMENSIONS` in the API
-  -- must match it, and the API refuses to start when it does not.
+  -- The API's `EMBEDDING_DIMENSIONS` must match; it refuses to start otherwise.
   embedding extensions.vector(1536) not null,
   -- Vectors from two models share no space, so search compares only chunks
   -- embedded by the model the query was.
@@ -25,10 +24,8 @@ create table public.document_chunks (
   unique (document_id, chunk_index)
 );
 
--- The column's dimension, which the API compares with its configured model's
--- at boot and refuses to start on a mismatch — a model that disagrees with
--- the column would otherwise fail every write and every search, one request
--- at a time.
+-- The column's dimension, which the API checks its configured model against
+-- at boot.
 create function public.embedding_dimensions()
 returns integer
 language sql

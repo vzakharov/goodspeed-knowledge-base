@@ -17,7 +17,6 @@ import {
   toDocumentSummary,
 } from './document-mapper.ts';
 
-/** Runs `run` over `items` one at a time, each waiting for the one before. */
 async function inSequence<T>(items: T[], run: (item: T) => Promise<void>) {
   const [first, ...rest] = items;
 

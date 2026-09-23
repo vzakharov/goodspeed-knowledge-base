@@ -1,18 +1,12 @@
 import type { ChatMessage } from '../ai/index.ts';
+import type { Tables } from '../database/database.ts';
 import type { PlacedMarkdown } from '../ingestion/index.ts';
-
-/**
- * The prompts of the retrieval-augmented answer, as pure functions of their
- * inputs: what the model is told, and how its citations are read back.
- */
 
 /** A retrieved chunk, as the prompt numbers and names it. */
 export type Source = PlacedMarkdown & { documentTitle: string };
 
 /** A turn of the conversation so far, as either side said it. */
-export type Turn = Pick<ChatMessage, 'role' | 'content'> & {
-  role: 'user' | 'assistant';
-};
+export type Turn = Pick<Tables<'messages'>, 'role' | 'content'>;
 
 const CITATION = /\[(\d+)]/g;
 
@@ -73,11 +67,7 @@ const ANSWER_RULES = [
   '- Answer in the language of the question, in concise markdown.',
 ].join('\n');
 
-/**
- * The answer's prompt: the rules and the numbered sources as the system
- * message, then the conversation so far as real turns, then the question.
- * The sources number from 1 in the order given — most similar first.
- */
+/** The sources number from 1 in the order given — most similar first. */
 export function answerPrompt(
   history: Turn[],
   question: string,
