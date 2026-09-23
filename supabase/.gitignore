@@ -1,0 +1,11 @@
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local
+
+# Local JWT signing key — `pnpm setup` generates it per machine.
+signing_keys.json
