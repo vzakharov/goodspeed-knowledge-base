@@ -16,11 +16,7 @@ type ConfirmDeleteProps = WithChildren & {
   onRemoved: () => void;
 };
 
-/**
- * A "Delete" button whose modal says, as `children`, what goes with the thing,
- * and deletes only on a second click. The modal stays open while the delete
- * runs, and shows why when it fails.
- */
+/** `children` is the modal's warning: what the delete takes with it. */
 export function ConfirmDelete({
   title,
   remove,

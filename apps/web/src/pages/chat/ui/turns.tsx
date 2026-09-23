@@ -67,8 +67,8 @@ type AnswerProps = Pick<Message, 'content'> &
   };
 
 /**
- * An answer and the sources its `[n]`s cite, which link back to their
- * documents. A source is the passage as it read when the answer was written.
+ * A source is the passage as it read when the answer was written; its link
+ * opens the document as it is now.
  */
 export function Answer({
   content,

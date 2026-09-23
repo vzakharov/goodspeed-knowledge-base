@@ -14,7 +14,6 @@ type ComposerProps = {
 const MIN_ROWS = 2;
 const MAX_ROWS = 10;
 
-/** Enter sends and Shift+Enter breaks the line, as in every chat the reader has used. */
 export function Composer({ busy, stoppable, onAsk, onStop }: ComposerProps) {
   const [question, setQuestion] = useState('');
   const sendable = !busy && question.trim() !== '';
@@ -48,6 +47,7 @@ export function Composer({ busy, stoppable, onAsk, onStop }: ComposerProps) {
             if (
               event.key === 'Enter' &&
               !event.shiftKey &&
+              // An Enter that confirms an IME composition is typing, not sending.
               !event.nativeEvent.isComposing
             ) {
               event.preventDefault();

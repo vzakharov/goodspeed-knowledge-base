@@ -14,7 +14,6 @@ import { api, queryClient } from '@/shared/api';
 import { pick } from '@/shared/lib/collections';
 import { readEvents } from '@/shared/lib/event-stream';
 
-/** Every conversation query sits under this key. */
 const CONVERSATIONS = ['conversations'] as const;
 
 export const conversationQueries = {
@@ -59,7 +58,6 @@ export async function startConversation(
 
 type Question = QuestionInput & {
   signal: AbortSignal;
-  /** Each piece of the answer's text, as the model writes it. */
   onDelta: (text: string) => void;
 };
 

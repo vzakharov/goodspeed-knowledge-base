@@ -58,7 +58,6 @@ type ThreadEndProps = WithAsking &
     turns: number;
   };
 
-/** What follows the stored turns: the question being answered here, then the composer. */
 function ThreadEnd({ conversationId, turns, asking }: ThreadEndProps) {
   const endRef = useRef<HTMLDivElement>(null);
   const pending =

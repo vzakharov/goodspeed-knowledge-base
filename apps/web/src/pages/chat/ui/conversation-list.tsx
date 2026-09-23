@@ -16,7 +16,6 @@ const updatedFormat = new Intl.DateTimeFormat(undefined, {
 
 type ConversationListProps = { current: string | null };
 
-/** The reader's conversations, the latest active first. */
 export function ConversationList({ current }: ConversationListProps) {
   const list = useQuery(conversationQueries.list());
 

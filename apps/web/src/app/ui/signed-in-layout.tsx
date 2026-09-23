@@ -95,7 +95,7 @@ export function SignedInLayout({ children }: WithChildren) {
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between" wrap="nowrap">
           <Group component="nav" gap="lg" wrap="nowrap">
-            {/* Below `sm` the links need the width, as the address does. */}
+            {/* Hidden below `sm`, with the email, so the links fit. */}
             <Text fw={700} visibleFrom="sm">
               Knowledge Base
             </Text>

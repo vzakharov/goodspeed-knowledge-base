@@ -11,7 +11,6 @@ export function useSearchParam(name: string): string | null {
   return useSearchParams()?.get(name) ?? null;
 }
 
-/** `path` carrying the parameter, or bare when there is no value. */
 export function withSearchParam(
   path: string,
   name: string,
