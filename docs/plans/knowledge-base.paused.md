@@ -90,7 +90,8 @@ call, on budget). Its `polish:` commits are the branch's floor, so the next
 - `apps/api/src/ingestion/chunker.ts` says "The README explains the numbers
   below" — true only once step 6's README lands.
 
-**Next session's chunk:** step 5's foundation — Supabase Auth in the browser
+**Next session's chunk:** knip (step 2's last item), then step 5's
+foundation — Supabase Auth in the browser
 with the route guard, the typed API client under TanStack Query, and the
 signed-in shell — so the pages after it have something to hang on. Documents,
 chat and usage are a chunk each after that.
@@ -177,6 +178,12 @@ Ordered so each step leaves `vet` green and the app runnable.
 - [x] Add each new workspace's checks to `vet.sh` and CLAUDE.md § "Vetting" in
       the same change.
 - [ ] Update `/preview` with the routes as they land (step 5).
+- [ ] Knip over every workspace — unused files, exports, dependencies — with
+      its Next, NestJS, ESLint and Node-test plugins, joining `vet.sh` and
+      CLAUDE.md § "Vetting" in the same change. An export kept for a later
+      step carries a `@tobeused` JSDoc tag, which the config excludes
+      (`tags: ["-tobeused"]`); every other finding is fixed by deleting the
+      code. First in the next chunk, so step 5 starts from a tree knip passes.
 
 ### 3. Database
 
@@ -262,6 +269,8 @@ Ordered so each step leaves `vet` green and the app runnable.
 - [ ] README: setup, architecture decisions and why, how to swap providers
       (one worked example per preset), what more time would buy, both Loom
       links.
+- [ ] No `@tobeused` tag survives: each export either found its consumer
+      (drop the tag) or never did (drop the export).
 - [ ] `/finalize`.
 
 ## Open questions
