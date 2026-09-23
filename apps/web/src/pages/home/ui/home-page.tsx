@@ -1,12 +1,13 @@
 'use client';
 
 import { type AiSettings, aiSettingsSchema } from '@kb/contracts';
-import { Alert, Loader, SimpleGrid, Stack, Text, Title } from '@mantine/core';
+import { Loader, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 
 import { api } from '@/shared/api';
+import { pick } from '@/shared/lib/collections';
 import type { Labeled } from '@/shared/typings';
-import { Card, PageShell, Section } from '@/shared/ui';
+import { Card, ErrorAlert, PageShell, Section } from '@/shared/ui';
 
 type ModelCardProps = Labeled &
   AiSettings['chat'] & {
@@ -41,9 +42,7 @@ function AiSettings() {
   if (settings.isPending) return <Loader size="sm" />;
   if (settings.isError) {
     return (
-      <Alert color="red" variant="light" title="The API did not answer">
-        {settings.error.message}
-      </Alert>
+      <ErrorAlert title="The API did not answer" {...pick(settings, 'error')} />
     );
   }
 

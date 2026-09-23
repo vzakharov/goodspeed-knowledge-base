@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Alert,
   Button,
   PasswordInput,
   SegmentedControl,
@@ -15,7 +14,8 @@ import { useState } from 'react';
 import { z } from 'zod';
 
 import { supabase } from '@/shared/api';
-import { oneOf } from '@/shared/lib/collections';
+import { oneOf, pick } from '@/shared/lib/collections';
+import { ErrorAlert } from '@/shared/ui';
 
 const MODES = ['sign-in', 'sign-up'] as const;
 
@@ -110,11 +110,7 @@ export function SignInForm() {
           }
           {...form.getInputProps('password')}
         />
-        {submit.isError && (
-          <Alert color="red" variant="light">
-            {submit.error.message}
-          </Alert>
-        )}
+        {submit.isError && <ErrorAlert {...pick(submit, 'error')} />}
         {submit.data === false && (
           <Text size="sm">Check your inbox to confirm the address.</Text>
         )}

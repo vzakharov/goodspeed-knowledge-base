@@ -23,7 +23,22 @@ import { ThemeToggle } from '@/features/switch-theme';
 
 const HEADER_HEIGHT = 56;
 
-const NAV: LabeledLink[] = [{ label: 'Overview', href: '/' }];
+const NAV: LabeledLink[] = [
+  { label: 'Overview', href: '/' },
+  { label: 'Documents', href: '/documents' },
+];
+
+/**
+ * A section is current on its own pages too — `/documents/edit` under
+ * `/documents`. `pathname` is `null` only under the Pages Router, which
+ * `apps/web/pages/` keeps empty.
+ */
+function isCurrent(href: string, pathname: string | null): boolean {
+  return (
+    pathname === href ||
+    (href !== '/' && pathname?.startsWith(`${href}/`) === true)
+  );
+}
 
 function SignOutButton() {
   const signingOut = useMutation({ mutationFn: signOut });
@@ -81,7 +96,7 @@ export function SignedInLayout({ children }: WithChildren) {
           <Group component="nav" gap="lg" wrap="nowrap">
             <Text fw={700}>Knowledge Base</Text>
             {NAV.map(({ label, href }) => {
-              const current = pathname === href;
+              const current = isCurrent(href, pathname);
 
               return (
                 <InternalLink

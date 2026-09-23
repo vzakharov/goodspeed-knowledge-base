@@ -31,10 +31,7 @@ export function InternalLink({ href, children, ...props }: InternalLinkProps) {
   );
 }
 
-/**
- * The call-to-action shape of the same pairing.
- * @tobeused by the documents list's "new document" (step 5).
- */
+/** The call-to-action shape of the same pairing. */
 export function InternalButton({
   href,
   children,

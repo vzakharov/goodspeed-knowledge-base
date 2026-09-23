@@ -5,7 +5,6 @@
  * A verbatim copy of the Playgram app's `shared/collections`, the home of this
  * family: a fix is made there and copied here, and a sibling (`omit`,
  * `mapValues`, `getKeys`) joins this file rather than opening its own.
- * @tobeused by the first page the lint rule flags (step 5).
  */
 export function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K> {
   // @ts-expect-error - we know the end result is a Pick<T, K>
