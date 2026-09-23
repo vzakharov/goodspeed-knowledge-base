@@ -1,42 +1,26 @@
-// What a person recognises a session by, read out of its transcript. Separate
-// from the pricing beside it because none of it is arithmetic: these are the
-// records the file happens to carry that answer "which session was that", and
-// they change with the Claude Code version rather than with the rate table.
-//
-// `.claude/rules/costs.md` § "What names a session" carries why a session needs
-// standing in for at all.
+// What a person recognises a session by, read out of its transcript — kept
+// apart from the pricing because these records change with the Claude Code
+// version, not with the rate table. `.claude/rules/costs.md` § "What names a
+// session" carries what each field stands in for.
 
 import { z } from 'zod';
 
-// Every record in the file carries a `type`, and a handful of kinds are read
-// for something other than their usage. Parsing for it rather than narrowing by
-// hand keeps one shape declared in one place, as every other record shape here
-// is.
 const KindSchema = z.object({ type: z.string() });
 
 export const kindOf = (record: unknown): string | undefined =>
   KindSchema.safeParse(record).data?.type;
 
-// Claude Code's own running cost for the session, rewritten as the session
-// goes. The last one in the file is its final word on it.
 const CostStateSchema = z.object({ totalCostUSD: z.number() });
 
 export const costStateOf = (record: unknown): number | undefined =>
   CostStateSchema.safeParse(record).data?.totalCostUSD;
 
-// Claude Code records every PR it opens or refreshes, which is what groups the
-// several sessions one PR takes.
 const PrLinkSchema = z.object({ prNumber: z.number() });
 
 export const prNumberOf = (record: unknown): number | undefined =>
   PrLinkSchema.safeParse(record).data?.prNumber;
 
-// The session's web URL reaches the transcript only as prose, inside the
-// attribution reminder the harness re-sends whenever the remote session
-// changes. Matching that one record's text is narrower than scanning the file,
-// where any quoted commit trailer carries a session URL too — usually another
-// session's. Which is why this takes the record's raw line: the URL is in the
-// reminder's body, not in a field.
+// Takes the raw line because the URL is in the reminder's body, not in a field.
 const AttachmentKindSchema = z.object({
   attachment: z.object({ type: z.string() }),
 });
@@ -52,9 +36,6 @@ export const sessionUrlIn = (
     ? SESSION_URL.exec(line)?.[0]
     : undefined;
 
-// The harness writes no session title, so the opening prompt stands in for one,
-// unwrapped from the envelope a slash command arrives in: `/handle <branch>` is
-// what a person would call that session.
 const PromptRecordSchema = z.object({
   isMeta: z.boolean().nullable().optional(),
   isSidechain: z.boolean().optional(),

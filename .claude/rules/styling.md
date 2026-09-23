@@ -42,9 +42,9 @@ attributes (`underline`), never for sizes or colours.
 Never write a colour literal in a component. The tokens are declared in
 `apps/web/src/app/styles/globals.scss` as `--color-*` and reached from TSX through
 `cssColor()`. Which tokens exist is settled by the `CSS_COLORS` array in
-`apps/web/src/shared/ui/css-color.ts` — it types `cssColor()` and generates the mixin
-that declares them, so adding one is a single edit there. They are
-colour-scheme aware, so nothing branches on the scheme itself.
+`apps/web/src/shared/ui/css-color.ts`, which types `cssColor()` and generates the
+mixin that declares them (§ "SCSS"). They are colour-scheme aware, so nothing
+branches on the scheme itself.
 
 Mantine's own variables are bound to those tokens by the `cssVariablesResolver`
 in `apps/web/src/app/ui/theme-provider.tsx`, not by a `:root` block. Mantine renders its
@@ -67,26 +67,11 @@ invisible in exactly one scheme.
 
 ## Rendered markdown
 
-`apps/web/src/app/styles/prose.scss` owns the whole rhythm of the HTML
-`react-markdown` renders — a document's body and the chat's answers: sizes,
-leading, vertical spacing, rules, tables that scroll inside the column —
-scoped under `.prose-content`, which sits on the element holding the markup.
-The markup is wrapped in nothing.
-
-**Long-form copy is not on the site's UI scale, and Mantine's `Typography` is
-not a substitute for this sheet.** `--mantine-line-height` and
-`--mantine-font-size-*` are sized for controls: 1.55 is right on a button label
-and cramped on a paragraph of an essay, and `Typography`'s own element rules
-reach for `--mantine-color-gray-0` behind `code`, `pre` and `blockquote` — a
-literal light grey that survives into the dark scheme. Every base rule here is
-`:where()`, so its specificity is the class alone and a component sheet or an
-element-specific rule below overrides it without out-specifying it.
-
-**A `:where()` selector cannot be split across a Sass nesting level.** Nesting
-`&:last-child` under `:where(tbody tr)` compiles to `:where(tbody tr):last-child`
-— the pseudo-class now sits outside the wrapper and weighs, which is the one
-thing the wrapper exists to prevent. Anything that belongs inside the
-parentheses is written out in full, however much it repeats.
+`apps/web/src/app/styles/prose.scss` owns the rhythm of the HTML
+`react-markdown` renders, under `.prose-content`; its header carries what an
+edit there must keep. **Mantine's `Typography` is no substitute for it**: its
+element rules paint `code`, `pre` and `blockquote` on `--mantine-color-gray-0`,
+a literal light grey that stays light in the dark scheme.
 
 ## SCSS
 
@@ -104,22 +89,11 @@ work here.** Next runs Sass before PostCSS, so `@include smaller-than(…)` read
 as an undefined _Sass_ mixin and fails the build before PostCSS sees the file.
 Reach for `_mantine.scss`, not the preset.
 
-Both of the shared scales are written once in TypeScript, and their Sass halves
-are **generated** by `pnpm styles:codegen` — TypeScript is the source because it
-is the side a type can constrain, and Sass cannot import it:
-
-| Written in                               | Generates                           | Why Sass needs its own copy                                                                           |
-| ---------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `apps/web/src/app/styles/breakpoints.ts` | `apps/web/styles/_breakpoints.scss` | A media-query condition cannot read a custom property, so the numbers have to be literals.            |
-| `apps/web/src/shared/ui/css-color.ts`    | `apps/web/styles/_tokens.scss`      | Sass is what declares the `--color-*` properties; TypeScript only types the names `cssColor()` reads. |
-
-`_mantine.scss` forwards the breakpoint partial, so a call site still reaches
-`mantine.$breakpoint-sm`; the token mixin is `@use`d directly by the sheets that
-declare a palette. Change either scale in its TypeScript and re-run the
-generator — and forgetting to is caught either way, since the vet run runs the
-generator itself and fails when it had to rewrite something, hand-edits of the
-partial included.
-
-Adding a colour token therefore cannot half-land: the generated mixin gains a
-required parameter, and every `@include tokens.colors(…)` that does not pass it
-fails the Sass build outright rather than defaulting.
+**`_breakpoints.scss` and `_tokens.scss` are generated** from
+`apps/web/src/app/styles/breakpoints.ts` and `apps/web/src/shared/ui/css-color.ts`
+by `pnpm styles:codegen` (`scripts/generate-styles.ts` carries why): edit the
+TypeScript and re-run it, never the partial. `_mantine.scss` forwards the
+breakpoints, so a call site reaches `mantine.$breakpoint-sm`; the sheets that
+declare a palette `@use` the token mixin directly. A new token is a new required
+parameter of that mixin, so every `@include tokens.colors(…)` must pass it or
+the Sass build fails.

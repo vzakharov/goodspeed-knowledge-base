@@ -7,13 +7,11 @@ paths:
 
 # ESLint Conventions
 
-- **Severity is `error` or `off` — never `warn`.** If a rule is worth having, it
-  blocks the merge (`./scripts/vet.sh`); a warning is a rule nobody enforces
-  (LLMs and humans alike treat warnings as negotiable and let them accumulate).
-  Do not add a `'warn'` severity to any rule, in the base rule groups
-  (`eslint/rule-groups/*.ts`) or a scoped override in `eslint.config.ts`. The
-  header of `eslint.config.ts` states the same policy as the config's own
-  contract.
+- **Severity is `error` or `off` — never `warn`**, in the rule groups and in
+  `eslint.config.ts`'s scoped overrides alike — a spread's `warn` included, which
+  is re-stated at `error`. A rule worth having blocks the merge
+  (`./scripts/vet.sh`); a warning is a rule nobody enforces, and LLMs and humans
+  alike let warnings accumulate.
 
 - **Grandfather with an `off`, not a `warn`.** When landing a new rule that
   pre-existing code violates, don't soften it to `warn` repo-wide — the rule
@@ -26,10 +24,6 @@ paths:
   carries `/* eslint-disable <rule> -- … */` under the docstring; an exemption
   spanning files is a scoped override block in `eslint.config.ts` that names
   them in `files:`.
-
-- **What the permanent case looks like here**: a file that must augment a
-  library type through an `interface`, a CLI whose stdout is its interface and
-  so disables `no-console`. The migration backlog is the temporary one.
 
 - **Rule severities live in `eslint/rule-groups/*.ts`** via
   `withSeverity('error', [...])` / `withSeverity('off', [...])`. That tree sets

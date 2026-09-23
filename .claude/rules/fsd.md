@@ -22,9 +22,9 @@ Lowest (most generic) first — an import may only point downward:
 | ----------- | ---------------------------------------------------------------------------------------- |
 | `shared/`   | Segments carrying no page composition: `typings`, `ui`, `lib/*`                          |
 | `entities/` | Business nouns and their own UI                                                          |
-| `features/` | User-facing capabilities — currently `switch-theme`                                      |
+| `features/` | User-facing capabilities                                                                 |
 | `widgets/`  | Composite blocks two page slices share                                                   |
-| `pages/`    | Page composition — currently `home`                                                      |
+| `pages/`    | Page composition                                                                         |
 | `app/`      | Root layout, Mantine provider, global stylesheets and theme — `ui` and `styles` segments |
 
 A layer is optional and **inventing one costs more than leaving it out** (see

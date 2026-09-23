@@ -137,8 +137,6 @@ describe('session-cost: what a row records', () => {
   });
 
   it('bills a subagent to the session that spawned it, from the subagent’s own file', () => {
-    // The transcript that would have been read alone says nothing about the
-    // delegated work, which is what made the shortfall invisible.
     const cost = summarise(
       [response({ id: 'msg_1', output: 1_000_000 })],
       [[response({ id: 'msg_2', output: 1_000_000, sidechain: true })]],

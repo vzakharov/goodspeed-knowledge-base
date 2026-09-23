@@ -1,32 +1,7 @@
 #!/usr/bin/env tsx
 /**
- * Cross-file duplicate type-shape detector.
- *
- * Two passes over the same set of `type` aliases, both purely syntactic and both
- * measured PAIRWISE — for every unordered pair we intersect the pass's sets and
- * report the pair when the intersection meets that pass's floor:
- *
- * - **Shared members**, floor 1. Two members are "the same" when their
- *   normalized signature text (name + optional/readonly modifiers + type
- *   annotation, whitespace-collapsed) is identical. Only a type's OWN members
- *   count: the named constituents of an intersection (`A & { … }`) are treated
- *   as inherited, so extracting a base and having both types `& Base` is exactly
- *   what makes a finding disappear. *Any* member two types both declare is a
- *   finding, so every shared member has a single home.
- * - **Repeated base combinations**, floor 2. The set of constituents the member
- *   pass discards as inherited — `Titled & Described` written across two types
- *   is the same shape under two spellings, one level up. The floor is 2 because
- *   a single shared base is reuse working as intended, and is the end state
- *   every member finding is fixed into.
- *
- * Nothing is grandfathered — a run is either clean or names the pairs to fix.
- *
- * Only `type` aliases are scanned; `interface` is banned repo-wide by
- * `@typescript-eslint/consistent-type-definitions`, which is what makes that
- * scope complete rather than a blind spot.
- *
- * Why the floors are what they are, the naming families, and how to work a
- * finding: scripts/type-overlap-check.README.md.
+ * Cross-file duplicate type-shape detector; scripts/type-overlap-check.README.md
+ * is the reference — the two passes, their floors, and how to work a finding.
  *
  * Usage:
  *   pnpm type-overlap                             # floors: members 1, bases 2
@@ -47,10 +22,8 @@ import type { Named, WithId } from '../apps/web/src/shared/typings';
 // entrypoint over a fixture tree by pointing cwd at it.
 const ROOT = process.cwd();
 
-// The scan covers the whole repo minus the directories below, so a new source
-// directory is in scope the day it appears rather than the day someone
-// remembers to list it. Dot-directories are skipped wholesale (`.git`, `.next`,
-// `.claude`), as are build output, dependencies, assets and scratch.
+// A skip-list, not an allowlist, so a new source directory is scanned the day it
+// appears. Dot-directories are skipped too, in `scan`.
 const SKIP_DIRS = new Set([
   'node_modules',
   'out',
@@ -61,8 +34,7 @@ const SKIP_DIRS = new Set([
   'tmp',
 ]);
 
-// The floor doubles as the default and an override may only raise it, so a run
-// can triage a looser gate but never preview a stricter one than vet enforces.
+// An override may only raise the floor (README §2).
 function readThreshold(name: string, floor: number): number {
   const override = process.env[name];
   const value = Number(override ?? floor);
@@ -190,12 +162,9 @@ type Findings = {
 };
 
 // --- Pairwise intersection, collapsed into shared-shape groups ---
-// The scan is pairwise, so a set of N types that all share the same entries is
-// found as N-choose-2 separate pairs echoing one shape. Group those pairs by
-// their (identical) shared set: every type in a group contains that set, so one
-// extraction clears the whole group at once. A type that shares different sets
-// with different partners appears in more than one group (it needs each base);
-// that is correct, not double-counting.
+// N types sharing one set are N-choose-2 pairs, grouped by that set so one
+// extraction clears the group. A type in several groups needs each base — that
+// is correct, not double-counting.
 function findOverlaps(
   select: (d: TypeDecl) => string[],
   threshold: number,

@@ -51,7 +51,7 @@ There is deliberately no Playwright dependency — Chrome's own `--screenshot` i
 | ----- | ---- |
 | `/`   | home |
 
-Add a row per route a visual change can reach, as the product's pages land.
+Add a row per route a visual change can reach.
 
 ## Dark mode
 
@@ -96,7 +96,7 @@ So: **never report a sub-500 capture as a layout finding.** Neither flag-level w
 
 - **Any `:hover` rule is invisible in a plain capture, and silently so.** Headless Chromium reports `(hover: none)`, so `apps/web/styles/_mantine.scss`'s `hover` mixin takes its `:active` branch and the hover rule never applies — the capture shows the resting state and looks like a correct render of it. Pass `--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4` to make the page report a hover-capable pointer.
 - **True phone width**, per the floor above.
-- **Overlap, ink extent and computed values**, where the eye is guessing at a few pixels — an absolutely-positioned control against a heading is the case that motivated this.
+- **Overlap, ink extent and computed values**, where the eye is guessing at a few pixels — an absolutely-positioned control against a heading, say.
 
 All three come from the DevTools Protocol, and Node's built-in `WebSocket` speaks it with no dependency: launch with `--remote-debugging-port=<port>`, poll `http://127.0.0.1:<port>/json/list` for the page target, then send `Page.navigate`, `Emulation.setDeviceMetricsOverride`, `Input.dispatchMouseEvent` (a `mouseMoved` at an element's centre sets `:hover`), `Runtime.evaluate` and `Page.captureScreenshot` — the last taking a `clip` with a `scale`, which is how a 25px chip becomes readable.
 

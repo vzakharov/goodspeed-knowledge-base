@@ -1,14 +1,8 @@
 /**
- * End-to-end tests for the type-overlap gate.
- *
- * Each case materializes a throwaway source tree in the OS temp directory and
- * runs the real script against it with `cwd` set there — the script takes its
- * scan root from `process.cwd()`, so a fixture tree needs no test hook in
- * production code, and what is asserted is the artifact `pnpm type-overlap`
- * actually runs: its exit code and the exact report text.
- *
- * Fixtures are written at runtime rather than committed, because a committed
- * `.ts` fixture that trips the gate would be scanned by the repo's own run.
+ * End-to-end tests for the type-overlap gate: each case writes a throwaway tree
+ * to the OS temp directory and runs the real script with `cwd` there. Fixtures
+ * are written at runtime because a committed one that trips the gate would fail
+ * the repo's own run.
  */
 
 import assert from 'node:assert/strict';

@@ -25,9 +25,8 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
-    // `scripts/render-mermaid.ts` and `scripts/generate-styles.ts` run
-    // under bare Node, whose ESM resolver needs the extension they import from
-    // `src/` by.
+    // The `node scripts/*.ts` entrypoints run on bare Node's type stripping,
+    // whose ESM resolver needs every relative import to spell its `.ts`.
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

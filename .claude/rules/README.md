@@ -5,8 +5,8 @@ session touches a file matching its `paths:` globs — so conventions reach the
 agent at the moment they're relevant, without being permanently resident in
 context the way `CLAUDE.md` is.
 
-**This directory ships empty on purpose.** Rules are inherently project-specific;
-the reusable part is the mechanism. Add rule files as your conventions emerge.
+Rules are inherently project-specific; the reusable part is the mechanism. Add a
+rule file as a convention emerges.
 
 ## Format
 

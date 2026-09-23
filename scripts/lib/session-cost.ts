@@ -1,7 +1,5 @@
-// Prices a Claude Code transcript at Claude API rates, for the `Stop` hook that
-// writes one session's row and the report that sums many.
-// `.claude/rules/costs.md` carries the transcript's shape and what the totals
-// leave out.
+// Prices a Claude Code transcript at Claude API rates. `.claude/rules/costs.md`
+// carries the transcript's shape and what the totals leave out.
 
 import { z } from 'zod';
 
@@ -32,9 +30,6 @@ export type PriceTable = z.infer<typeof PriceTableSchema>;
 export const parsePrices = (json: string): PriceTable =>
   PriceTableSchema.parse(JSON.parse(json));
 
-// Every field but the two token counts is `nullish`: some arrive as an explicit
-// `null` rather than being left out, and an absent field and a null one mean the
-// same thing here — nothing to read.
 const UsageSchema = z.object({
   input_tokens: z.number(),
   output_tokens: z.number(),
@@ -85,28 +80,14 @@ const SessionCostSchema = z.object({
   sessionId: z.string(),
   branch: z.string().nullable(),
   cwd: z.string().nullable(),
-  // What a person recognises a session by. Each carries a default, so a row
-  // written before the field existed still parses.
-  //
-  // `name` is the agent's own short label, and the one field here the transcript
-  // cannot supply: it stays null until a turn fills it in, which is what
-  // `.claude/hooks/prompt-session-name.sh` asks for. Writing a row therefore
-  // carries the existing name forward rather than recomputing it.
+  // The defaults let a row that predates its field still parse.
   name: z.string().nullable().default(null),
   openingPrompt: z.string().nullable().default(null),
   prs: z.array(z.number()).default([]),
-  // The URL a person opens the session at, which is a different id from the
-  // transcript's own and appears only in a remote session.
   url: z.string().nullable().default(null),
   firstResponseAt: z.string().nullable(),
   lastResponseAt: z.string().nullable(),
   pricesAsOf: z.string(),
-  // What Claude Code itself had counted the session at, read off the
-  // `cost-state` records it writes into the transcript. It is the one figure
-  // here that does not come from this repo's arithmetic, which is what makes it
-  // worth keeping — and because it is written into the same file partway
-  // through, it is a floor rather than a rival total: `pnpm costs` reports a row
-  // that came out *under* it.
   claudeCodeTotalUsd: z.number().nullable().default(null),
   total: TallySchema,
   ownTurns: TallySchema,
@@ -117,12 +98,10 @@ const SessionCostSchema = z.object({
 
 export type SessionCost = z.infer<typeof SessionCostSchema>;
 
-/** Rows are read back in a later process, so they are parsed rather than trusted. */
 export const parseSessionCost = (json: string): SessionCost =>
   SessionCostSchema.parse(JSON.parse(json));
 
-// Thinking tokens are absent: they sit inside `output_tokens` already, so a
-// line of their own would charge every turn that thought twice.
+// `thinkingTokens` sit inside `outputTokens` already, so billing them charges twice.
 const BILLED_FIELDS = [
   'inputTokens',
   'cacheWrite5mTokens',
@@ -168,16 +147,12 @@ export const costOf = (tokens: TokenTally, rates: Rates): number => {
   return usd;
 };
 
-/** `<model>/<speed>`, the pair a response is billed under. */
 export const rateKey = (
   model: string,
   speed: string | null | undefined,
 ): string => `${model}/${speed ?? 'standard'}`;
 
-// Claude Code's placeholder for a turn no model served — a cancellation, an
-// interrupted request. It is not a model, so the unpriced-pair throw would be
-// reporting the wrong thing; a warning covers the case where one ever arrives
-// carrying tokens.
+// Skipped rather than priced, so it warns instead of tripping the unpriced throw.
 const SYNTHETIC_MODEL = '<synthetic>';
 
 type Response = z.infer<typeof ResponseRecordSchema>;
@@ -214,25 +189,13 @@ const isResponseRecord = (record: unknown): boolean =>
   record.message !== null &&
   'usage' in record.message;
 
-/**
- * A session's transcripts: the main file, and one per subagent it spawned.
- *
- * A subagent's responses are billed to the session that spawned it and are
- * written to a **separate file** rather than into the main one, so a reading
- * that opens only the main transcript prices the session short by however much
- * it delegated — silently, since the shortfall looks exactly like a session that
- * delegated nothing.
- */
+/** A session's main transcript and one file per subagent it spawned — all of it the session's spend. */
 export type TranscriptSources = {
   main: string;
   subagents: readonly string[];
 };
 
-/**
- * Throws when a transcript names a `(model, speed)` pair the table cannot
- * price, or an assistant record does not parse: an unpriced response silently
- * counted as free is the one failure that makes the whole ledger a lie.
- */
+/** Throws on a `(model, speed)` pair the table cannot price, or a response record that does not parse. */
 export const summariseTranscript = (
   sources: TranscriptSources,
   prices: PriceTable,
@@ -254,9 +217,8 @@ export const summariseTranscript = (
   let url: string | undefined;
   let claudeCodeTotalUsd: number | undefined;
 
-  // `delegated` forces the bucket for a subagent's own file. Its records carry
-  // `isSidechain` too, but the file they are in is the fact that does not depend
-  // on a flag having been set.
+  // `delegated` files a subagent's own file as subagent spend, whatever its
+  // records' `isSidechain` says.
   const scan = (jsonl: string, delegated: boolean): void => {
     for (const line of jsonl.split('\n')) {
       if (line.trim() === '') continue;
@@ -287,8 +249,7 @@ export const summariseTranscript = (
 
       if (!isResponseRecord(record)) continue;
       const response = ResponseRecordSchema.parse(record);
-      // One API response is written as one record per content block, each
-      // carrying the whole response's usage, so the id is what counts it once.
+      // One record per content block, each carrying the whole response's usage.
       if (seen.has(response.message.id)) continue;
       seen.add(response.message.id);
 

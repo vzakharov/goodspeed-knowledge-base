@@ -4,11 +4,9 @@
 both intersect; and every _combination_ of bases two types both spell has a name of its own.
 Enforced by `pnpm type-overlap`, in `vet`, at threshold 1 for members and 2 for combinations.**
 
-_Adopted wholesale from `Playgramai/playgramapp`, where the detector was ratcheted 4→3→2→1 over
-several batches before landing globally at 1. This repo starts at 1: it was clean at that floor on
-adoption bar one pair, so there is nothing to phase in. The upstream doc
-(`docs/decisions/type-overlap-and-shared-bases.md` there) carries the empirical record — the counts,
-the fifty-five numbered lessons, and the FSD-specific placement rules this one drops._
+_Adopted from `Playgramai/playgramapp`, whose `docs/decisions/type-overlap-and-shared-bases.md`
+carries the empirical record — the ratchet from 4 down to 1, the counts, the numbered lessons, and
+the FSD-specific placement rules this one drops._
 
 ---
 
@@ -104,7 +102,7 @@ together; neither is worth much alone.
 ## 3. Naming families
 
 The sole home for the families. The table is the at-the-keyboard reference; the rules below hold what
-a table can't. `Named`, `WithId`, `WithFilePath`, `Titled`, `Described` are the families in
+a table can't. `Named`, `WithId`, `WithText`, `Titled`, `Described` are the families in
 miniature — the names to reach for first, wherever § 6 puts the base.
 
 | Member kind         | Required                                                          | `?:`                                  | `\| undefined`, required key | `\| null`              | may be both         |
@@ -266,9 +264,8 @@ The order of work on a finding:
    trees and asserts both directions — the clean line verbatim, and, for each pass, the section, the
    group's member list and the fix bullet. Extend it in the same commit as the gate change, and check
    the new case actually fails against the unchanged script before you keep it.
-   **An ad-hoc probe cannot live in `tmp/`**, which the scanner skips — nor anywhere else committed,
-   since the repo's own run would then scan it. That is why the fixtures are written into the OS temp
-   directory at runtime rather than checked in.
+   **An ad-hoc probe cannot live in `tmp/`**, which the scanner skips, nor anywhere committed, which
+   the repo's own run would scan — write it to the OS temp directory, as the tests do.
 
 ## 7. Docstrings on a base
 

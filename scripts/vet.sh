@@ -8,10 +8,8 @@ cd "$(dirname "$0")/.."
 
 status=0
 
-# Runs one step on its own, replaying its log only when it fails. The log goes
-# under tmp/ rather than through run-parallel.sh, which wipes its log directory
-# at startup — a log written there would be gone by the time the fan-out
-# finished citing it.
+# Runs a step alone, replaying its log only on failure. The log sits in tmp/
+# rather than run-parallel.sh's log directory, which the fan-out wipes at startup.
 alone() {
   local name=$1
   shift
@@ -26,15 +24,12 @@ mkdir -p tmp
 alone build pnpm build
 alone styles pnpm styles:codegen
 
-# The type check's workspace half goes through Turborepo, whose `typecheck`
-# depends on `build` — a cache hit on the build that just ran, never a rebuild.
-# type-overlap reads source text only; the test run writes only into the OS
-# temp directory. The squash check reads the proposal under
-# docs/remove-before-merging/, and the last reads the agent infrastructure,
-# neither of which anything else here touches.
-# The two database suites need the local stack `pnpm bootstrap` started, and
-# touch nothing but it: pgTAP rolls each file back, and the API's end-to-end run
-# signs up users of its own.
+# Why each is safe beside the rest:
+# - typecheck: Turborepo's `typecheck` depends on `build`, a cache hit by now.
+# - type-overlap reads source only; test writes only to the OS temp directory.
+# - squash reads docs/remove-before-merging/, skills the agent infrastructure.
+# - test-db and test-e2e touch only the local stack: pgTAP rolls each file back,
+#   and the end-to-end run signs up users of its own.
 scripts/run-parallel.sh \
   typecheck='pnpm typecheck' \
   eslint='pnpm exec eslint .' \

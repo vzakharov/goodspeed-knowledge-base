@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
 // Prices one session's transcript and writes its row under
-// `.claude/costs/sessions/`. The row is rewritten from the whole file each run
-// rather than appended to, which is what lets a run pick up what the previous
-// one was too early to see — the transcript lags the live conversation.
+// `.claude/costs/sessions/`, rewritten from the whole file on every run.
 //
 //   node scripts/session-cost.ts --transcript <path> [--session-id <id>] [--row-path]
 //   node scripts/session-cost.ts --transcript <path> --name '<short label>'
@@ -30,14 +28,11 @@ if (transcript === undefined) {
   process.exit(2);
 }
 
-// The month a session is filed under is the month it started, so a session
-// running across midnight on the last of the month stays in one file.
+// The month it started, so a session running across month-end stays in one file.
 const monthOf = (cost: SessionCost): string =>
   (cost.firstResponseAt ?? new Date().toISOString()).slice(0, 7);
 
-// A subagent's responses are billed to this session and written to their own
-// file under `<transcript>/subagents/`, so the directory is read rather than
-// assumed empty. A session that spawned none has no directory at all.
+// A session that spawned no subagent has no directory at all.
 const subagentsOf = (main: string): string[] => {
   const dir = path.join(
     path.dirname(main),
@@ -53,9 +48,8 @@ const subagentsOf = (main: string): string[] => {
   }
 };
 
-// The name is the one field no run can recompute, so a rewrite reads back what
-// the last one wrote. An unreadable row is treated as no row: the point is to
-// keep a name, never to fail a write over one.
+// An unreadable row counts as no row: the point is to carry a name forward,
+// never to fail a write over one.
 const nameOn = (row: string): string | null => {
   try {
     return parseSessionCost(readFileSync(row, 'utf8')).name;

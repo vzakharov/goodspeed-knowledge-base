@@ -1,15 +1,8 @@
 #!/usr/bin/env node
 
-// Totals the rows under `.claude/costs/sessions/` — what the work in this
-// repository would have cost at Claude API rates.
+// Totals the rows under `.claude/costs/sessions/` at Claude API rates.
 //
 //   node scripts/costs-report.ts [--month YYYY-MM] [--json]
-//
-// Nothing is written: the totals are derived from the rows, so the report is
-// run when a number is wanted rather than kept on disk going stale. `--json`
-// prints the whole breakdown for whoever wants to keep one anyway. Rows reach
-// `main` by merge, so a month read here is a month of *merged* work:
-// `.claude/rules/costs.md` carries what that leaves out.
 
 /* eslint-disable no-console -- stdout is this script's interface: the report is
    the whole output. */
@@ -77,8 +70,6 @@ const table = (title: string, buckets: Record<string, Bucket>): void => {
     );
 };
 
-// Every grain prints: the month is the bill, the week the trend, the day which
-// session did it.
 table('month', totals.byMonth);
 table('week', totals.byWeek);
 table('day', totals.byDay);
@@ -89,9 +80,8 @@ console.log(
   `\ntotal ${usd(totals.costUsd)} over ${count(totals.sessions, 'session')}${subagents > 0 ? `, ${usd(subagents)} of it subagents` : ''}`,
 );
 
-// The rate table is hand-kept, so the report states its age and checks the
-// arithmetic against Claude Code's own count — one way only, with the slack
-// `.claude/rules/costs.md` § "Checking the arithmetic" explains.
+// The table's age, then the one-way check against Claude Code's own count:
+// `.claude/rules/costs.md` § "Checking the arithmetic".
 const prices = readPrices();
 const days = Math.floor((Date.now() - Date.parse(prices.as_of)) / 86_400_000);
 console.log(

@@ -1,26 +1,21 @@
 #!/usr/bin/env node
 
 /**
- * Generates the Sass partials under `apps/web/styles/` whose contents are fixed by a
- * TypeScript declaration. Run it after editing either source:
+ * Generates the Sass partials under `apps/web/styles/` from the TypeScript
+ * declarations they mirror. Run it after editing either source:
  *
  *   pnpm styles:codegen
  *
  * There is no check-only mode: it **exits non-zero when it had to write**, so
- * one run both repairs the drift and reports it. That is what lets the vet run
- * fail on a stale partial while still leaving it fixed — `git diff` is the
- * report, and a second run is green.
+ * the vet run fails on a stale partial while leaving it fixed — `git diff` is
+ * the report, and a second run is green.
  *
- * Both partials exist because Sass and TypeScript each need the same names and
- * numbers and neither can read the other's declaration: Mantine resolves
- * responsive props (`cols={{ base: 1, md: 2 }}`) from `theme.breakpoints` and
- * `cssColor()` types the `--color-*` names, while Sass needs the breakpoints as
- * literals — a media-query condition cannot read a custom property — and is
- * what declares the tokens in the first place. TypeScript is the source in both
- * cases because it is the side a type can constrain.
- *
- * Bare Node runs this file, relying on its type stripping, so the imports of
- * the sources carry their `.ts` extension.
+ * Sass and TypeScript each need the same names and numbers, and neither can
+ * read the other's declaration: Mantine resolves responsive props from
+ * `theme.breakpoints` and `cssColor()` types the `--color-*` names, while a
+ * media-query condition needs the breakpoints as Sass literals and Sass is what
+ * declares the tokens. TypeScript is the source because it is the side a type
+ * can constrain.
  */
 
 /* eslint-disable no-console -- stderr is how this script reports drift: which
@@ -66,9 +61,8 @@ const PARTIALS = [
   },
 ];
 
-// Shape derived from the list rather than declared: the three members are the
-// list's own, and a named record here collides with unrelated `body`/`source`
-// declarations under `pnpm type-overlap` for no shared concept.
+// Derived from the list rather than declared: a named record here collides with
+// unrelated `body`/`source` members under `pnpm type-overlap`.
 function render({ source, body }: (typeof PARTIALS)[number]): string {
   return `// Generated from ${source}
 // by \`pnpm styles:codegen\`. Edit the source, not here — the vet run

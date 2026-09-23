@@ -7,6 +7,7 @@ paths:
   - scripts/lib/session-cost.ts
   - scripts/lib/cost-totals.ts
   - scripts/lib/ledger.ts
+  - scripts/lib/session-identity.ts
   - .claude/hooks/stop-session-cost.sh
   - .claude/hooks/prompt-session-name.sh
 ---
@@ -93,16 +94,10 @@ Applied to Claude Code's own token counts, the table reproduces its cost to the
 last digit — so a divergence is a gap in what a row **read**, never in what it
 charged.
 
-**The usage panel is not a third opinion, and what breaks it is compaction.**
-Against a session that has never compacted it agrees to within 1% — $14.03 to
-this table's $13.90 — and one compaction later it is out by tens of dollars,
-each subsequent one adding tens more across a window in which the transcript
-gains no responses at all. Its "Cost" also disagrees with its own Breakdown's
-cost row, $198.49 against $47.04 on one card, and pricing its own token rows at
-these rates misses that Cost by ≈4× on one card and ≈33× on another — so the
-gap is not a unit or a stale rate, which would miss by one factor in both.
-anthropics/claude-code#95837 carries the measurements and asks which figure is
-authoritative.
+**The usage panel is not a third opinion.** It agrees to within 1% until a
+session compacts, drifts by tens of dollars with each compaction after, and
+disagrees with its own Breakdown; anthropics/claude-code#95837 carries the
+measurements.
 
 ## Running beside the harness's Stop check
 
@@ -151,24 +146,17 @@ one file per session id.
 
 ## What the totals do not cover
 
-- **The last turn of a session.** The transcript is written asynchronously and
-  lags the live conversation, so each run rewrites the row from the whole file
-  and picks up what the previous run was too early to see. The final turn has no
-  successor to correct it, and **no turn can close that**: a step in `/finalize`
-  runs in the same session and is followed by the turns that invoked it, so it
-  moves the blind spot rather than removing it. What closes it is a read that is
-  not a turn. A **later session** re-prices the file, which needs the transcript
-  to outlive this one — true locally, false in a remote container, discarded
-  with `~/.claude/projects/` inside it unless something committed a copy first.
-  A **watcher on the transcript** sees the trailing appends, the container
-  outliving them by a wide margin, and costs the serialisation § "Running beside
-  the harness's Stop check" is built on: it would write and commit with no turn
-  in progress.
+- **The last turn of a session.** The transcript lags the live conversation, so
+  each run rewrites the row from the whole file and picks up what the previous
+  run was too early to see — but the final turn has no successor, and **no turn
+  can close that**: a `/finalize` step is followed by the turns that invoked it.
+  Only a read that is not a turn can — a later session re-pricing a transcript
+  that outlived this one (false in a remote container), or a transcript watcher,
+  which would write and commit with no turn in progress and so give up the
+  serialisation § "Running beside the harness's Stop check" is built on.
 - **Each compact.** The transcript records the compaction call without its
-  `usage` — the boundary record carries `preTokens`, the summary arrives as a
-  `user` record — so there is nothing to price. Bounded rather than unknown: the
-  two compacts of the session measured read 526k tokens between them, about
-  $0.30 at the cache-read rate a warm prefix gets.
+  `usage`, so there is nothing to price. Bounded: two measured compacts read
+  526k tokens, about $0.30 at the cache-read rate.
 - **A rate that changed after a row was written.** Each row records the
   `pricesAsOf` it was priced under and is never re-priced — its transcript is
   usually gone by then — so a table update applies forward only, and `pnpm costs`

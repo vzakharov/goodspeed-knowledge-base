@@ -8,7 +8,7 @@ The static export is the constraint that shapes the web app: it is HTML and clie
 
 ## About this file
 
-This file is intentionally bare. It carries only the conventions that hold true regardless of stack. As the project's actual conventions emerge — directory layout, testing approach, naming patterns, deployment quirks, recurring pitfalls — flesh out the relevant sections below.
+This file carries the conventions that hold across the whole repo. As new ones emerge — directory layout, testing approach, naming patterns, deployment quirks, recurring pitfalls — flesh out the relevant sections below.
 
 **Agent: this is yours to grow.** When you notice a pattern worth codifying, a trap worth warning about, or a tool/command that should be documented, propose the addition. Treat CLAUDE.md as a living artifact you and the human co-author over time — not a fixed doctrine to obey. The principles in "Key principles" below are the seed; everything around them should grow with the project.
 
@@ -20,7 +20,7 @@ This file is intentionally bare. It carries only the conventions that hold true 
 - **`supabase/`** — the Supabase CLI's own layout: `config.toml`, `migrations/`, pgTAP suites in `tests/`. The local stack runs on Docker; `pnpm bootstrap` (`scripts/bootstrap.ts`) starts it, generates the per-machine signing key, and writes each app's `.env` from the `.env.example` beside it.
 - **`eslint/`** — the lint ruleset `eslint.config.ts` orchestrates: `rule-groups/` by plugin family, `rules/` for the project-local `vova/*` rules. Linted like any other source; see `.claude/rules/eslint.md`.
 - **`.claude/costs/`** — what the work here would cost at Claude API rates: `prices.json`, the hand-maintained rate table, and `sessions/<YYYY-MM>/<session-id>.json`, one row per session, written by a `Stop` hook and carried to the trunk by the branch's merge. `pnpm costs` sums them on demand and writes nothing. `@.claude/rules/costs.md` carries how a transcript is priced, what checks the arithmetic, and how that hook shares the event with the harness's own.
-- **`scripts/`** — agent-facing shell/Python tooling; `vet.sh` is the entrypoint below. `type-overlap-check.ts` (`type-overlap-check.README.md` is its reference) runs under `tsx`; `generate-styles.ts` under bare Node's type stripping.
+- **`scripts/`** — agent-facing tooling in shell, Python and TypeScript; `vet.sh` is the entrypoint below. The TypeScript runs on bare Node (`tsconfig.json` says what that asks of an import), bar `type-overlap-check.ts` under `tsx` — `type-overlap-check.README.md` is its reference.
 - **`.claude/`** — Skills, rules and session hooks.
 
 Anything that holds only over part of that tree lives as a path-scoped rule in `.claude/rules/`, loaded when a session touches the paths it names — the FSD layering and the styling cascade are both documented there rather than here.
@@ -55,13 +55,13 @@ What about that list is deliberate:
 
 - **`pnpm build` is the check that covers the apps themselves** — the static export renders every route, so it catches a broken page, route or import.
 - **Vet needs the local stack running.** `test:db` and `test:e2e` run against it, and each fails naming `pnpm bootstrap` when it is down. A cloud session starts `dockerd` by hand (`nohup dockerd &`, not the tool's background mode), and again after a resume, which restarts the container; the CLI pulls its images from `public.ecr.aws`.
-- **Never call `pnpm lint` from vet.** That script is `eslint . --fix`, and a fix it picks is a judgment about source someone wrote. `pnpm exec eslint .` is the checking form, and `pnpm lint:css` is stylelint's. `pnpm styles:codegen` is the one exception, because a generated partial has exactly one correct content.
+- **Never call `pnpm lint` from vet.** That script is `eslint . --fix`, and a fix it picks is a judgment about source someone wrote. `pnpm exec eslint .` is the checking form, and `pnpm lint:css` is stylelint's.
 - **The build and the codegen run alone, in that order, before the concurrent rest.** `next build` regenerates `apps/web/.next/types/`, which that workspace's tsconfig includes, so a type check overlapping it intermittently reads a route-type module the build hasn't finished writing. **Pre-generating with `next typegen` does not fix this and makes it worse** — typegen emits a `cache-life.d.ts` that the build then deletes, so the type check fails every time on a file it has already globbed. The codegen _writes_ two `.scss` files that `lint:css` and `format:check` glob. The rest touch nothing each other reads, so `scripts/run-parallel.sh` fans them out; a check added there has to be independent of whatever it runs beside.
-- **Only failures are printed.** `run-parallel.sh` buffers each check under `tmp/run-parallel/` and replays just the ones that failed, ending in the path to the verbatim log; the build does the same through `tmp/vet-build.log`. The runner also flags a tree that was clean before the run and is dirty after — an autofix step that rewrote files and still exited 0.
+- **Only failures are printed.** `run-parallel.sh` buffers each check under `tmp/run-parallel/` and replays just the ones that failed, ending in the path to the verbatim log; the build and the codegen do the same through `tmp/vet-build.log` and `tmp/vet-styles.log`. The runner also flags a tree that was clean before the run and is dirty after — an autofix step that rewrote files and still exited 0.
 - **Turborepo's strict environment is why `turbo.json` passes the proxy and CA variables through.** A task sees only the variables `turbo.json` names, so without them `next/font` cannot reach Google Fonts from behind a proxy and the build fails on a TLS error. They are pass-through rather than hashed because they describe the machine, not the build's inputs.
-- **`pnpm lint:css` holds the styling cascade to `@.claude/rules/styling.md`** — the layered-Mantine import means no rule needs `!important`, so `declaration-no-important` rejects one outright.
+- **`pnpm lint:css` holds the styling cascade to `@.claude/rules/styling.md`**, `!important` included.
 - **`pnpm type-overlap` holds every workspace to § "Derive types and schemas from the source of truth"'s one-home rule**, with nothing grandfathered. Working a finding: `scripts/type-overlap-check.README.md`.
-- **`pnpm styles:codegen` repairs the generated Sass partials rather than reporting on them.** There is deliberately no check-only mode: `vet.sh` fails when the tree changed under it, `git diff` is the report, and a re-run is green.
+- **`pnpm styles:codegen` is the one check that writes** — a generated partial has exactly one correct content, so it repairs a stale one and fails for having had to; `scripts/generate-styles.ts` carries the rest.
 - **`scripts/check-skill-catalog.sh` asserts that every `@`-reference into `.claude/` resolves** — the failure it catches is silent.
 - **`scripts/check-squash-message.sh` holds the squash proposal to the size caps `@.claude/skills/squash-message/SKILL.md` states.**
 
@@ -178,7 +178,7 @@ Use semantic commit prefixes:
 
 **`polish:` is a branch-local type**, outside the standard set on purpose. `@.claude/skills/polish/SKILL.md` finds where it last ran by that subject line, and nothing else would carry the mark: the run's edits are `refactor:` or `docs:` by nature, which says nothing about who made them or why. It reaches no trunk — the squash gives the branch one subject of its own, written by hand — so the extension costs a reader of `main` nothing and a reader of the branch a legible `git log --oneline`. That skill owns the form the subject takes.
 
-**This list is local and extensible**, not the conventional-commits spec. When a change genuinely doesn't fit any row above, proposing a new row is a legitimate move — better than filing it under the nearest wrong one — provided the addition names a kind of change that recurs, and joins the gate's `publishing` set in the same change when a merge of it alters what the sites serve or how they get served (§ "Deployment").
+**This list is local and extensible**, not the conventional-commits spec. When a change genuinely doesn't fit any row above, proposing a new row is a legitimate move — better than filing it under the nearest wrong one — provided the addition names a kind of change that recurs.
 
 Write descriptive commit messages: the subject line summarizes the change, and the body explains what was changed and why in enough detail that someone reading the log understands the commit without looking at the diff.
 

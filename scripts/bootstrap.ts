@@ -9,8 +9,6 @@
  * already running is restarted, no data is reset, and an existing `.env` keeps
  * every value in it except the Supabase ones, which follow the stack. A
  * variable a template gained since is appended with its default.
- *
- * Bare Node runs this file on its type stripping, so imports carry `.ts`.
  */
 
 /* eslint-disable no-console -- stdout is this script's interface: the stack's

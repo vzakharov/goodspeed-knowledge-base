@@ -1,8 +1,3 @@
-// Sums the session rows for `pnpm costs` — the same spend by month, by ISO
-// week, by day, and by the branch that spent it. Nothing here is written to
-// disk: the totals are wholly derived from the rows, and a derived file
-// committed beside its own sources is a merge conflict every branch pays for.
-
 import { z } from 'zod';
 
 import { BilledSchema, type SessionCost } from './session-cost.ts';
@@ -52,8 +47,7 @@ const into = (
   addInto((buckets[key] ??= emptyBucket()), row);
 };
 
-// Rounded where it is written rather than where it is read: a sum of floats
-// carries digits no price has, and the file is read by people.
+// A sum of floats carries digits no price has, and the report is read by people.
 const cents = (usd: number): number => Math.round(usd * 1e4) / 1e4;
 
 const rounded = (bucket: Bucket): Bucket => ({
@@ -68,20 +62,13 @@ const roundedAll = (buckets: Record<string, Bucket>): Record<string, Bucket> =>
       .map(([key, bucket]) => [key, rounded(bucket)]),
   );
 
-/**
- * The branch a session's spend is filed under, with the pull requests it touched
- * named beside it: the branch says roughly what the work was, the numbers are
- * what a reader clicks through to. The spend is the branch's rather than each
- * PR's, since a session that touched two would otherwise be counted twice.
- */
 export const branchLabel = (row: SessionCost): string =>
   [row.branch ?? '(no branch)', ...row.prs.map((pr) => `#${pr}`)].join(' ');
 
 /**
- * A session is filed under where it **started**, the rule that already picks its
- * row's month, so one running past midnight stays whole. A row with no priced
- * response has no day to file under and lands in the grand total and its branch
- * alone.
+ * Files a session under the day it **started**, as its row's month is, so one
+ * running past midnight stays whole. A row with no priced response lands in the
+ * grand total and its branch alone.
  */
 export const totalsOf = (rows: readonly SessionCost[]): Totals => {
   const byMonth: Record<string, Bucket> = {};

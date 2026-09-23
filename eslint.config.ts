@@ -1,8 +1,7 @@
-// ESLint configuration philosophy: every rule is listed explicitly — either enabled
-// as 'error' or disabled with a comment explaining why. Nothing is silently inherited.
-// Rules from eslint-config-next spreads are re-stated for transparency and to upgrade
-// any 'warn' entries to 'error'. Severity is 'error' or 'off', never 'warn'; the policy
-// and how to grandfather a rule live in .claude/rules/eslint.md.
+// ESLint configuration philosophy: every rule is listed explicitly — enabled, or
+// disabled with a comment explaining why — so nothing is silently inherited, the
+// eslint-config-next spreads' rules included. Severity policy and grandfathering:
+// .claude/rules/eslint.md.
 //
 // The rule set is split by plugin family into eslint/rule-groups/*.ts, each group
 // listing a severity's rules via `withSeverity` and its rules with options
