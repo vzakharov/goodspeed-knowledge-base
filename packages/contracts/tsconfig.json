@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    // Both apps import the build, so a relative `.ts` import has to come out
+    // as the `.js` beside it.
+    "rewriteRelativeImportExtensions": true
+  },
+  "include": ["src/**/*.ts"],
+  // The root excludes every workspace from its own project; this one is one.
+  "exclude": ["node_modules", "dist"]
+}

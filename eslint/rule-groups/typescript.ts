@@ -155,6 +155,12 @@ export const typescriptRules = {
     { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
   ],
   '@typescript-eslint/method-signature-style': ['error', 'property'], // property style is more precise — method style allows bivariant params
+  // A Nest module is an empty class carrying a decorator; any other empty or
+  // static-only class is still one that should be a module of functions.
+  '@typescript-eslint/no-extraneous-class': [
+    'error',
+    { allowWithDecorator: true },
+  ],
   '@typescript-eslint/no-unnecessary-condition': [
     'error',
     {
@@ -170,9 +176,9 @@ export const typescriptRules = {
     '@typescript-eslint/no-redeclare', // "it is not recommended to turn on this rule in new TypeScript projects"
 
     // Wrong for this project:
-    '@typescript-eslint/class-methods-use-this', // no classes in this codebase
+    '@typescript-eslint/class-methods-use-this', // a Nest provider's method belongs on its class for injection, whether or not it reads `this`
     '@typescript-eslint/explicit-function-return-type', // inference is the point of TypeScript; enforcing explicit returns on every function is noise
-    '@typescript-eslint/explicit-member-accessibility', // no classes in this codebase
+    '@typescript-eslint/explicit-member-accessibility', // members are public unless marked; `private` is written where it is meant
     '@typescript-eslint/explicit-module-boundary-types', // inferred return types on exports are fine in a well-typed codebase
     '@typescript-eslint/init-declarations', // too strict — lazy init and conditional assignment are valid patterns
     '@typescript-eslint/max-params', // use parameter objects by convention, not enforcement
@@ -180,12 +186,11 @@ export const typescriptRules = {
     '@typescript-eslint/naming-convention', // TypeScript naming is already conventional; the rule is noisy against library prop shapes
     '@typescript-eslint/no-dynamic-delete', // computed delete is occasionally the clearest way to normalize a record
     '@typescript-eslint/no-empty-interface', // superseded by no-empty-object-type (already enabled)
-    '@typescript-eslint/no-extraneous-class', // no classes to constrain; the rule has nothing to act on
     '@typescript-eslint/no-invalid-void-type', // void in callback return positions is idiomatic TypeScript
     '@typescript-eslint/no-magic-numbers', // impractical in layout and animation code; would require a named constant per spacing value
     '@typescript-eslint/no-type-alias', // deprecated; superseded by consistent-type-definitions
     '@typescript-eslint/no-var-requires', // superseded by no-require-imports (already enabled)
-    '@typescript-eslint/parameter-properties', // no classes in this codebase
+    '@typescript-eslint/parameter-properties', // Nest's constructor injection is one; `erasableSyntaxOnly` rules them out everywhere but apps/api
     '@typescript-eslint/prefer-destructuring', // style preference, not a correctness issue
     '@typescript-eslint/prefer-enum-initializers', // enums not used; project prefers union types
     '@typescript-eslint/prefer-literal-enum-member', // enums not used

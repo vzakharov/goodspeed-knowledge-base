@@ -183,6 +183,125 @@ const boundariesConfig: Config = {
   },
 };
 
+// A workspace under packages/, reached through its package name. It resolves
+// to its build through the workspace symlink, so to the checker it is a local
+// file rather than an external module.
+const WORKSPACE_PACKAGE = {
+  type: 'workspace-package',
+  pattern: ['packages/*/**'],
+};
+
+// The API's layout, lighter than the web's. Infrastructure — configuration,
+// HTTP plumbing, the database client, auth, the model layer — may be used by
+// every feature module. A feature module reaches another only through its
+// `index.ts`: the Nest module and the providers it exports. And `ai/` is
+// reached only by the modules that call a model, so which ones do is written
+// down here rather than discovered.
+const API_FEATURES = ['documents', 'ingestion', 'chat', 'usage'];
+const API_MODEL_CALLERS = ['ingestion', 'chat', 'usage'];
+const API_INFRASTRUCTURE = ['config', 'http', 'database', 'auth'];
+
+const apiBoundariesConfig: Config = {
+  plugins: { boundaries: boundariesPlugin },
+  files: ['apps/api/src/**/*.ts'],
+  ignores: [
+    // The files at the root of src/ assemble the app, so like the web's
+    // routing directory they import every module by definition.
+    'apps/api/src/*.ts',
+    // A test reaches across to `test/`'s fakes, which are no module's.
+    'apps/api/src/**/*.test.ts',
+  ],
+  settings: {
+    'boundaries/elements': [
+      { type: 'api-ai', pattern: ['apps/api/src/ai/**'] },
+      ...API_INFRASTRUCTURE.map((name) => ({
+        type: 'api-infrastructure',
+        pattern: [`apps/api/src/${name}/**`],
+      })),
+      ...API_FEATURES.map((name) => ({
+        type: 'api-feature',
+        pattern: [`apps/api/src/(${name})/**`],
+        capture: ['featureName'],
+      })),
+      WORKSPACE_PACKAGE,
+    ],
+  },
+  rules: {
+    'boundaries/dependencies': [
+      'error',
+      {
+        default: 'disallow',
+        policies: [
+          {
+            from: {
+              element: { types: { anyOf: ['api-ai', 'api-infrastructure'] } },
+            },
+            allow: {
+              to: {
+                element: {
+                  types: {
+                    anyOf: [
+                      'api-ai',
+                      'api-infrastructure',
+                      'workspace-package',
+                    ],
+                  },
+                },
+              },
+            },
+          },
+          {
+            from: { element: { type: 'api-feature' } },
+            allow: {
+              to: {
+                element: {
+                  types: { anyOf: ['api-infrastructure', 'workspace-package'] },
+                },
+              },
+            },
+          },
+          {
+            from: {
+              element: {
+                type: 'api-feature',
+                captured: { featureName: API_MODEL_CALLERS },
+              },
+            },
+            allow: {
+              to: { element: { type: 'api-ai', fileInternalPath: 'index.ts' } },
+            },
+          },
+          // Within a feature module, a file reaches any sibling directly.
+          {
+            from: { element: { type: 'api-feature' } },
+            allow: {
+              to: {
+                element: {
+                  type: 'api-feature',
+                  captured: {
+                    featureName: '{{ from.captured.featureName }}',
+                  },
+                },
+              },
+            },
+          },
+          {
+            from: { element: { type: 'api-feature' } },
+            allow: {
+              to: {
+                element: { type: 'api-feature', fileInternalPath: 'index.ts' },
+              },
+            },
+          },
+        ],
+      },
+    ],
+    'boundaries/no-ignored-dependencies': 'error',
+    'boundaries/no-unknown-dependencies': 'error',
+    'boundaries/no-unknown-files': 'error',
+  },
+};
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
@@ -208,6 +327,7 @@ const eslintConfig = defineConfig([
   // Prettier must come after all other configs to override formatting rules.
   prettierConfig,
   boundariesConfig,
+  apiBoundariesConfig,
 
   // Project-local ESLint rules (eslint/rules/).
   {
@@ -272,6 +392,15 @@ const eslintConfig = defineConfig([
       '@typescript-eslint/no-unsafe-type-assertion': 'off',
     },
   },
+  // The API is Nest, whose provider definitions spell `useFactory`, `useValue`
+  // and `useClass` — object keys @eslint-react reads as hook names, though no
+  // React runs anywhere in the workspace.
+  {
+    files: ['apps/api/**/*.ts'],
+    rules: {
+      '@eslint-react/no-unnecessary-use-prefix': 'off',
+    },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next, re-stated for `apps/*` because each
@@ -283,6 +412,9 @@ const eslintConfig = defineConfig([
     '**/next-env.d.ts',
     '**/dist/**',
     '**/.turbo/**',
+    // Generated from the schema by `pnpm db:types`; its shape is the
+    // generator's.
+    'apps/api/src/database/database.types.ts',
     // Dev artifacts (gitignored, transient — CLAUDE.md § "Key principles"):
     'tmp/**',
   ]),

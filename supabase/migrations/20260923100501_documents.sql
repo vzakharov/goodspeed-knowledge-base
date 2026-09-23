@@ -13,7 +13,8 @@ create table public.documents (
   -- chunk, so renaming a document stales its embeddings just as editing it
   -- does. Ingestion writes its chunks only while this still matches the hash
   -- it read, so a slow run cannot overwrite a newer edit's.
-  content_hash text generated always as (md5(title || E'\n' || content)) stored,
+  content_hash text not null
+    generated always as (md5(title || E'\n' || content)) stored,
   embedding_status public.embedding_status not null default 'pending',
   -- Set exactly when the status is `failed`: what the provider or the store
   -- said, so the reader sees why rather than only that.
@@ -80,3 +81,55 @@ create policy "documents: update own" on public.documents
 create policy "documents: delete own" on public.documents
   for delete to authenticated
   using (user_id = (select auth.uid()));
+
+-- The list's rows: every column but the body, and the body's opening
+-- instead, so a list never ships every document whole — newest edit first,
+-- optionally only those carrying a tag. Functions rather than views because a
+-- view's columns all read as nullable to the type generator, and a function's
+-- declared ones do not. `security invoker`, like every function here: the
+-- caller's policies are the scope.
+create function public.list_document_summaries(with_tag text default null)
+returns table (
+  id uuid,
+  title text,
+  excerpt text,
+  tags text[],
+  embedding_status public.embedding_status,
+  embedding_error text,
+  embedding_model text,
+  created_at timestamptz,
+  updated_at timestamptz
+)
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select
+    id,
+    title,
+    left(content, 280),
+    tags,
+    embedding_status,
+    embedding_error,
+    embedding_model,
+    created_at,
+    updated_at
+  from public.documents
+  where with_tag is null or tags @> array[with_tag]
+  order by updated_at desc;
+$$;
+
+-- Every tag in use, with how many documents carry it, most used first.
+create function public.list_document_tags()
+returns table (tag text, documents integer)
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select tag, count(*)::integer
+  from public.documents, unnest(tags) as tag
+  group by tag
+  order by count(*) desc, tag;
+$$;

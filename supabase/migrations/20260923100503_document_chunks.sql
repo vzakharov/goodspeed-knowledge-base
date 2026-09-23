@@ -25,6 +25,22 @@ create table public.document_chunks (
   unique (document_id, chunk_index)
 );
 
+-- The column's dimension, which the API compares with its configured model's
+-- at boot and refuses to start on a mismatch — a model that disagrees with
+-- the column would otherwise fail every write and every search, one request
+-- at a time.
+create function public.embedding_dimensions()
+returns integer
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select atttypmod
+  from pg_catalog.pg_attribute
+  where attrelid = 'public.document_chunks'::regclass and attname = 'embedding';
+$$;
+
 create index document_chunks_embedding_idx on public.document_chunks
   using hnsw (embedding extensions.vector_cosine_ops);
 create index document_chunks_user_idx on public.document_chunks (user_id);

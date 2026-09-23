@@ -1,0 +1,155 @@
+import { z } from 'zod';
+
+import type {
+  EmbeddingSettings,
+  ModelSettings,
+} from '../ai/openai-compatible.ts';
+import {
+  PROVIDER_NAMES,
+  PROVIDER_PRESETS,
+  type ProviderName,
+} from '../ai/providers.ts';
+
+/**
+ * Everything the API reads from its environment, parsed once at boot. A
+ * variable that is missing or malformed stops the start with the variable's
+ * name, rather than failing the first request that needs it.
+ *
+ * `.env.example` at the repository root documents each one.
+ */
+
+// An empty variable means unset: `.env.example` lists every name with an
+// empty value, and a copy of it should read as "not configured".
+const optional = <T extends z.ZodType>(schema: T) =>
+  z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    schema.optional(),
+  );
+
+const urlSchema = z
+  .url({ protocol: /^https?$/ })
+  .transform((url) => url.replace(/\/+$/, ''));
+
+const providerSchema = z.enum(PROVIDER_NAMES);
+
+const envSchema = z.object({
+  PORT: z.coerce.number().int().min(1).max(65_535).default(4000),
+  /** The web app's origin, the one the API accepts cross-origin calls from. */
+  WEB_ORIGIN: urlSchema.default('http://localhost:3000'),
+
+  SUPABASE_URL: urlSchema,
+  /** The publishable (anon) key: the API reaches the database as the reader, never as a service role. */
+  SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
+
+  CHAT_PROVIDER: providerSchema,
+  CHAT_MODEL: z.string().min(1),
+  CHAT_API_KEY: optional(z.string()),
+  CHAT_BASE_URL: optional(urlSchema),
+
+  EMBEDDING_PROVIDER: providerSchema,
+  EMBEDDING_MODEL: z.string().min(1),
+  EMBEDDING_API_KEY: optional(z.string()),
+  EMBEDDING_BASE_URL: optional(urlSchema),
+  /** Has to equal the dimension of `document_chunks.embedding`. */
+  EMBEDDING_DIMENSIONS: z.coerce.number().int().min(1),
+  EMBEDDING_BATCH_SIZE: z.coerce.number().int().min(1).max(2048).default(64),
+});
+
+type Env = z.infer<typeof envSchema>;
+
+export type AppConfig = {
+  port: number;
+  webOrigin: string;
+  supabase: {
+    url: string;
+    publishableKey: string;
+  };
+  chat: ModelSettings;
+  embedding: EmbeddingSettings;
+};
+
+/** Thrown for a configuration that parses but cannot work. */
+export class ConfigError extends Error {
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
+    this.name = 'ConfigError';
+  }
+}
+
+function modelSettings(
+  capability: 'CHAT' | 'EMBEDDING',
+  provider: ProviderName,
+  model: string,
+  apiKey: string | undefined,
+  baseUrl: string | undefined,
+): ModelSettings {
+  const preset = PROVIDER_PRESETS[provider];
+  const resolvedBaseUrl = baseUrl ?? preset.baseUrl;
+
+  if (resolvedBaseUrl === undefined) {
+    throw new ConfigError(
+      `${capability}_BASE_URL is required for the ${provider} provider`,
+    );
+  }
+
+  if (preset.requiresApiKey && apiKey === undefined) {
+    throw new ConfigError(
+      `${capability}_API_KEY is required for the ${provider} provider`,
+    );
+  }
+
+  return { provider, model, apiKey, baseUrl: resolvedBaseUrl, preset };
+}
+
+function toConfig(env: Env): AppConfig {
+  const embeddingProvider = PROVIDER_PRESETS[env.EMBEDDING_PROVIDER];
+
+  if (!embeddingProvider.servesEmbeddings) {
+    throw new ConfigError(
+      `${env.EMBEDDING_PROVIDER} serves no embeddings — pick another EMBEDDING_PROVIDER; chat and embeddings are configured separately`,
+    );
+  }
+
+  return {
+    port: env.PORT,
+    webOrigin: env.WEB_ORIGIN,
+    supabase: {
+      url: env.SUPABASE_URL,
+      publishableKey: env.SUPABASE_PUBLISHABLE_KEY,
+    },
+    chat: modelSettings(
+      'CHAT',
+      env.CHAT_PROVIDER,
+      env.CHAT_MODEL,
+      env.CHAT_API_KEY,
+      env.CHAT_BASE_URL,
+    ),
+    embedding: {
+      ...modelSettings(
+        'EMBEDDING',
+        env.EMBEDDING_PROVIDER,
+        env.EMBEDDING_MODEL,
+        env.EMBEDDING_API_KEY,
+        env.EMBEDDING_BASE_URL,
+      ),
+      dimensions: env.EMBEDDING_DIMENSIONS,
+      batchSize: env.EMBEDDING_BATCH_SIZE,
+    },
+  };
+}
+
+export function loadConfig(env: NodeJS.ProcessEnv): AppConfig {
+  const parsed = envSchema.safeParse(env);
+
+  if (!parsed.success) {
+    const problems = parsed.error.issues.map(
+      ({ path, message }) => `  ${path.join('.')}: ${message}`,
+    );
+
+    throw new ConfigError(
+      `Invalid environment — see .env.example:\n${problems.join('\n')}`,
+    );
+  }
+
+  return toConfig(parsed.data);
+}

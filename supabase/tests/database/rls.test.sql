@@ -1,9 +1,9 @@
 -- Row-level security: a second user reaches nothing of the first's, through
--- any table, view or function, and an anonymous caller reaches nothing at all.
+-- any table or function, and an anonymous caller reaches nothing at all.
 
 begin;
 
-select plan(30);
+select plan(34);
 
 -- Two users, `alice` and `bob`, and the claims a request of each carries.
 insert into auth.users (id, email, aud, role)
@@ -43,8 +43,8 @@ insert into public.conversations (id, title)
 values ('20000000-0000-0000-0000-000000000001', 'Alice asks');
 insert into public.messages (conversation_id, role, content)
 values ('20000000-0000-0000-0000-000000000001', 'user', 'What is the secret?');
-insert into public.usage_events (kind, model, prompt_tokens, completion_tokens)
-values ('chat', 'test-model', 10, 5);
+insert into public.usage_events (kind, provider, model, prompt_tokens, completion_tokens)
+values ('chat', 'test', 'test-model', 10, 5);
 
 select is((select count(*)::integer from public.documents), 1, 'the owner sees her document');
 select is((select count(*)::integer from public.document_chunks), 1, 'the owner sees her chunks');
@@ -54,7 +54,9 @@ select is(
   1,
   'the owner''s search finds her chunk'
 );
-select is((select count(*)::integer from public.usage_daily), 1, 'the owner sees her usage');
+select is((select count(*)::integer from public.usage_by_day('2000-01-01')), 1, 'the owner sees her usage');
+select is((select count(*)::integer from public.list_document_summaries()), 1, 'the owner sees her summaries');
+select is((select count(*)::integer from public.list_document_tags()), 1, 'the owner sees her tags');
 
 -- Bob, reading.
 select set_config('request.jwt.claims', (select value from claims where who = 'bob'), true);
@@ -69,7 +71,9 @@ select is_empty(
 select is_empty('select * from public.conversations', 'another user sees no conversations');
 select is_empty('select * from public.messages', 'another user sees no messages');
 select is_empty('select * from public.usage_events', 'another user sees no usage events');
-select is_empty('select * from public.usage_daily', 'another user sees no usage totals');
+select is_empty($$select * from public.usage_by_day('2000-01-01')$$, 'another user sees no usage totals');
+select is_empty('select * from public.list_document_summaries()', 'another user sees no document summaries');
+select is_empty('select * from public.list_document_tags()', 'another user sees no tags');
 
 -- Bob, writing. An update or delete the policy filters out touches no row
 -- rather than failing, so each is checked by its effect.
@@ -132,8 +136,8 @@ select throws_ok(
   'another user cannot post as the owner'
 );
 select throws_ok(
-  $$insert into public.usage_events (user_id, kind, model)
-    values ('00000000-0000-0000-0000-00000000000a', 'chat', 'test-model')$$,
+  $$insert into public.usage_events (user_id, kind, provider, model)
+    values ('00000000-0000-0000-0000-00000000000a', 'chat', 'test', 'test-model')$$,
   '42501',
   null,
   'another user cannot record usage against the owner'
@@ -148,7 +152,7 @@ select is_empty('select * from public.documents', 'an anonymous caller sees no d
 select is_empty('select * from public.document_chunks', 'an anonymous caller sees no chunks');
 select is_empty('select * from public.conversations', 'an anonymous caller sees no conversations');
 select is_empty('select * from public.messages', 'an anonymous caller sees no messages');
-select is_empty('select * from public.usage_daily', 'an anonymous caller sees no usage');
+select is_empty($$select * from public.usage_by_day('2000-01-01')$$, 'an anonymous caller sees no usage');
 
 -- Alice again: everything Bob tried left her data as it was.
 reset role;
