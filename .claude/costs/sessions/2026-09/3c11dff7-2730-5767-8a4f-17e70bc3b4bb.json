@@ -1,0 +1,56 @@
+{
+  "sessionId": "3c11dff7-2730-5767-8a4f-17e70bc3b4bb",
+  "branch": "claude/relaxed-clarke-rxib1v",
+  "cwd": "/home/user/goodspeed-knowledge-base",
+  "name": null,
+  "openingPrompt": "я писал на nestjs пару лет назад но с тех пор совсем всё вылетело из головы. Можешь мне короткий креш-курс в приложении конкретно к этой репе. Что помню: контро…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01BnxR7MCt7pYkrZHoWAohvL",
+  "firstResponseAt": "2026-09-23T23:36:32.334Z",
+  "lastResponseAt": "2026-09-23T23:37:15.807Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 61039,
+    "cacheReadTokens": 502731,
+    "outputTokens": 6451,
+    "thinkingTokens": 1748,
+    "responses": 6,
+    "costUsd": 0.7179262000000001
+  },
+  "ownTurns": {
+    "inputTokens": 12,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 61039,
+    "cacheReadTokens": 502731,
+    "outputTokens": 6451,
+    "thinkingTokens": 1748,
+    "responses": 6,
+    "costUsd": 0.7179262000000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 12,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 61039,
+      "cacheReadTokens": 502731,
+      "outputTokens": 6451,
+      "thinkingTokens": 1748,
+      "responses": 6,
+      "costUsd": 0.7179262000000001
+    }
+  },
+  "warnings": []
+}
