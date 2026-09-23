@@ -28,11 +28,12 @@ this order:
 4. `/pr` — refresh PR #1's title, body and QA checklist to the branch as it
    now stands, so the PR never trails the work by more than one chunk.
 
-A per-chunk polish is scoped to the chunk's commits and marks itself
-`polish(chunk: <name>):`, which the full-polish floor lookup skips: it cleared
-the chunk, not the branch. The first full `/polish` — at `/finalize` at the
-latest — therefore still reads the whole branch, including the seed, the
-database and the API, which no chunk polished.
+A per-chunk polish is a plain `/polish`: its scope is everything since the
+last `polish:` commit, which is the previous chunk's polish, so it covers the
+chunk and every commit between. Each pass's commit subject is `polish:` —
+never `polish(<scope>):`, which the floor lookup skips, so the next run would
+re-read ground already cleared. A chunk's polish is thereby the next one's
+floor, and `/finalize`'s reads only what came after the last chunk.
 
 ## Done in the seed (this PR)
 
@@ -98,9 +99,9 @@ two things this chunk left for it to decide:
 Chat and usage are a chunk each after that.
 
 **The third session was a full `/polish` and nothing else** (the operator's
-call, on budget). Its `polish:` commits are the branch's floor; the fourth
-session's are `polish(chunk: …)` and skipped by the lookup, so the next full
-`/polish` reads from the third session's floor. `/dry` left these for the
+call, on budget). The fourth session's polish covered everything after it and
+closes with an empty `polish:` commit, which is the branch's floor now — its
+two pass commits carry the skipped `polish(chunk: …)` form. `/dry` left these for the
 operator, none blocking:
 
 - API: an owned-row lookup/delete/404 helper shared by the conversation and
