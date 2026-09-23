@@ -1,12 +1,7 @@
 /**
- * The site's colour tokens, and the only place their names are written.
- * `styles/_tokens.scss` is generated from this array by `pnpm styles:codegen`,
- * so the mixin that declares the `--color-*` properties and the union that
- * reads them cannot drift; the order is the order that mixin takes its palette
- * in.
- *
- * Both palettes declare all of them — light and dark, in
- * `src/app/styles/globals.scss` — so call sites never branch on the scheme.
+ * The colour tokens, named only here. `pnpm styles:codegen` generates the
+ * `styles/_tokens.scss` mixin that declares them, taking its arguments in this
+ * order — so a reorder reassigns both palettes in `src/app/styles/globals.scss`.
  */
 export const CSS_COLORS = [
   'background',

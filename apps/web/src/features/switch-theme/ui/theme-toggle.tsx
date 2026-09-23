@@ -12,8 +12,6 @@ import {
 import classes from './theme-toggle.module.scss';
 
 const SIZE = 38;
-
-// Shared by both icons, which swap in one slot.
 const ICON_SIZE = 20;
 
 const OPPOSITE = {

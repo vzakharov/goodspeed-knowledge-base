@@ -1,16 +1,15 @@
-// Rendered markdown — a document's body and the chat's answers, both through
-// `react-markdown` with GFM. Long-form copy is set on its own scale rather than
-// the site's UI one: `--mantine-line-height` and `--mantine-font-size-*` are
-// sized for controls, where 1.55 on a button label is right and 1.55 on a
-// paragraph is cramped. So this sheet states the whole rhythm — sizes, leading,
-// vertical spacing and rules — and the markup is wrapped in nothing.
+// Rendered markdown — a document's body and the chat's answers, through
+// `react-markdown` with GFM. `--mantine-line-height` and `--mantine-font-size-*`
+// are sized for controls (1.55 suits a button label and cramps a paragraph), so
+// this sheet states the whole rhythm itself, on the element holding the markup.
 
-// The base is `em`, so the whole scale follows the container's `font-size`.
-// Every base rule is `:where()`, which keeps its specificity at the class
-// alone — the element-specific rules further down and any component sheet
-// override it without having to out-specify it.
+// Sizes are in `em`, so the scale follows the container's `font-size`.
 
-// The foreground at partial strength — markers, the quote rule, table rules.
+// Every base rule is `:where()`, so its specificity is the class alone and a
+// component sheet overrides it without out-specifying it. Write such a selector
+// out in full rather than nesting into it: `&:last-child` under
+// `:where(tbody tr)` compiles outside the wrapper, where it weighs.
+
 @function foreground-at($strength) {
   @return color-mix(in srgb, var(--color-foreground) $strength, transparent);
 }
@@ -19,8 +18,6 @@
   font-size: 1rem;
   line-height: 1.75;
 
-  // Code sits on a tinted surface, so a block reads as one against the page in
-  // either scheme.
   --code-surface: color-mix(
     in srgb,
     var(--color-foreground) 7%,
@@ -59,7 +56,7 @@
     border-top: 1px solid var(--color-border-hairline);
   }
 
-  // A heading owns the space above it, so whatever follows one adds none.
+  // A heading or rule owns the gap below it, so whatever follows one adds none.
   :where(hr + *, h1 + *, h2 + *, h3 + *, h4 + *) {
     margin-top: 0;
   }
@@ -127,8 +124,6 @@
     font-weight: 400;
   }
 
-  // A multi-paragraph list item sets its paragraphs tighter than the body, and
-  // keeps the item's own outer spacing rather than doubling it.
   :where(li p) {
     margin: 0.75em 0;
   }
@@ -152,9 +147,6 @@
     quotes: '“' '”' '‘' '’';
   }
 
-  // Written out rather than nested inside the rule above: nesting would leave
-  // `p:first-of-type` outside the `:where()`, and the point of the wrapper is
-  // that the whole selector weighs nothing beyond `.prose-content`.
   :where(blockquote p:first-of-type)::before {
     content: open-quote;
   }
@@ -170,10 +162,9 @@
     font-size: 0.875em;
   }
 
-  // Stated rather than inherited from the theme: `--mantine-color-white` is
-  // bound to this site's *background* token, so a rule reaching for it as "the
-  // readable colour in the dark scheme" paints text the colour of the surface
-  // behind it.
+  // Stated rather than inherited: `--mantine-color-white` is the *background*
+  // token here, so a rule reaching for it as the dark scheme's readable colour
+  // paints text the colour of the surface behind it.
   :not(pre) > code {
     background: var(--code-surface);
     color: var(--color-foreground);
@@ -243,8 +234,6 @@
     border-bottom: 1px solid foreground-at(15%);
   }
 
-  // `:last-child` belongs inside the `:where()` for the same reason as the
-  // blockquote pair above.
   :where(tbody tr:last-child) {
     border-bottom: 0;
   }
@@ -253,7 +242,7 @@
     vertical-align: baseline;
   }
 
-  // Media — a markdown image, at most the column's width and a screen's height.
+  // Media
 
   :where(img) {
     display: block;

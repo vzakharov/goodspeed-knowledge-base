@@ -1,10 +1,9 @@
 import type { MantineBreakpointsValues } from '@mantine/core';
 
 /**
- * The design's own breakpoint scale, and the only place it is written.
- * `styles/_breakpoints.scss` is generated from here by `pnpm styles:codegen`:
- * Sass needs the numbers as literals, since a media-query condition cannot
- * read a custom property, and cannot import TypeScript.
+ * The breakpoint scale, written only here. `pnpm styles:codegen` generates
+ * `styles/_breakpoints.scss` from it: a media query needs literals, and Sass
+ * cannot import TypeScript.
  */
 export const breakpoints = {
   xs: '30em',

@@ -4,7 +4,6 @@ import type { Described, Linked, Titled, WithChildren } from '@/shared/typings';
 
 import classes from './card.module.scss';
 
-/** A heading and the prose under it — the copy every card kind renders. */
 export type Summarized = Titled & Described;
 
 /** The label a screen reader reads, the card's own markup not being one. */

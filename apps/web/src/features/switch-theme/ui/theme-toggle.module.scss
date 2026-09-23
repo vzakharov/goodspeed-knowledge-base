@@ -1,9 +1,8 @@
 @use '../../../../styles/mantine' as mantine;
 
-// Both icons render and CSS picks one. The export is static, so an icon chosen
-// from React state is the light one in every prerendered page until hydration;
-// `ColorSchemeScript` sets `data-mantine-color-scheme` inside `<head>`, so the
-// survivor is painted on the first frame instead.
+// Both icons render and CSS picks one: an icon chosen in React is the light one
+// on every prerendered page until hydration, while `ColorSchemeScript` sets
+// `data-mantine-color-scheme` in `<head>`, before the first paint.
 
 // The inverse of the site's `hoverDim`: this is page furniture rather than
 // content, so it rests below full strength and comes up on hover, not down.

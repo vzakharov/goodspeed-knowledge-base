@@ -10,11 +10,7 @@ type SectionProps = WithId &
 
 const SECTION_GAP = 24;
 
-/**
- * A top-level section whose anchor doubles as the nav target. Only a standalone
- * one is titled from its id; a section sharing a page heads itself, or not at
- * all.
- */
+/** A top-level section, its `id` the anchor. One sharing a page heads itself, or not at all. */
 export function Section({ id, standalone = false, children }: SectionProps) {
   return (
     <Box component="section" {...{ id }}>
@@ -26,10 +22,9 @@ export function Section({ id, standalone = false, children }: SectionProps) {
   );
 }
 
-/** Adds to the Stack's gap, which does not collapse with it, to reach 32px. */
+/** A margin adds to a Stack's gap rather than collapsing into it. */
 export const SUBHEADING_GAP = 32 - SECTION_GAP;
 
-/** A heading inside a `Section`, one level down from its title. */
 export function Subheading({ children }: WithChildren) {
   return (
     <Title order={3} mt={SUBHEADING_GAP}>

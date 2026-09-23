@@ -2,10 +2,7 @@ import { Text } from '@mantine/core';
 
 import { PageShell, Section } from '@/shared/ui';
 
-/**
- * Placeholder until the product's own pages land — it exists so the static
- * export renders one real route through the carried design system.
- */
+/** Placeholder until the product's own pages exist: one real route for the static export to render. */
 export function HomePage() {
   return (
     <PageShell>

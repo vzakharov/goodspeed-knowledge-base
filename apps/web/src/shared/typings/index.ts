@@ -1,11 +1,8 @@
 /**
- * The repo's shared base types — the single home for any member more than one
- * named type declares. `pnpm type-overlap` fails the run when two types
- * duplicate a member, and intersecting a base from here is the fix.
- *
- * Names follow the families in scripts/type-overlap-check.README.md; a base
- * whose declarers all sit in one module belongs in that module instead, which
- * is why this segment holds only what genuinely crosses slices.
+ * The home for a member more than one named type declares: `pnpm type-overlap`
+ * fails on the duplicate, and intersecting a base from here fixes it. Names
+ * follow the families in scripts/type-overlap-check.README.md; a base whose
+ * declarers all sit in one module belongs in that module instead.
  */
 
 import type { ReactNode } from 'react';
@@ -36,7 +33,7 @@ export type WithText = { text: string };
 /** The one line under a name — what is on offer, said once. */
 export type WithTagline = { tagline: string };
 
-/** A name and the line it is billed under: a site's identity, a card's header. */
+/** A name and the line it is billed under. */
 export type Billed = Named & WithTagline;
 
 /** Extra classes a caller merges into the component's own. */
@@ -57,7 +54,7 @@ export type Linked = { href: string };
 /** An anchor whose label is a string rather than markup. */
 export type LabeledLink = Labeled & Linked;
 
-/** Where an anchor points, when there is anywhere — a card that is only a card states no `href`. */
+/** Where an anchor points, when there is anywhere. */
 export type WithOptionalLink = { href?: string };
 
 /** The muted line above a title, saying what the thing under it is before it is read. */

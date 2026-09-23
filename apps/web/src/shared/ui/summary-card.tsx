@@ -4,11 +4,7 @@ import type { WithOptionalEyebrow, WithOptionalLink } from '@/shared/typings';
 
 import { Card, CardLink, type Summarized } from './card';
 
-/**
- * A heading and its blurb, the whole card linking off the site where it has
- * somewhere to point. Here rather than in a page slice because both sites'
- * indexes are lists of these, and slices may not reach each other sideways.
- */
+/** A heading and its blurb; given an `href`, the whole card links off the site. */
 export function SummaryCard({
   title,
   description,

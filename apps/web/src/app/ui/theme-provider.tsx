@@ -11,10 +11,9 @@ import { cssColor } from '@/shared/ui';
 
 import { theme } from '../styles/theme';
 
-// Every `--mantine-*` override belongs here rather than in a stylesheet:
-// Mantine emits its own block as a `<style data-mantine-styles>` at the top of
-// `<body>`, on `:root`, so a stylesheet's `:root` ties on specificity and loses
-// on document order.
+// Every `--mantine-*` override belongs here, not in a stylesheet: Mantine's own
+// `:root` block is a `<style>` at the top of `<body>`, so a stylesheet's `:root`
+// loses to it on document order.
 const cssVariablesResolver: CSSVariablesResolver = () => ({
   variables: {
     '--mantine-color-body': cssColor('background'),

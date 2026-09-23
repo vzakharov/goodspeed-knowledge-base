@@ -1,17 +1,14 @@
-// Sass counterparts to the mixins Mantine documents as a PostCSS preset. That
-// preset is unreachable from `.scss`: Next runs Sass first, so
-// `@include smaller-than(…)` reads as an undefined *Sass* mixin and fails the
-// build before PostCSS sees the file. Reach for these instead.
+// Sass counterparts to the mixins Mantine documents as a PostCSS preset, which
+// `.scss` cannot reach: Next runs Sass first, so `@include smaller-than(…)`
+// fails the build as an undefined *Sass* mixin. `light-dark()` is plain CSS and
+// passes through untouched.
 
-// Pull them in per-file — `@use '…/_mantine' as mantine` — so a module's
-// dependencies stay visible in the module. `light-dark()` needs nothing here:
-// it is a plain CSS function and passes through Sass untouched.
+// `@use` this per file, so a module's dependencies stay visible in the module.
 
 @use 'sass:math';
 
-// The breakpoint scale, generated from src/app/styles/breakpoints.ts. Forwarded
-// rather than used, so `@use '…/_mantine' as mantine` reaches
-// `mantine.$breakpoint-sm` alongside the mixins below.
+// Generated from src/app/styles/breakpoints.ts, and forwarded so that
+// `mantine.$breakpoint-sm` resolves beside the mixins.
 @forward 'breakpoints';
 
 // Takes a px length, e.g. `rem(24px)`.
@@ -31,8 +28,7 @@
   }
 }
 
-// Touch devices have no hover state to speak of, so they take the styles on
-// press instead.
+// Touch devices have no hover, so they take the styles on press.
 @mixin hover {
   @media (hover: hover) {
     &:hover {

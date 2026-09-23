@@ -4,9 +4,7 @@ import type { WithChildren } from '@/shared/typings';
 
 import classes from './page-shell.module.scss';
 
-/**
- * The padded full-height frame and reading measure the site's pages share.
- */
+/** The padded full-height frame and reading measure the site's pages share. */
 export function PageShell({ children }: WithChildren) {
   return (
     <Box className={classes['page']}>

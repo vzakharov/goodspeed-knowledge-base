@@ -30,9 +30,8 @@ const monochrome: MantineColorsTuple = [
   foreground,
 ];
 
-// `variant="default"` is the site's only control skin: a square hairline box
-// that inverts to solid foreground on hover. It has to live here rather than in
-// a CSS module because Mantine emits variant colours as inline `style` vars.
+// `variant="default"` is the site's only control skin. Here rather than in a CSS
+// module because Mantine emits variant colours as inline `style` vars.
 const variantColorResolver: VariantColorsResolver = (input) =>
   input.variant === 'default'
     ? {
@@ -92,8 +91,7 @@ export const theme = createTheme({
     },
     ActionIcon: { classNames: { root: classes['control'] } },
     Title: { classNames: { root: classes['title'] } },
-    // The nav is the one place that opts out. Safe in `defaultProps` because it
-    // renders as a data attribute, not the inline style a visual value becomes.
+    // Safe in `defaultProps`: it renders as a data attribute.
     Anchor: { defaultProps: { underline: 'always' } },
     // `List.Item` reads its class names off the List context, so the item
     // wrapper is styled from here rather than on the item.

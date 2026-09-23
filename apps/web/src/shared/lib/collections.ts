@@ -1,12 +1,10 @@
 /**
- * A subset of an object, named once. `{...pick(printed, 'href')}` is what
- * `vova/no-redundant-property-copy` asks for where `href={printed.href}`
- * spells the key on both sides.
+ * What `vova/no-redundant-property-copy` asks for: `{...pick(printed, 'href')}`
+ * over `href={printed.href}`.
  *
- * Taken verbatim from the Playgram app's `shared/collections`, which is the
- * home of this family — so a fix to it is made there and copied here, not the
- * other way round, and its siblings (`omit`, `mapValues`, `getKeys`) land in
- * this file under that name rather than each opening one of its own.
+ * A verbatim copy of the Playgram app's `shared/collections`, the home of this
+ * family: a fix is made there and copied here, and a sibling (`omit`,
+ * `mapValues`, `getKeys`) joins this file rather than opening its own.
  */
 export function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K> {
   // @ts-expect-error - we know the end result is a Pick<T, K>
@@ -17,14 +15,11 @@ export function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K> {
   return result;
 }
 
-/**
- * The list is widened to `readonly string[]` before `.includes()`: a literal
- * tuple types its own `includes` as accepting a member, which is the one thing
- * an unchecked value cannot promise.
- */
 export const isOneOf =
   <const T extends readonly string[]>(values: T) =>
   (value: unknown): value is T[number] =>
+    // Widened first: a literal tuple's own `includes` accepts only a member,
+    // which is what an unchecked value cannot promise.
     typeof value === 'string' && (values as readonly string[]).includes(value);
 
 /** The same check as a parse: the value, or a throw listing what was allowed. */

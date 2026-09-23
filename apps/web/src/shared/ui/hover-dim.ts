@@ -1,5 +1,5 @@
 import classes from './hover-dim.module.scss';
 
-// Slices with no sideways reach to each other claim it, so it is handed out
-// from here rather than declared as a global.
+// Exported here rather than declared as a global class, so a slice reaches it
+// through `shared/ui` like anything else it shares.
 export const hoverDim = classes['hoverDim'];

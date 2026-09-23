@@ -19,10 +19,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 /**
- * What every route without metadata of its own — `/` — publishes. Reaches Next
- * only through `app/layout.tsx`'s re-export, as each page's does through its
- * route module: a `metadata` this file exports and the route does not is never
- * read.
+ * What a route without metadata of its own publishes. Next reads it only
+ * through `app/layout.tsx`'s re-export — as it reads each page's through its
+ * route module — so a `metadata` the route file does not re-export is ignored.
  */
 export const rootMetadata: Metadata = {
   title: 'Knowledge Base',
