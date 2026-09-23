@@ -1,0 +1,89 @@
+{
+  "repo": "vzakharov/muthur",
+  "lastSyncedSha": "6884e9605b98feeac41190624c1e3860e8d9c65e",
+  "lastSyncedAt": "2026-09-23",
+  "adopted": [
+    ".claude/settings.json",
+    {
+      ".claude/voice/": "the house rule for writing to a person, imported by CLAUDE.md, plus `operators/` one file per handle. The source marks the entries `rewrite` because its own are its operator's; here that is the same person, so `operators/vzakharov.md` is taken verbatim. A second operator gets a file of their own rather than a rewrite of that one."
+    },
+    ".claude/skills/branch-rename/",
+    ".claude/skills/check-merge/",
+    ".claude/skills/dry/",
+    ".claude/skills/finalize/",
+    ".claude/skills/from-branch/",
+    ".claude/skills/go/",
+    ".claude/skills/handle/",
+    {
+      ".claude/skills/take-issue/": "taken with two paragraphs this repo wrote itself: the two accommodations that make a `user-attachments` download work here — S3 rejecting a second auth mechanism, and the egress proxy refusing the path — and, in `video-frames.md`, that the `apt-get update` before installing ffmpeg is load-bearing. Neither is in the source, so a verbatim re-copy would drop both."
+    },
+    {
+      ".claude/skills/issue/": "the redirect left behind when `/issue` split into transport (`/take-issue`) and the skills that decide. Taken because `/issue` was the shipped name here, which is the catalog's own condition for the row. Rewritten on one point: the source's no-number branch names `/propose-issue`, declined here, so this copy names `/task` and says filing is done by hand."
+    },
+    ".claude/skills/override-gh/",
+    ".claude/skills/polish/",
+    ".claude/skills/task/",
+    ".claude/skills/plainly/",
+    ".claude/skills/plan/",
+    {
+      ".claude/skills/plan/carving.md": "the carve, taken with its filing half rewritten. The source delegates that half to `/propose-issue`, declined here, so this copy states the `gh issue create` and `sub_issues` mechanics inline — where they lived in `/issue` before the split — and drops the dedupe pass, this backlog being one an operator reads in a sitting. The judgment half lands verbatim."
+    },
+    ".claude/skills/pr/",
+    ".claude/skills/qa-checklist/",
+    {
+      ".claude/skills/update-muthur/": "this skill. The source has renamed it three times (sync-upstream, sync-agent-infra, sync-muthur, update-muthur) and ships it as an unhydrated stub; the local copy carries the same name and watermark filename it has there, and a hydrated procedure. So what lands from a commit touching this path is the procedure's own changes, never the stub framing. The name travels because the verb is `npm update`'s — what gets updated is the vendored copy in whatever tree the command runs in — which reads the same at every link in the chain."
+    },
+    {
+      ".claude/skills/spinoff/": "taken with two translations, neither of which the closure check can see. The relative link to the source's catalog.md resolves to nothing here and reads as any catalog.md under .claude/skills/. And the stackless-vet rule it cites as CLAUDE.md § \"Vetting\" is the source's clause, declined here, so the skill states it itself. Everything else lands verbatim, its § \"The watermark\" pointer included: this repo carries the source's own name for the sync skill and for the watermark file, so the paragraph on what the target's copy is named holds here as written. Its catalog refusal needs no translation either — this repo has no catalog, which is exactly the signal that says a caller may spin off."
+    },
+    ".claude/skills/squash-message/",
+    ".claude/skills/sync-branch/",
+    ".claude/skills/tend-prose/",
+    ".claude/skills/watch-ci/",
+    "scripts/check-merge.sh",
+    "scripts/check-skill-catalog.sh",
+    "scripts/check-squash-message.sh",
+    "scripts/ci-watch-tick.sh",
+    "scripts/export-github-item.py",
+    "scripts/extract-session-images.py",
+    "scripts/gh_export/",
+    "scripts/lib/gh-repo.sh",
+    "scripts/lib/github.py",
+    "scripts/lib/media.py",
+    "scripts/lib/watch-tick-common.sh",
+    "scripts/pr-body.py",
+    "scripts/run-parallel.sh",
+    ".claude/rules/README.md",
+    {
+      ".claude/hooks/": "adopted whole. `install-deps.sh` is the source's stub while this repo has no stack; the stack's own install line replaces its TODO when the stack lands, after which the source's edits to that file are read for the idea and the body never lands."
+    },
+    {
+      "scripts/vet.sh": "the source's stub, less its `check-muthur.sh` line: that script is declined below, being the source's own machinery. It exits 0 while the repo has no stack; the stack's checks replace the stub when the stack lands, after which the source's edits are read for the idea and the file never lands."
+    }
+  ],
+  "declined": {
+    ".claude/skills/audit-github-backlog/": "the backlog is empty — revisit when it is large enough that a sweep beats reading it",
+    ".claude/skills/bootstrap-workflow-dispatch/": "no workflow here yet, so the 404 this skill clears cannot occur. It also @-references the declined /test-on-gh, so adopting it alone would break the closure check. Revisit alongside /test-on-gh",
+    ".claude/skills/detemplate/": "turns a fresh \"Use this template\" fork into a project. This repo was seeded by /spinoff rather than forked, so the one moment the skill exists for never happens here. Never",
+    ".claude/skills/hotfix/": "no promotion path to bypass — nothing here deploys; the project is run locally by whoever reviews it",
+    ".claude/skills/implement/": "the source's redirect stub pointing /implement at /go, declined on the operator's call at the sync that renamed the skill: a permanent extra row is not worth keeping a retired name resolvable. `/plan` writes `/go <branch>` handoff blocks, and an older block saying `/implement` is a word an agent reads, not a skill they must load. Never — the stub only ever earns its place in the window right after the rename, and that window is closed",
+    ".claude/skills/log-review/": "no deployed service, so there are no logs to read. Revisit with the first deploy target",
+    ".claude/skills/propose-issue/": "issues are opened by hand here, and there is no backlog to dedupe against — revisit when filing becomes routine",
+    ".claude/skills/readonly-probe/": "no production datastore — the only database is the local Supabase stack a developer starts themselves",
+    ".claude/skills/release/": "nothing here deploys, so there is no versioned release to cut. Revisit if the project gains a deploy target",
+    ".claude/skills/renumber-migration/": "not yet: this repo is about to carry database migrations, which is this skill's condition. Weigh it at the first sync after the migration layout lands, against how that layout names migrations",
+    ".claude/skills/test-on-gh/": "nothing runs on pull requests here yet. Revisit once a test bucket exists that needs a service (a database, a model) or minutes rather than seconds, which is the condition — a test suite existing is not",
+    ".claude/skills/update-muthur/catalog.md": "never — the source's own inventory of what it ships, describing the source's tree rather than this repo. Step 4a reads it from the clone, where it is current by construction; a vendored copy would only drift, and the source's own banner says to delete it wherever it turns up downstream. check-skill-catalog.sh reads it at this path and skips its catalog assertions when absent, which is the normal state here; CLAUDE.md § \"Adding or renaming a skill\" records that. Lived at docs/catalog.md until the source moved it off a path an adopter can own",
+    "ADOPTING.md": "the source's guide for a repo taking the template on. This repo was seeded by /spinoff, which did that work once. Revisit only if a repo ever adopts from here — it would need its own, not a copy of the source's",
+    "README.md": "never — the source's README describes the source. This repo's is the project's own, written for whoever runs it, and the two answer different questions",
+    "scripts/check-muthur.sh": "never — the source's one vet line for the checks whose membership test is \"would the adopting repo run this?\": its repo-identity check and the `scripts/test_*.py` over code an adopter vendors and never edits. Its verdict is what this repo takes rather than the line itself — keyed on the catalog this repo declines, it exits 0 downstream, which is the source stating that an adopter runs none of it. Both of the rows it covers are declined below on that reading",
+    "scripts/check-repo-identity.sh": "never — it holds the source's own owner/repo to one home, the watermark's `repo` field, across the clone lines and gh recipes a human copies. The source's own vet.sh calls it the one line there that is that repo's alone: it keys on the catalog, which this repo declines, so it exits 0 here and would certify nothing",
+    "scripts/test_*.py": "never, which is the catalog's own disposition for the row — the unit tests over the source's own scripts, `scripts/gh_export/` included. They rode in here as a side effect of porting the exporter's commits, and an adopter that carries them either runs them, certifying code it never edits, or carries two files nothing reaches. The suite stays where the code is edited; `scripts/gh_export/` itself is adopted, being what this repo runs. See vzakharov/muthur#82 on why the disposition never reached the triage"
+  },
+  "lineage": [
+    {
+      "repo": "vzakharov/vovazakharov.com",
+      "atSha": "cefeabd7b5007ac1dd7f867c84419f2b8411b6fb"
+    }
+  ]
+}

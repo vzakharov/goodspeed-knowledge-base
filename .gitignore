@@ -1,0 +1,20 @@
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Python bytecode cache
+__pycache__/
+*.pyc
+
+# Scratch space for dev artifacts — one-off scripts, spikes, probe output,
+# screenshots. Anything transient goes here rather than earning its own
+# .gitignore entry. See CLAUDE.md "Dev artifacts go under tmp/".
+tmp/
