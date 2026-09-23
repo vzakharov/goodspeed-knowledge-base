@@ -1,0 +1,39 @@
+@use '../../../styles/mantine' as mantine;
+
+// Bound through `theme.components`. Control colours belong in `theme.ts`'s
+// `variantColorResolver`: Mantine emits them as inline `style` vars, which no
+// class can beat.
+
+// The one heading that grows with the viewport. A class, because Mantine's
+// runtime stylesheet redeclares `--mantine-h1-font-size` on `:root` after ours.
+.title[data-order='1'] {
+  @include mantine.larger-than(mantine.$breakpoint-sm) {
+    font-size: 48px;
+    line-height: 1;
+  }
+}
+
+.control {
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+// A button's icon sits 4px from its label, the gap the rest of the UI uses;
+// Mantine's own section gap is 10px.
+.controlSection {
+  margin-inline-end: 4px;
+}
+
+.list {
+  list-style-position: inside;
+  padding-inline-start: 0;
+}
+
+// An inside marker only reads as one while the item's content stays in the
+// inline flow. Mantine's wrapper is a block, which would indent wrapped lines
+// past the bullet instead of returning them to the margin.
+.listItemWrapper {
+  display: inline;
+}

@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "jsx": "preserve",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "erasableSyntaxOnly": false
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "register.js"],
+  // The root excludes every workspace from its own project; this one is one.
+  "exclude": ["node_modules", "dist"]
+}

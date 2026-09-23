@@ -1,0 +1,58 @@
+{
+  "sessionId": "de805882-93f7-5cc5-8154-e8ca0e06c922",
+  "branch": "claude/knowledge-base-f6yidh",
+  "cwd": "/home/user/goodspeed-knowledge-base",
+  "name": "pnpm bootstrap and per-chunk plan rules",
+  "openingPrompt": "/from-branch claude/knowledge-base-f6yidh давай продолжать, но (и внеси это в план) каждая сессия должна делать какой-то удобоваримый кусок (потолок -- 200 с не…",
+  "prs": [
+    1
+  ],
+  "url": "https://claude.ai/code/session_017DabPBhz8XFKe3pw19h2Aj",
+  "firstResponseAt": "2026-09-23T11:04:44.085Z",
+  "lastResponseAt": "2026-09-23T11:29:11.002Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 2.587129,
+  "total": {
+    "inputTokens": 140,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 188137,
+    "cacheReadTokens": 10691018,
+    "outputTokens": 49453,
+    "thinkingTokens": 15737,
+    "responses": 70,
+    "costUsd": 4.632919600000001
+  },
+  "ownTurns": {
+    "inputTokens": 140,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 188137,
+    "cacheReadTokens": 10691018,
+    "outputTokens": 49453,
+    "thinkingTokens": 15737,
+    "responses": 70,
+    "costUsd": 4.632919600000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 140,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 188137,
+      "cacheReadTokens": 10691018,
+      "outputTokens": 49453,
+      "thinkingTokens": 15737,
+      "responses": 70,
+      "costUsd": 4.632919600000001
+    }
+  },
+  "warnings": []
+}

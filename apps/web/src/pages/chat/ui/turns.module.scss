@@ -1,0 +1,16 @@
+// The reader's questions sit to the right, narrower than the answers, so a
+// thread reads as turns without a label on each.
+.question {
+  align-self: flex-end;
+  max-width: 85%;
+}
+
+.questionText {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.sources {
+  border-top: 1px solid var(--color-border-hairline);
+  padding-top: var(--mantine-spacing-sm);
+}

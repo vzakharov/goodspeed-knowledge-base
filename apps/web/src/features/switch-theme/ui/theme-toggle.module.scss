@@ -1,0 +1,33 @@
+@use '../../../../styles/mantine' as mantine;
+
+// Both icons render and CSS picks one: an icon chosen in React is the light one
+// on every prerendered page until hydration, while `ColorSchemeScript` sets
+// `data-mantine-color-scheme` in `<head>`, before the first paint.
+
+// Page furniture rather than content, so it rests below full strength and
+// comes up on hover.
+.toggle {
+  opacity: 0.45;
+
+  @include mantine.hover {
+    opacity: 1;
+  }
+}
+
+// Light is the base and only `dark` is keyed, so a document that never got the
+// attribute shows one icon rather than both.
+.whenLight {
+  display: block;
+
+  @include mantine.dark {
+    display: none;
+  }
+}
+
+.whenDark {
+  display: none;
+
+  @include mantine.dark {
+    display: block;
+  }
+}

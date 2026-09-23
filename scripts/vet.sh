@@ -1,42 +1,52 @@
 #!/bin/bash
 # Vet: the fast checks the agent runs before pushing review-ready work.
 #
-# ADOPTERS: what this file must exit is CLAUDE.md → Vetting's contract. Read it
-# there rather than inferring it from what this stub does — the exit turns on
-# whether your repo has a stack yet, which is not a thing this file can see.
-#
-# Wire these up for your stack (lint, type-check, format-check, fast tests).
-# Serial:
-#   pnpm lint && pnpm typecheck && pnpm test:unit
-#   cargo clippy --all-targets -- -D warnings && cargo test
-#   ruff check . && mypy . && pytest -q
-#   go vet ./... && go test -short ./...
-#
-# Parallel, printing only what failed (worth it once the serial run is the wait):
-#   exec scripts/run-parallel.sh lint='pnpm lint' typecheck='pnpm typecheck' test='pnpm test:unit'
-#
-# The two lines below are not stack-specific. Replacing everything around them
-# is what this file is for, so decide each on its own rather than sweeping it
-# away with the stack:
-#
-#   check-skill-catalog.sh — asserts that every `@`-reference into
-#     `.claude/` resolves, and that no unhydrated stub stowed away. A
-#     dangling reference fails silently: the agent follows the surviving prose
-#     past the step they could not load. Dropping this line puts the check back
-#     on the agent's memory, which is where it was when it went unrun.
-#   check-squash-message.sh — holds the squash proposal to the rules
-#     `/squash-message` states, passing quietly when a branch has no proposal.
-#     Dropping it leaves nothing catching a proposal edited by hand or outgrown
-#     by a later base merge.
-#
-# See CLAUDE.md → Vetting for the contract.
+# See CLAUDE.md → Vetting for the contract and for why this list is what it is.
+set -uo pipefail
 
-set -euo pipefail
+cd "$(dirname "$0")/.."
 
-"$(dirname "$0")/check-skill-catalog.sh"
-"$(dirname "$0")/check-squash-message.sh"
+status=0
 
-echo "vet: no stack-specific checks are configured; the checks above are the run." >&2
-echo "vet: a repo whose stack is present and unchecked exits 1 here instead" >&2
-echo "     (see CLAUDE.md → Vetting for the contract)." >&2
-exit 0
+# Runs a step alone, replaying its log only on failure. The log sits in tmp/
+# rather than run-parallel.sh's log directory, which the fan-out wipes at startup.
+alone() {
+  local name=$1
+  shift
+  if ! "$@" >"tmp/vet-$name.log" 2>&1; then
+    sed "s/^/[$name] /" "tmp/vet-$name.log"
+    printf '[%s] full log: tmp/vet-%s.log\n' "$name" "$name"
+    status=1
+  fi
+}
+
+mkdir -p tmp
+alone build pnpm build
+alone styles pnpm styles:codegen
+
+# Why each is safe beside the rest:
+# - typecheck: Turborepo's `typecheck` depends on `build`, a cache hit by now.
+# - type-overlap and knip read source only; test writes only to the OS temp directory.
+# - squash reads docs/remove-before-merging/, skills the agent infrastructure.
+# - test-db and test-e2e touch only the local stack: pgTAP rolls each file back,
+#   and the end-to-end run signs up users of its own.
+scripts/run-parallel.sh \
+  typecheck='pnpm typecheck' \
+  eslint='pnpm exec eslint .' \
+  format='pnpm format:check' \
+  stylelint='pnpm lint:css' \
+  fsd='pnpm lint:fsd' \
+  type-overlap='pnpm type-overlap' \
+  knip='pnpm knip' \
+  test='pnpm test' \
+  test-db='pnpm test:db' \
+  test-e2e='pnpm test:e2e' \
+  squash='scripts/check-squash-message.sh' \
+  skills='scripts/check-skill-catalog.sh' || status=1
+
+if ((status)); then
+  printf '\nvet FAILED\n' >&2
+  exit 1
+fi
+
+printf '\nvet OK\n'

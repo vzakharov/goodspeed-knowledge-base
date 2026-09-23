@@ -1,0 +1,25 @@
+// Generated from apps/web/src/shared/ui/css-color.ts
+// by `pnpm styles:codegen`. Edit the source, not here — the vet run
+// regenerates this file and fails when it had to.
+
+@mixin colors(
+  $background,
+  $foreground,
+  $border-hairline,
+  $border-hairline-strong,
+  $surface,
+  $surface-strong,
+  $series-1,
+  $series-2,
+  $series-3
+) {
+  --color-background: #{$background};
+  --color-foreground: #{$foreground};
+  --color-border-hairline: #{$border-hairline};
+  --color-border-hairline-strong: #{$border-hairline-strong};
+  --color-surface: #{$surface};
+  --color-surface-strong: #{$surface-strong};
+  --color-series-1: #{$series-1};
+  --color-series-2: #{$series-2};
+  --color-series-3: #{$series-3};
+}

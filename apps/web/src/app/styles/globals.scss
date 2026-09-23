@@ -1,0 +1,30 @@
+@use '../../../styles/tokens' as tokens;
+@use './prose';
+
+:root {
+  @include tokens.colors(
+    #fff,
+    #000,
+    rgb(0 0 0 / 20%),
+    rgb(0 0 0 / 40%),
+    rgb(0 0 0 / 4%),
+    rgb(0 0 0 / 10%),
+    #2a78d6,
+    #eb6834,
+    #1baf7a
+  );
+}
+
+[data-mantine-color-scheme='dark'] {
+  @include tokens.colors(
+    #000,
+    #fff,
+    rgb(255 255 255 / 20%),
+    rgb(255 255 255 / 40%),
+    rgb(255 255 255 / 6%),
+    rgb(255 255 255 / 14%),
+    #3987e5,
+    #d95926,
+    #199e70
+  );
+}

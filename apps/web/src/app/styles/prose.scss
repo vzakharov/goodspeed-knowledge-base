@@ -1,0 +1,254 @@
+// Rendered markdown — a document's body and the chat's answers, through
+// `react-markdown` with GFM. `--mantine-line-height` and `--mantine-font-size-*`
+// are sized for controls (1.55 suits a button label and cramps a paragraph), so
+// this sheet states the whole rhythm itself, on the element holding the markup.
+
+// Sizes are in `em`, so the scale follows the container's `font-size`.
+
+// Every base rule is `:where()`, so its specificity is the class alone and a
+// component sheet overrides it without out-specifying it. Write such a selector
+// out in full rather than nesting into it: `&:last-child` under
+// `:where(tbody tr)` compiles outside the wrapper, where it weighs.
+
+@function foreground-at($strength) {
+  @return color-mix(in srgb, var(--color-foreground) $strength, transparent);
+}
+
+.prose-content {
+  font-size: 1rem;
+  line-height: 1.75;
+
+  --code-surface: color-mix(
+    in srgb,
+    var(--color-foreground) 7%,
+    var(--color-background)
+  );
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+
+  // Flow
+
+  :where(p) {
+    margin: 1.25em 0;
+  }
+
+  // A link in running prose has to be visible without a pointer — underlined
+  // always, not on hover.
+  :where(a) {
+    color: inherit;
+    font-weight: 500;
+    text-decoration: underline;
+  }
+
+  :where(strong) {
+    font-weight: 600;
+  }
+
+  :where(hr) {
+    margin: 3em 0;
+    border: 0;
+    border-top: 1px solid var(--color-border-hairline);
+  }
+
+  // A heading or rule owns the gap below it, so whatever follows one adds none.
+  :where(hr + *, h1 + *, h2 + *, h3 + *, h4 + *) {
+    margin-top: 0;
+  }
+
+  // Headings
+
+  :where(h1) {
+    margin: 0 0 0.8889em;
+    font-size: 2.25em;
+    font-weight: 800;
+    line-height: 1.1111;
+  }
+
+  :where(h2) {
+    margin: 2em 0 1em;
+    font-size: 1.5em;
+    font-weight: 700;
+    line-height: 1.3333;
+  }
+
+  :where(h3) {
+    margin: 1.6em 0 0.6em;
+    font-size: 1.25em;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
+  :where(h4) {
+    margin: 1.5em 0 0.5em;
+    font-size: 1em;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  // Lists
+
+  :where(ul, ol) {
+    margin: 1.25em 0;
+    padding-inline-start: 1.625em;
+  }
+
+  :where(ul) {
+    list-style-type: disc;
+  }
+
+  :where(ol) {
+    list-style-type: decimal;
+  }
+
+  :where(ul ul, ul ol, ol ul, ol ol) {
+    margin: 0.75em 0;
+  }
+
+  :where(li) {
+    margin: 0.5em 0;
+    padding-inline-start: 0.375em;
+  }
+
+  :where(ul > li)::marker {
+    color: foreground-at(40%);
+  }
+
+  :where(ol > li)::marker {
+    color: foreground-at(60%);
+    font-weight: 400;
+  }
+
+  :where(li p) {
+    margin: 0.75em 0;
+  }
+
+  :where(li > p:first-child) {
+    margin-top: 1.25em;
+  }
+
+  :where(li > p:last-child) {
+    margin-bottom: 1.25em;
+  }
+
+  // Quotes
+
+  :where(blockquote) {
+    margin: 1.6em 0;
+    padding-inline-start: 1em;
+    border-inline-start: 0.25rem solid foreground-at(40%);
+    font-style: italic;
+    font-weight: 500;
+    quotes: '“' '”' '‘' '’';
+  }
+
+  :where(blockquote p:first-of-type)::before {
+    content: open-quote;
+  }
+
+  :where(blockquote p:last-of-type)::after {
+    content: close-quote;
+  }
+
+  // Code
+
+  :where(code) {
+    font-family: var(--mantine-font-family-monospace);
+    font-size: 0.875em;
+  }
+
+  // Stated rather than inherited: `--mantine-color-white` is the *background*
+  // token here, so a rule reaching for it as the dark scheme's readable colour
+  // paints text the colour of the surface behind it.
+  :not(pre) > code {
+    background: var(--code-surface);
+    color: var(--color-foreground);
+    padding: 0.15em 0.35em;
+    font-weight: inherit;
+  }
+
+  :where(pre) {
+    margin: 1.7143em 0;
+    padding: 1em;
+    overflow-x: auto;
+    background: var(--code-surface);
+    font-size: 0.875em;
+    font-weight: 400;
+    line-height: 1.7143;
+    border-radius: 0.375rem;
+
+    > code {
+      background: none;
+      padding: 0;
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      color: inherit;
+    }
+  }
+
+  // Tables
+
+  // A table wider than the column scrolls inside it rather than widening the
+  // page, so it is a block box around its own table layout.
+  :where(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    table-layout: auto;
+    margin: 2em 0;
+    font-size: 0.875em;
+    line-height: 1.7143;
+    border-collapse: collapse;
+  }
+
+  :where(th, td) {
+    text-align: start;
+    padding: 0.5714em;
+  }
+
+  :where(th:first-child, td:first-child) {
+    padding-inline-start: 0;
+  }
+
+  :where(th:last-child, td:last-child) {
+    padding-inline-end: 0;
+  }
+
+  :where(thead) {
+    border-bottom: 1px solid foreground-at(30%);
+  }
+
+  :where(thead th) {
+    vertical-align: bottom;
+    padding-top: 0;
+    font-weight: 600;
+  }
+
+  :where(tbody tr) {
+    border-bottom: 1px solid foreground-at(15%);
+  }
+
+  :where(tbody tr:last-child) {
+    border-bottom: 0;
+  }
+
+  :where(tbody td) {
+    vertical-align: baseline;
+  }
+
+  // Media
+
+  :where(img) {
+    display: block;
+    max-width: 100%;
+    max-height: 32rem;
+    height: auto;
+    margin: 2em auto;
+  }
+}

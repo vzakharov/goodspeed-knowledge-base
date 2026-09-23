@@ -1,0 +1,11 @@
+@use '../../../styles/mantine' as mantine;
+
+.page {
+  min-height: 100vh;
+  padding: 32px;
+  padding-bottom: 80px;
+
+  @include mantine.larger-than(mantine.$breakpoint-sm) {
+    padding: 80px;
+  }
+}

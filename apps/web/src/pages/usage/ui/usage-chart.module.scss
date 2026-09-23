@@ -1,0 +1,38 @@
+.chart {
+  position: relative;
+}
+
+.plot {
+  display: block;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+}
+
+.grid {
+  stroke: var(--color-border-hairline);
+  stroke-width: 1;
+}
+
+.axis {
+  font-size: 12px;
+  fill: var(--mantine-color-dimmed);
+}
+
+// Wider than its column, so a thin day is still easy to land on.
+.hit {
+  fill: transparent;
+}
+
+.tooltip {
+  position: absolute;
+  top: 0;
+
+  // Its own width, not the room right of `left`, which a flipped tooltip
+  // near the right edge barely has.
+  width: max-content;
+  padding: 8px 12px;
+  pointer-events: none;
+}

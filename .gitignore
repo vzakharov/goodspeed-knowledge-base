@@ -18,3 +18,16 @@ __pycache__/
 # screenshots. Anything transient goes here rather than earning its own
 # .gitignore entry. See CLAUDE.md "Dev artifacts go under tmp/".
 tmp/
+
+# Dependencies and build output
+node_modules/
+.next/
+out/
+dist/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# Environment — .env.example is the committed, documented template
+.env*
+!.env.example

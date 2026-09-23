@@ -1,0 +1,61 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build outputs
+.next
+out
+build
+dist
+.turbo
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+*.log
+
+# Scratch (dev artifacts, per CLAUDE.md)
+tmp
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Session cost rows — rewritten wholesale by `scripts/session-cost.ts` on every
+# turn, so a formatting pass over them is undone by the next one.
+.claude/costs/sessions
+
+# Per-machine Claude Code settings — never committed, written by the harness
+# rather than by hand, so its formatting is nobody's to hold to a standard.
+.claude/settings.local.json
+
+# GitHub exports — `scripts/export-github-item.py` writes what the thread holds,
+# and a snapshot reformatted is no longer the thing it is a snapshot of.
+docs/issue
+docs/pr
+
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# The Supabase CLI's own state: the per-machine signing key `pnpm bootstrap`
+# writes and the CLI's cache, both ignored by supabase/.gitignore, which
+# Prettier does not read.
+supabase/signing_keys.json
+supabase/.temp

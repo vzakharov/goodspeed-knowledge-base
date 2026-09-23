@@ -1,0 +1,58 @@
+{
+  "sessionId": "c4626f77-796c-58c9-94b0-454ebfe9116e",
+  "branch": "claude/knowledge-base-f6yidh",
+  "cwd": "/home/user/goodspeed-knowledge-base",
+  "name": "knowledge base: documents pages",
+  "openingPrompt": "пошли дальше (/go) по claude/knowledge-base-f6yidh",
+  "prs": [
+    1
+  ],
+  "url": "https://claude.ai/code/session_01LJX3gHGBhCXVvNKY11EgYH",
+  "firstResponseAt": "2026-09-23T13:02:21.958Z",
+  "lastResponseAt": "2026-09-23T13:30:56.814Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 5.6568324000000025,
+  "total": {
+    "inputTokens": 190,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 269029,
+    "cacheReadTokens": 18341142,
+    "outputTokens": 72266,
+    "thinkingTokens": 19620,
+    "responses": 94,
+    "costUsd": 7.266540400000001
+  },
+  "ownTurns": {
+    "inputTokens": 190,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 269029,
+    "cacheReadTokens": 18341142,
+    "outputTokens": 72266,
+    "thinkingTokens": 19620,
+    "responses": 94,
+    "costUsd": 7.266540400000001
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 190,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 269029,
+      "cacheReadTokens": 18341142,
+      "outputTokens": 72266,
+      "thinkingTokens": 19620,
+      "responses": 94,
+      "costUsd": 7.266540400000001
+    }
+  },
+  "warnings": []
+}
