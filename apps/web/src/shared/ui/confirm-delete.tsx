@@ -32,7 +32,8 @@ export function ConfirmDelete({
 
   return (
     <>
-      <Button variant="default" size="xs" onClick={open}>
+      {/* Beside a long title, a button would shrink past its own label. */}
+      <Button variant="default" size="xs" flex="none" onClick={open}>
         Delete
       </Button>
       <Modal

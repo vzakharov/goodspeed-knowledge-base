@@ -54,6 +54,7 @@ There is deliberately no Playwright dependency — Chrome's own `--screenshot` i
 | `/documents`           | the list, its tag filter (`?tag=`) and the not-searchable notice        |
 | `/documents/new`       | the document form, with its Write/Preview tabs                          |
 | `/documents/edit?id=…` | the same form over a saved document, its status notice and delete modal |
+| `/chat`, `/chat?c=…`   | the conversation list, a thread with its sources, the composer          |
 
 A route behind the guard renders only a loader until a session exists, so a
 bare `--screenshot` of it shows nothing. Get a session from the Auth API —
@@ -67,7 +68,9 @@ The API will not boot without a model provider. `startFakeOpenAi` in
 `apps/api/test/fake-openai.ts` serves one locally — run it from a throwaway
 script under `tmp/preview/` with `node --import ./register.js` in `apps/api`,
 and start the API with both capabilities' `*_PROVIDER=custom` and
-`*_BASE_URL` pointed at it.
+`*_BASE_URL` pointed at it. It answers at once, so an answer is stored before
+a capture can see it streaming: to catch the in-flight state, or to click Stop,
+add latency with CDP's `Network.emulateNetworkConditions` first.
 
 Add a row per route a visual change can reach.
 

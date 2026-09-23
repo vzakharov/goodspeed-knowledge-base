@@ -19,6 +19,8 @@ export function Question({ content }: Pick<Message, 'content'>) {
   );
 }
 
+const HEADING_LINE = /^#{1,6}\s/;
+
 function Source({
   index,
   documentId,
@@ -26,6 +28,15 @@ function Source({
   headingPath,
   excerpt,
 }: Citation) {
+  // A document that opens on its title as a heading would name it twice, and
+  // the trail already says which headings the excerpt sits under.
+  const trail =
+    headingPath[0] === documentTitle ? headingPath.slice(1) : headingPath;
+  const passage = excerpt
+    .split('\n')
+    .filter((line) => !HEADING_LINE.test(line))
+    .join('\n');
+
   return (
     <Stack gap={2}>
       <Text size="sm">
@@ -35,15 +46,15 @@ function Source({
         <InternalLink href={documentHref(documentId)} fw={700}>
           {documentTitle}
         </InternalLink>
-        {headingPath.length > 0 && (
+        {trail.length > 0 && (
           <Text span c="dimmed">
             {' › '}
-            {headingPath.join(' › ')}
+            {trail.join(' › ')}
           </Text>
         )}
       </Text>
       <Text size="xs" c="dimmed" lineClamp={2}>
-        {excerpt}
+        {passage}
       </Text>
     </Stack>
   );

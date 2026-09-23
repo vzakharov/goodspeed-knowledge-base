@@ -95,7 +95,10 @@ export function SignedInLayout({ children }: WithChildren) {
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between" wrap="nowrap">
           <Group component="nav" gap="lg" wrap="nowrap">
-            <Text fw={700}>Knowledge Base</Text>
+            {/* Below `sm` the links need the width, as the address does. */}
+            <Text fw={700} visibleFrom="sm">
+              Knowledge Base
+            </Text>
             {NAV.map(({ label, href }) => {
               const current = isCurrent(href, pathname);
 
