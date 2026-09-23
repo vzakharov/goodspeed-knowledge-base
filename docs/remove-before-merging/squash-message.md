@@ -1,19 +1,22 @@
 Proposed squash title/body:
 
 ```
-feat: knowledge base foundation, database, API and local stack (pr #1)
+feat: knowledge base foundation, database, API, stack and sign-in (pr #1)
 ```
 
 ```
 The repository is the answer to Goodspeed's assessment brief, an
 AI-powered knowledge base with a RAG chat over the user's documents.
-This lands everything beneath the web app: the monorepo, the schema,
-the API and one command that brings the stack up locally.
+This lands the monorepo, the schema, the API, one command that brings
+the stack up locally, and the web app as far as sign-in.
 
 apps/web is a Next.js 16 static export carrying the design system of
-vzakharov/vovazakharov.com without its product, settled for pages that
-render only after sign-in. Lint, FSD boundaries, type-overlap and the
-cost ledger run from the root over every workspace.
+vzakharov/vovazakharov.com without its product. Supabase Auth signs
+the reader in from the browser; a client-side guard fronts every other
+route, the API and RLS being what protect the data, and a typed client
+parses each response with the contract's schema under TanStack Query.
+Lint, FSD boundaries, type-overlap, knip and the cost ledger run from
+the root over every workspace.
 
 supabase/ holds the schema: documents, chunks as vector(1536) under
 HNSW, conversations and append-only usage events, with row-level
