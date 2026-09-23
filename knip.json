@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "tags": ["-tobeused"],
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.ts", "steiger.config.mjs"],
+      "project": ["*.{ts,mjs}", "eslint/**/*.ts", "scripts/**/*.ts"]
+    },
+    "apps/web": {
+      "project": ["app/**/*.{ts,tsx}", "src/**/*.{ts,tsx,scss}"]
+    },
+    "apps/api": {
+      "entry": ["test/**/*.e2e.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"],
+      "ignore": ["src/database/database.types.ts"]
+    },
+    "packages/contracts": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts"]
+    }
+  }
+}

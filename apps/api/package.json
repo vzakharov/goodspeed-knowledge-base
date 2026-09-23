@@ -25,7 +25,6 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.2.6",
     "@swc-node/register": "^1.12.1",
     "@swc/cli": "^0.8.1",
     "@swc/core": "^1.16.2",

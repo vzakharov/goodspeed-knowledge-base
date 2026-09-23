@@ -13,7 +13,7 @@ import type { Anchored, WithOptionalClassName } from '@/shared/typings';
 
 // `ElementProps` omits what `AnchorProps` claims, so a plain anchor attribute —
 // `hrefLang`, `target` — reaches the `<a>` without the two types shadowing.
-export type InternalLinkProps = Anchored &
+type InternalLinkProps = Anchored &
   AnchorProps &
   WithOptionalClassName &
   ElementProps<'a', keyof AnchorProps | 'href' | 'className'>;
@@ -31,7 +31,10 @@ export function InternalLink({ href, children, ...props }: InternalLinkProps) {
   );
 }
 
-/** The call-to-action shape of the same pairing. */
+/**
+ * The call-to-action shape of the same pairing.
+ * @tobeused by the documents list's "new document" (step 5).
+ */
 export function InternalButton({
   href,
   children,

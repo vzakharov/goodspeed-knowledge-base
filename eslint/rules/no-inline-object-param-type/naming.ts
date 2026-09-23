@@ -3,7 +3,7 @@ import type * as ESTree from 'estree';
 
 import { type KeyedNode, memberKeyName, tsType } from './ast';
 
-export const capitalize = (name: string): string =>
+const capitalize = (name: string): string =>
   name.charAt(0).toUpperCase() + name.slice(1);
 
 /**

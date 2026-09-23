@@ -91,7 +91,7 @@ export const documentListQuerySchema = z.object({
 
 export type DocumentListQuery = z.infer<typeof documentListQuerySchema>;
 
-export const tagCountSchema = z.object({
+const tagCountSchema = z.object({
   tag: z.string(),
   documents: z.int().min(1),
 });

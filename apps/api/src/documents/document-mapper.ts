@@ -20,7 +20,7 @@ export type DocumentSummaryRow = Pick<
 > &
   EmbeddingColumns & { excerpt: string };
 
-export function toEmbeddingState(
+function toEmbeddingState(
   row: EmbeddingColumns,
   currentModel: string,
 ): EmbeddingState {

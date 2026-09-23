@@ -12,7 +12,7 @@ export type ModelIdentity = {
   model: string;
 };
 
-export type ChatRole = 'system' | 'user' | 'assistant';
+type ChatRole = 'system' | 'user' | 'assistant';
 
 export type ChatMessage = {
   role: ChatRole;
@@ -29,9 +29,9 @@ export type TokenUsage = PromptTokens & { completionTokens: number };
  * Null where the provider reported none, which is not the same as zero — a
  * record keeps the difference rather than inventing a count.
  */
-export type WithReportedUsage<Usage> = { usage: Usage | null };
+type WithReportedUsage<Usage> = { usage: Usage | null };
 
-export type ChatCompletion = Pick<ChatMessage, 'content'> &
+type ChatCompletion = Pick<ChatMessage, 'content'> &
   WithReportedUsage<TokenUsage>;
 
 /** A streamed answer: its text in pieces, then its usage once, if reported. */
@@ -53,7 +53,7 @@ export type ChatModel = ModelIdentity & {
 /** The length of every vector an embedding model returns. */
 export type WithDimensions = { dimensions: number };
 
-export type Embeddings = WithReportedUsage<PromptTokens> & {
+type Embeddings = WithReportedUsage<PromptTokens> & {
   /** One per input, in input order, each `dimensions` long. */
   vectors: number[][];
 };

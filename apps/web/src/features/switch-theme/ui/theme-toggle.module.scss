@@ -4,8 +4,8 @@
 // on every prerendered page until hydration, while `ColorSchemeScript` sets
 // `data-mantine-color-scheme` in `<head>`, before the first paint.
 
-// The inverse of the site's `hoverDim`: this is page furniture rather than
-// content, so it rests below full strength and comes up on hover, not down.
+// Page furniture rather than content, so it rests below full strength and
+// comes up on hover.
 .toggle {
   opacity: 0.45;
 

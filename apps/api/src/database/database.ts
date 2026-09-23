@@ -46,7 +46,7 @@ export function createAnonymousDb({
 }
 
 /** A query the database refused or failed. The PostgREST error is the cause. */
-export class DatabaseError extends Error {
+class DatabaseError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
     this.name = 'DatabaseError';

@@ -6,7 +6,7 @@ const claimsSchema = z.object({
   role: z.literal('authenticated'),
 });
 
-export type VerifiedClaims = z.infer<typeof claimsSchema>;
+type VerifiedClaims = z.infer<typeof claimsSchema>;
 
 export type TokenVerifier = {
   verify: (token: string) => Promise<VerifiedClaims>;

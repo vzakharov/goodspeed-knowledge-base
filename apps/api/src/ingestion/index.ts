@@ -1,3 +1,3 @@
 export type { PlacedMarkdown } from './chunker.ts';
 export { IngestionModule } from './ingestion.module.ts';
-export { IngestionService, type IngestionSource } from './ingestion.service.ts';
+export { IngestionService } from './ingestion.service.ts';

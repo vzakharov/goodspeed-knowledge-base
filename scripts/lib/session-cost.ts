@@ -24,7 +24,7 @@ const PriceTableSchema = z.object({
   rates: z.record(z.string(), RateSet),
 });
 
-export type Rates = z.infer<typeof RateSet>;
+type Rates = z.infer<typeof RateSet>;
 export type PriceTable = z.infer<typeof PriceTableSchema>;
 
 export const parsePrices = (json: string): PriceTable =>
@@ -72,9 +72,9 @@ export const BilledSchema = z.object({
 
 const TallySchema = TokenTallySchema.extend(BilledSchema.shape);
 
-export type TokenTally = z.infer<typeof TokenTallySchema>;
-export type Billed = z.infer<typeof BilledSchema>;
-export type Tally = TokenTally & Billed;
+type TokenTally = z.infer<typeof TokenTallySchema>;
+type Billed = z.infer<typeof BilledSchema>;
+type Tally = TokenTally & Billed;
 
 const SessionCostSchema = z.object({
   sessionId: z.string(),
@@ -140,14 +140,14 @@ const addInto = (target: Tally, source: Tally): void => {
   target.costUsd += source.costUsd;
 };
 
-export const costOf = (tokens: TokenTally, rates: Rates): number => {
+const costOf = (tokens: TokenTally, rates: Rates): number => {
   let usd = 0;
   for (const field of BILLED_FIELDS)
     usd += (tokens[field] * rates[BILLED_AT[field]]) / 1e6;
   return usd;
 };
 
-export const rateKey = (
+const rateKey = (
   model: string,
   speed: string | null | undefined,
 ): string => `${model}/${speed ?? 'standard'}`;

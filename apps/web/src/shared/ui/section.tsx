@@ -21,14 +21,3 @@ export function Section({ id, standalone = false, children }: SectionProps) {
     </Box>
   );
 }
-
-/** A margin adds to a Stack's gap rather than collapsing into it. */
-export const SUBHEADING_GAP = 32 - SECTION_GAP;
-
-export function Subheading({ children }: WithChildren) {
-  return (
-    <Title order={3} mt={SUBHEADING_GAP}>
-      {children}
-    </Title>
-  );
-}
