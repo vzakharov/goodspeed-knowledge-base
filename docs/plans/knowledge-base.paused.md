@@ -59,10 +59,30 @@ floor, and `/finalize`'s reads only what came after the last chunk.
 
 ## Progress
 
-Steps 1–4 are done, and so are step 2's knip and step 5's foundation; the
-documents, chat and usage pages and step 6 have not started. `vet` is green
-at the pause and needs the stack up — `pnpm bootstrap` in a fresh session,
-after starting `dockerd` by hand.
+Steps 1–4 are done, and so are step 5's foundation and documents pages; the
+chat and usage pages and step 6 have not started. `vet` is green at the pause
+and needs the stack up — `pnpm bootstrap` in a fresh session, after starting
+`dockerd` by hand. The API boots only with a model provider configured;
+`/preview` says how to point it at the fake one.
+
+**The fifth session** landed the documents pages:
+
+- `/documents` — the list, a tag filter held in `?tag=`, each row's
+  embedding status, and a notice offering to re-embed every document that
+  is not searchable. `/documents/new` and `/documents/edit?id=…` share one
+  form (title, tags, markdown with Write/Preview tabs through
+  `react-markdown` + `remark-gfm` and `prose.scss`); the editor adds delete
+  behind a modal and an "Embed again" retry for a failed or stale document.
+- `entities/document`: the query options, the writes that keep the cache
+  honest (a save's answer goes into its detail entry, the lists and tag
+  counts refetch), the routes (`documentHref`, `documentsHref`) and
+  `EmbeddingBadge` with the one sentence per status the editor reuses.
+- `shared/ui` gained `ErrorAlert` (the error `Alert`, lifted at its third
+  use) and `shared/lib/search-param.ts` the `useSearchParam` hook. No
+  `@tobeused` tag survives: `InternalButton` and `pick` found consumers.
+- `PageShell`'s padding stays as it is: the list reads well at 1280 and at
+  500px, previewed in both themes, and create → edit → delete was driven end
+  to end in the browser.
 
 **The fourth session** landed knip and the web app's foundation:
 
@@ -85,16 +105,19 @@ after starting `dockerd` by hand.
   sign-up → overview → sign-out. `/preview` says how to capture behind the
   guard.
 
-**Next session's chunk:** the documents pages — list with the tag filter,
-create/edit with a markdown preview, delete with confirmation, embedding
-status. It starts from `InternalButton` and `api.send` for the delete, and
-two things this chunk left for it to decide:
+**Next session's chunk:** the chat — conversation list, a streaming answer
+read with `fetch` from `api.send`, citations linking back through
+`documentHref`, history kept across sessions, and a `Chat` row in `NAV`. It
+starts from:
 
-- Error display is an `Alert` written out in the sign-in form and the
-  overview; the documents pages make it three, which is the point to lift it
-  into `shared/ui`.
-- `PageShell`'s 80px padding sits inside the `AppShell`'s own, which reads
-  roomy on the overview; revisit it once a dense page (the list) exists.
+- `Markdown` in `pages/document-editor/ui/markdown.tsx`: the chat's answers
+  are its second consumer, which is the point to lift it into `shared/ui`.
+- The route is `/chat?c=…`, read with `useSearchParam` inside a `Suspense`.
+- Mantine's tinted variants lose their text on the monochrome palette
+  (`.claude/rules/styling.md` § `white` and `black`); a neutral block is a
+  `Card`.
+
+Usage is the chunk after that.
 
 Chat and usage are a chunk each after that.
 
@@ -168,6 +191,9 @@ database layer is verified.
 - The theme toggle lives in the signed-in header and on the sign-in card;
   the fixed theme corner is gone. The sign-in card's heading is an `h2`,
   since the theme's `h1` grows with the viewport past the card's width.
+- A list row's excerpt is plain text: `markdown_excerpt` (its own migration,
+  tested in pgTAP) takes the markdown's syntax out of the opening, so a row
+  does not open on `# Heading **bold**`.
 - The overview at `/` is a real page — the configured models, from
   `/settings/ai` — rather than a placeholder, so the typed client has a
   consumer from the first chunk.
@@ -289,10 +315,10 @@ Ordered so each step leaves `vet` green and the app runnable.
       sign-out); a client-side guard around every authenticated route.
 - [x] Server state through TanStack Query over an API client typed from
       `@kb/contracts`; no second store for what the server owns.
-- [ ] **Routes use search params, not dynamic segments** — `/documents/edit?id=…`,
+- [x] **Routes use search params, not dynamic segments** — `/documents/edit?id=…`,
       `/chat?c=…`. A static export needs every dynamic segment's values at
       build time, and user data has none.
-- [ ] Documents: list with tag filter, create/edit with a markdown preview,
+- [x] Documents: list with tag filter, create/edit with a markdown preview,
       delete with confirmation, embedding status visible.
 - [ ] Chat: conversation list, streaming answer, citations linking back to
       the chunk's document, history kept across sessions.

@@ -65,6 +65,11 @@ surface behind the text. Its inline-`code` rule is one, which is why
 `prose.scss` states that colour itself. Suspect this first when something is
 invisible in exactly one scheme.
 
+The tinted variants are the same trap on the monochrome palette: `light`,
+`outline` and `dot` on an `Alert` or `Badge` lose their text in one scheme or
+the other. A neutral notice is a `Card`, a neutral badge `outline` or
+`default`; a real palette colour (`red` for a failure) renders in both.
+
 ## Rendered markdown
 
 `apps/web/src/app/styles/prose.scss` owns the rhythm of the HTML
