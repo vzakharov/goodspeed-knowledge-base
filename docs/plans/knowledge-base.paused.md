@@ -15,10 +15,24 @@ and everything from "Remaining work" on is the build.
 Each session takes one digestible chunk of the remaining work — a slice that
 lands whole, leaves `vet` green, and fits in a budget of a little over 200k
 tokens. Glance at the running total now and then rather than on every step.
-At the chunk's end — or earlier, if the budget is closing in — record under
-"Progress" what is done and what is left, `git mv` the plan back to
-`knowledge-base.paused.md`, commit and push, so the next session resumes from
-the file rather than from the conversation.
+At the chunk's end — or earlier, if the budget is closing in — close it in
+this order:
+
+1. `/polish` over the chunk — the quality passes run per chunk, not once for
+   the whole plan, so each chunk lands reviewed.
+2. Record under "Progress" what is done, what is left, and what the next
+   chunk needs — its scope, and anything it has to start from (the stack up,
+   a decision still open, a deviation it inherits).
+3. `git mv` the plan back to `knowledge-base.paused.md`, commit and push, so
+   the next session resumes from the file rather than from the conversation.
+4. `/pr` — refresh PR #1's title, body and QA checklist to the branch as it
+   now stands, so the PR never trails the work by more than one chunk.
+
+A per-chunk polish is scoped to the chunk's commits and marks itself
+`polish(chunk: <name>):`, which the full-polish floor lookup skips: it cleared
+the chunk, not the branch. The first full `/polish` — at `/finalize` at the
+latest — therefore still reads the whole branch, including the seed, the
+database and the API, which no chunk polished.
 
 ## Done in the seed (this PR)
 
