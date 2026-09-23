@@ -2,22 +2,22 @@
 
 import { Group, Loader, Text, Title } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
-import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { pick } from '@/shared/lib/collections';
+import { useSearchParam } from '@/shared/lib/search-param';
 import type { WithId } from '@/shared/typings';
-import { ErrorAlert, InternalLink, PageShell, Section } from '@/shared/ui';
+import { ErrorAlert } from '@/shared/ui';
 
 import {
   documentQueries,
-  documentsHref,
   EmbeddingBadge,
   updateDocument,
 } from '@/entities/document';
 
 import { DeleteDocument } from './delete-document';
 import { DocumentForm } from './document-form';
+import { EditorShell } from './editor-shell';
 import { EmbeddingNotice } from './embedding-notice';
 
 function Editor({ id }: WithId) {
@@ -54,10 +54,8 @@ function Editor({ id }: WithId) {
   );
 }
 
-/** The document is the `id` search parameter; a static export has no segment for it. */
 function EditorForAddress() {
-  // `null` only under the Pages Router, which `apps/web/pages/` keeps empty.
-  const id = useSearchParams()?.get('id') ?? null;
+  const id = useSearchParam('id');
 
   if (id === null) {
     return <Text c="dimmed">No document is named in the address.</Text>;
@@ -68,17 +66,10 @@ function EditorForAddress() {
 
 export function EditDocumentPage() {
   return (
-    <PageShell>
-      <Section id="document">
-        <InternalLink href={documentsHref(null)} size="sm">
-          ← Documents
-        </InternalLink>
-        {/* `useSearchParams` needs a boundary in a static export, which has
-            no query string to render at build time. */}
-        <Suspense fallback={<Loader size="sm" />}>
-          <EditorForAddress />
-        </Suspense>
-      </Section>
-    </PageShell>
+    <EditorShell id="document">
+      <Suspense fallback={<Loader size="sm" />}>
+        <EditorForAddress />
+      </Suspense>
+    </EditorShell>
   );
 }

@@ -3,10 +3,10 @@
 import { Group, Loader, Stack, Text, Title } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 import { pick } from '@/shared/lib/collections';
+import { useSearchParam } from '@/shared/lib/search-param';
 import { ErrorAlert, InternalButton, PageShell, Section } from '@/shared/ui';
 
 import { documentQueries, NEW_DOCUMENT_HREF } from '@/entities/document';
@@ -51,8 +51,7 @@ function DocumentList({ tag }: Filtered) {
 
 /** The filter is the `tag` search parameter, so a filtered list has a URL. */
 function FilteredList() {
-  // `null` only under the Pages Router, which `apps/web/pages/` keeps empty.
-  const tag = useSearchParams()?.get('tag') ?? null;
+  const tag = useSearchParam('tag');
 
   return (
     <>
@@ -76,8 +75,6 @@ export function DocumentsPage() {
             New document
           </InternalButton>
         </Group>
-        {/* `useSearchParams` needs a boundary in a static export, which has
-            no query string to render at build time. */}
         <Suspense fallback={<Loader size="sm" />}>
           <FilteredList />
         </Suspense>
