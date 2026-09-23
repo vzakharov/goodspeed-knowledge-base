@@ -27,6 +27,7 @@ const NAV: LabeledLink[] = [
   { label: 'Overview', href: '/' },
   { label: 'Documents', href: '/documents' },
   { label: 'Chat', href: '/chat' },
+  { label: 'Usage', href: '/usage' },
 ];
 
 /**

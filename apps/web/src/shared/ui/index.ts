@@ -1,6 +1,6 @@
 export { Card } from './card';
 export { ConfirmDelete } from './confirm-delete';
-export { cssColor } from './css-color';
+export { type CssColor, cssColor } from './css-color';
 export { ErrorAlert } from './error-alert';
 export { InternalButton, InternalLink } from './internal-link';
 export { Markdown } from './markdown';

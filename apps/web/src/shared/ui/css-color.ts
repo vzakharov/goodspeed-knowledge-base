@@ -10,6 +10,11 @@ export const CSS_COLORS = [
   'border-hairline-strong',
   'surface',
   'surface-strong',
+  // Chart series, in the fixed categorical order: slot n is the nth series a
+  // chart draws, whatever it is.
+  'series-1',
+  'series-2',
+  'series-3',
 ] as const;
 
 /** A token missing from here is a type error rather than a dead `var()`. */

@@ -8,7 +8,10 @@
   $border-hairline,
   $border-hairline-strong,
   $surface,
-  $surface-strong
+  $surface-strong,
+  $series-1,
+  $series-2,
+  $series-3
 ) {
   --color-background: #{$background};
   --color-foreground: #{$foreground};
@@ -16,4 +19,7 @@
   --color-border-hairline-strong: #{$border-hairline-strong};
   --color-surface: #{$surface};
   --color-surface-strong: #{$surface-strong};
+  --color-series-1: #{$series-1};
+  --color-series-2: #{$series-2};
+  --color-series-3: #{$series-3};
 }
