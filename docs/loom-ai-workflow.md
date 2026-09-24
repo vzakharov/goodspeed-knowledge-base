@@ -29,14 +29,14 @@ _On screen: vovazakharov.com → the app beside it._
 
 - **`/spinoff`** seeded this repo from **my site's**.
 - **Not the agent rules** — those come from muthur anyway — the site's
-  **engineering**: **FSD** with two checkers, the **lint ruleset**, the
-  **type-duplication gate**, the **design system**.
-- **Guardrails checked, not asked for** — one **`vet`** run before each merge →
-  agent code **doesn't sprawl**.
+  **engineering**: **FSD** with two checkers, the **strictest lint rules**,
+  **my own lint rules** I carry from project to project, the **design system**.
+- **Rules checked by a script, not just asked for** — one **`vet`** run before
+  each merge → agents **stay in bounds**.
 
-## 1:05 — One plan, bounded sessions
+## 1:05 — One plan, sessions with limits
 
-_On screen: #1 → the `pause` commit._
+_On screen: #1 → the `pause` commit (dd1dacd), its plan diff._
 
 - `/plan` from the brief. Usually **many PRs**; here **one**, for the
   **deadline**.
@@ -54,9 +54,9 @@ _On screen: #1's files → #2._
 - **Every file gets a human read**: all **252**, **67 threads**.
 - Not fixed in #1 — already **100+ commits** → it **landed as is**, the review
   became **ticket #2**.
-- **Carved into five**, by **priority**: first a **document of the design
-  decisions** — so they live **in the repo, not in a chat** — then the
-  **first-run polish**.
+- **Split into five**, by **priority**: first a **document of the design
+  decisions** — a repo **someone else wrote**, so it **gets my head around
+  it** and teaches me **how to explain it** — then the **first-run polish**.
 
 ## 2:40 — From one sentence to a PR
 
@@ -67,15 +67,17 @@ _On screen: the closed PR list → #12 → its session, the top of it._
 - The session **opens with plain words**; **`/task`** decides **plan or not**,
   carries it to the **PR**.
 - Why the web → **the document from the first video**.
-- The agent's call: **extraction in the browser** — pdf.js, its fonts and maps
-  **copied into the static export**.
-- **Right first time**: **not one review comment** from me.
+- The agent's call: **the PDF is read in the browser** — pdf.js, its fonts
+  and maps **copied into the static export**.
+- **Right first time**: **not one review comment** from me — and I **don't
+  comment just to comment**.
 
 ## 3:35 — Where the human decides
 
 _On screen: #13._
 
-- Agents **focus on the technical side**, **miss the big picture** in places.
+- Agents often **nail the technical parts** but **miss the big picture** — for
+  example:
 - "More time" came out as **what the agent would do** → rewritten as **what I
   would**.
 
@@ -86,7 +88,8 @@ _On screen: the `pnpm costs` output._
 - **Harish mentioned** liking **AI for internal tooling** — here's one.
 - A **hook prices every session** at **Claude API rates**; **`pnpm costs`**
   sums them.
-- The whole project: **~$170**, **twenty sessions**.
+- The whole project: **~$170**; **~$100** of it **the app's code**, the rest
+  **docs, these videos**, the loop's **upkeep**.
 
 ## 4:20 — Outro
 
