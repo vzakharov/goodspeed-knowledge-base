@@ -51,10 +51,8 @@ function linesOf(items: readonly PdfTextItem[]): Line[] {
   return lines;
 }
 
-// A lowercase continuation is what tells a word broken across lines from a
-// hyphenated compound ending one, and it cannot tell them apart when the
-// compound's second half is lowercase too: `well-` / `known` joins as
-// `wellknown`.
+// A lowercase next line marks a broken word, so a compound whose second half
+// is lowercase joins too: `well-` / `known` becomes `wellknown`.
 const HYPHEN_BREAK = /\p{L}-$/u;
 const LOWERCASE_START = /^\p{Ll}/u;
 

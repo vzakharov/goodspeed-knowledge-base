@@ -105,7 +105,6 @@ export async function readDocumentFile(
   return text;
 }
 
-/** A title for the document a file came from: its name, less the extension. */
 export const titleFromFileName = (name: string): string =>
   name
     .replace(/\.[^.]+$/u, '')

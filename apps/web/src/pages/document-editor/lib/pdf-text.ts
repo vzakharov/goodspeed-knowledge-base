@@ -17,9 +17,9 @@ export async function pdfText(
   data: ArrayBuffer,
   signal?: AbortSignal,
 ): Promise<string> {
-  // Loaded when a PDF arrives, so the editor never pays for pdf.js on a text
-  // file. The legacy build because the modern one leans on APIs a year-old
-  // browser lacks (`Uint8Array.prototype.toHex`), and Node does too.
+  // Loaded when a PDF arrives, so a text file costs the editor nothing of
+  // pdf.js. The legacy build: the modern one needs `Uint8Array.prototype.toHex`,
+  // which Node and older browsers lack.
   const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
   pdfjs.GlobalWorkerOptions.workerSrc ||= new URL(
     'pdfjs-dist/legacy/build/pdf.worker.min.mjs',
