@@ -1,9 +1,8 @@
 # Loom walkthrough — talking points
 
-The order of the app walkthrough and what each part must not leave out. The
-cues are for speaking freely, not for reading aloud. Target about 4:30 of the
-5:00 the brief allows; talk over the waits (embedding, streaming, bootstrap)
-rather than sitting through them.
+The order of the app walkthrough and what each part must cover, as cues to
+speak from. Target about 4:30 of the brief's 5:00; talk over the waits
+(embedding, streaming, bootstrap).
 
 **Before recording**
 
