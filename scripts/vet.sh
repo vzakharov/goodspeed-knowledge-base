@@ -27,7 +27,8 @@ alone styles pnpm styles:codegen
 # Why each is safe beside the rest:
 # - typecheck: Turborepo's `typecheck` depends on `build`, a cache hit by now.
 # - type-overlap and knip read source only; test writes only to the OS temp directory.
-# - squash reads docs/remove-before-merging/, skills the agent infrastructure.
+# - squash reads docs/remove-before-merging/, skills the agent infrastructure,
+#   staged .claude/staged/ and git's index.
 # - test-db and test-e2e touch only the local stack: pgTAP rolls each file back,
 #   and the end-to-end run signs up users of its own.
 scripts/run-parallel.sh \
@@ -42,7 +43,8 @@ scripts/run-parallel.sh \
   test-db='pnpm test:db' \
   test-e2e='pnpm test:e2e' \
   squash='scripts/check-squash-message.sh' \
-  skills='scripts/check-skill-catalog.sh' || status=1
+  skills='scripts/check-skill-catalog.sh' \
+  staged='scripts/staged.sh check' || status=1
 
 if ((status)); then
   printf '\nvet FAILED\n' >&2
