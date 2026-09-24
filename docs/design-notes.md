@@ -11,15 +11,14 @@ The sections go from the outside in. §1 is the map, and the sections after it n
 - [1. Bird's-eye view](#1-birds-eye-view)
 - [2. Choices and their alternatives](#2-choices-and-their-alternatives)
   - [A NestJS API beside the web app, in a monorepo](#a-nestjs-api-beside-the-web-app-in-a-monorepo)
-  - [One contracts package, not a shared src/](#one-contracts-package-not-a-shared-src)
   - [Node's test runner, not Vitest](#nodes-test-runner-not-vitest)
   - [A static export for the web app](#a-static-export-for-the-web-app)
   - [A hand-drawn chart, and when makeshift code is right](#a-hand-drawn-chart-and-when-makeshift-code-is-right)
-  - [The session in useSyncExternalStore, not Zustand](#the-session-in-usesyncexternalstore-not-zustand)
+  - [The session in useSyncExternalStore, not a store library](#the-session-in-usesyncexternalstore-not-a-store-library)
   - [TanStack Query for everything the server owns](#tanstack-query-for-everything-the-server-owns)
+  - [Plain model calls, not an agent framework](#plain-model-calls-not-an-agent-framework)
 - [3. How it works](#3-how-it-works)
   - [Providers: one client, and a preset per provider](#providers-one-client-and-a-preset-per-provider)
-  - [How the API knows a request is a ReaderRequest](#how-the-api-knows-a-request-is-a-readerrequest)
   - [Condensing a follow-up before retrieval](#condensing-a-follow-up-before-retrieval)
   - [When a model call's usage is null](#when-a-model-calls-usage-is-null)
   - [Asking in one conversation, switching to another, and coming back](#asking-in-one-conversation-switching-to-another-and-coming-back)
@@ -33,11 +32,9 @@ The sections go from the outside in. §1 is the map, and the sections after it n
   - [The ESLint boundaries setup, and why a workspace package is an element type](#the-eslint-boundaries-setup-and-why-a-workspace-package-is-an-element-type)
   - [apps/api/.swcrc and apps/api/register.js: compiling the API with decorator metadata](#appsapiswcrc-and-appsapiregisterjs-compiling-the-api-with-decorator-metadata)
   - [Tests beside the code, tests under apps/api/test/, and the pgTAP suites](#tests-beside-the-code-tests-under-appsapitest-and-the-pgtap-suites)
-  - [The usage chart's SVG, from data to path commands](#the-usage-charts-svg-from-data-to-path-commands)
 - [4. House style and what the process produced](#4-house-style-and-what-the-process-produced)
   - [{...{ asking }} and the vova/* lint rules](#-asking--and-the-vova-lint-rules)
   - [What the /polish passes produced](#what-the-polish-passes-produced)
-  - [The confirmation copy](#the-confirmation-copy)
   - [Small component modules](#small-component-modules)
   - [Sass tokens generated from TypeScript](#sass-tokens-generated-from-typescript)
   - [The type-overlap check](#the-type-overlap-check)
@@ -46,7 +43,6 @@ The sections go from the outside in. §1 is the map, and the sections after it n
   - [The API client takes any path](#the-api-client-takes-any-path)
   - [What the contract does not cover](#what-the-contract-does-not-cover)
   - [Duplication left in place](#duplication-left-in-place)
-  - [Query code without a helper layer](#query-code-without-a-helper-layer)
   - [Files that outgrow a single read](#files-that-outgrow-a-single-read)
   - [Hardcoded copy, and an answer screen readers do not hear](#hardcoded-copy-and-an-answer-screen-readers-do-not-hear)
   - [No tests drive the UI](#no-tests-drive-the-ui)
@@ -65,90 +61,120 @@ The sections go from the outside in. §1 is the map, and the sections after it n
 
 ## 1. Bird's-eye view
 
-One diagram holds the whole system: two apps, the package of shapes they share, and the three services outside the code that they call.
+Three diagrams: the whole system with each app folded to its layers, then each app on its own, with what lies outside it drawn as ovals. In all three, solid arrows are imports, dotted ones imports of the shared package, and thick ones calls over the network.
+
+**The system.** Two apps, the package of shapes they share, and the three services outside the code that they call.
 
 ```mermaid
 flowchart LR
   subgraph web["apps/web — Next.js static export"]
     direction TB
-    routes["app/ routes"]
-    subgraph wpages["pages"]
-      home["home"]
-      chatpage["chat"]
-      docs["documents"]
-      editor["document-editor"]
-      usagepage["usage"]
-      signin["sign-in"]
-    end
-    wapp["app (layout, providers)"]
-    subgraph wentities["entities"]
-      edoc["document"]
-      esession["session"]
-    end
-    theme["features/switch-theme"]
+    wpages["pages"]
+    wentities["entities"]
     sapi["shared/api"]
-    sother["shared/ui · lib · typings"]
+    wpages --> wentities --> sapi
+    wpages --> sapi
   end
 
   contracts["packages/contracts<br/>@kb/contracts"]
 
   subgraph api["apps/api — NestJS"]
     direction TB
-    subgraph afeatures["feature modules"]
-      documents["documents"]
-      chat["chat"]
-      ingestion["ingestion"]
-      usage["usage"]
-    end
-    subgraph infra["infrastructure"]
-      auth["auth"]
-      http["http"]
-      config["config"]
-      database["database"]
-    end
+    afeatures["feature modules"]
     ai["ai"]
+    infra["infrastructure"]
+    afeatures --> ai
+    afeatures --> infra
   end
 
   pg[("Postgres + pgvector")]
   sbauth(["Supabase Auth"])
   provider(["Model provider<br/>(OpenAI API)"])
 
-  routes --> wpages
-  routes --> wapp
-  wapp --> esession
-  wapp --> theme
-  signin --> esession
-  signin --> theme
-  chatpage --> edoc
-  docs --> edoc
-  editor --> edoc
-  edoc --> sapi
-  esession --> sapi
-  home --> sapi
-  chatpage --> sapi
-  usagepage --> sapi
-  signin --> sapi
-
-  chat --> ingestion
-  chat --> usage
-  documents --> ingestion
-  ingestion --> usage
-  chat --> ai
-  ingestion --> ai
-  usage --> ai
-  afeatures --> infra
-
   web -. imports .-> contracts
   api -. imports .-> contracts
-
   sapi == "HTTPS, bearer token" ==> afeatures
-  sapi == "sign-in, sessions" ==> sbauth
+  sapi == "sign-in" ==> sbauth
+  infra == "JWKS" ==> sbauth
+  infra == "queries, as the reader" ==> pg
+  ai == "chat, embeddings" ==> provider
+```
+
+**The web app.** `apps/web/app/` is Next's router and only routes; the modules it routes to live in `apps/web/src/`, in Feature-Sliced Design's layers ([`.claude/rules/fsd.md`](../.claude/rules/fsd.md)). Every slice also uses `shared/ui`, `shared/lib` and `shared/typings`, and most pages, `entities/document` and `shared/api` import `@kb/contracts`; both are left out because they would connect to nearly everything.
+
+```mermaid
+flowchart TB
+  routes["app/ routes"]
+  wapp["app (layout, providers)"]
+  subgraph wpages["pages"]
+    direction LR
+    home["home"]
+    chatpage["chat"]
+    docs["documents"]
+    editor["document-editor"]
+    usagepage["usage"]
+    signin["sign-in"]
+  end
+  theme["features/switch-theme"]
+  subgraph wentities["entities"]
+    direction LR
+    edoc["document"]
+    esession["session"]
+  end
+  sapi["shared/api"]
+
+  apiapp(["apps/api"])
+  sbauth(["Supabase Auth"])
+
+  routes --> wpages & wapp
+  wapp --> esession & theme
+  signin --> esession & theme
+  chatpage & docs & editor --> edoc
+  home & chatpage & usagepage & signin --> sapi
+  edoc & esession --> sapi
+
+  sapi == "HTTPS, bearer token" ==> apiapp
+  sapi == "sign-in" ==> sbauth
+```
+
+**The API.** Three feature modules own a controller each (`documents`, `chat`, `usage`), and `ingestion` serves the first two. Every module uses the infrastructure, drawn as one arrow, and the feature modules and `http` import `@kb/contracts`.
+
+```mermaid
+flowchart TB
+  webapp(["apps/web"])
+  subgraph afeatures["feature modules"]
+    direction LR
+    documents["documents"]
+    chat["chat"]
+    ingestion["ingestion"]
+    usage["usage"]
+  end
+  ai["ai"]
+  subgraph infra["infrastructure"]
+    direction LR
+    auth["auth"]
+    http["http"]
+    config["config"]
+    database["database"]
+  end
+
+  pg(["Postgres + pgvector"])
+  sbauth(["Supabase Auth"])
+  provider(["Model provider"])
+
+  webapp == "HTTPS, bearer token" ==> afeatures
+  documents --> ingestion
+  chat --> ingestion & usage
+  ingestion --> usage
+  chat & ingestion & usage --> ai
+  afeatures & ai --> infra
+
   auth == "JWKS" ==> sbauth
   database == "as the reader" ==> pg
   ai == "chat, embeddings" ==> provider
 ```
 
-Solid arrows are imports, dotted ones imports of the shared package, and thick ones calls over the network. Two sets of edges are left out because they would connect nearly everything: every web slice uses `shared/ui`, `shared/lib` and `shared/typings`, and every API feature module uses the infrastructure modules, drawn as one arrow. `apps/web/app/` is Next's router and only routes; the modules it routes to live in `apps/web/src/`, in Feature-Sliced Design's layers ([`.claude/rules/fsd.md`](../.claude/rules/fsd.md)). What sits where is also in [README § "Layout"](../README.md#layout).
+What sits where is also in [README § "Layout"](../README.md#layout).
 
 **One question, followed through.** A reader types a question in the chat.
 
@@ -187,55 +213,17 @@ What it costs:
 
 The monorepo follows from the split: two apps sharing one contract need a workspace and a task runner. A single app would give Turborepo nothing to do.
 
-Moving to the single-app shape is mostly a matter of moving code:
-
-- The model layer, the chunker, the prompt builder, the config parser, the token verifier and the database helpers import nothing from Nest ([`ai/`](../apps/api/src/ai/), [`chunker.ts`](../apps/api/src/ingestion/chunker.ts), [`prompt.ts`](../apps/api/src/chat/prompt.ts), [`env.ts`](../apps/api/src/config/env.ts), [`database.ts`](../apps/api/src/database/database.ts)). They move as they are.
-- The services use Nest only for `@Injectable`, the two model tokens, `NotFoundException` and `Logger`, and each one takes the reader as an argument. They become plain modules, with the two models built once from the config.
-- The controllers become route handlers under `/api`, so the web client changes only its base URL and the end-to-end suite keeps its paths.
-- The guard becomes a helper that reads the Supabase session from cookies (`@supabase/ssr`), because the server cannot see the browser's storage. From that session it builds the reader's database client, as `createReaderDb` does now. Row-level security keeps working unchanged, because every query still runs as the reader.
-- The web app drops `output: 'export'`, and `@kb/contracts` becomes a slice of its `shared/` layer.
-
-### One contracts package, not a shared `src/`
-
-The package exists to hold runtime schemas, not to share types. A shared `src/` would change where those schemas live, but every one of them would still be written. Each body is checked where it arrives: the API parses every request with its schema ([`zod.pipe.ts:10-24`](../apps/api/src/http/zod.pipe.ts#L10-L24)), and the web client parses every response ([`api-client.ts:61-69`](../apps/web/src/shared/api/api-client.ts#L61-L69)). Any import can share a type, but only a schema can check data that came over the network. So the Zod files exist in either layout, and nothing redeclares their types in this one ([README § "Architecture decisions"](../README.md#architecture-decisions)).
-
-What a shared `src/` would save is the packaging. That means the package's `exports` into `dist/` ([`package.json:6-11`](../packages/contracts/package.json#L6-L11)), its `tsconfig.build.json`, and the `^build` step that every app task waits on.
-
-Whether each build would accept source from outside its app, going by the configs:
-
-- **Next: yes.** `next build` runs Turbopack by default in Next 16. Turbopack resolves any file under `turbopack.root`, which is already set to the repo root ([`next.config.ts:13-15`](../apps/web/next.config.ts#L13-L15)). `experimental.externalDir` is the equivalent switch for a webpack build, and `transpilePackages` compiles a workspace package that ships TypeScript source. The project this frontend foundation came from keeps its `src/` above its apps (`31586b1`), so this half is known to work.
-- **Nest in dev: yes.** `@swc-node/register` ([`register.js`](../apps/api/register.js)) compiles each TypeScript file Node loads, wherever the file is.
-- **Nest's build: not as configured.** `swc src -d dist --strip-leading-paths` ([`package.json:8`](../apps/api/package.json#L8)) compiles only the app's own `src/`. A built file that imports `../../../src/…` would point at a file that was never compiled. Fixing that means compiling the shared folder into `dist/` with its relative layout intact, or bundling the API. `tsc` is no obstacle here: the API only type-checks with it (`--noEmit`), and `rootDir` constrains only emitted output. The one `rootDir` in the repo belongs to the contracts build ([`tsconfig.build.json:9`](../packages/contracts/tsconfig.build.json#L9)).
-- **Dependencies: a catch.** pnpm resolves a bare import by looking upward from the importing file's folder, and the root `node_modules` holds only the root's own tooling. Shared code that imports `zod` works only because the root happens to declare it. The root would have to declare every other dependency the shared code imports as well.
-
-The package also gives something a folder does not: a boundary the file system enforces. The web app can reach only what [`index.ts`](../packages/contracts/src/index.ts) exports, so no server module can land in the browser bundle by mistake. A shared `src/` would need a lint rule to provide that.
-
-So the move is possible, and it swaps one build step for extra build configuration plus a boundary that only lint enforces. With two apps and one shared module, the package is the cheaper of the two.
+Moving to the single-app shape is mostly a matter of moving code. The model layer, the chunker, the prompt builder, the config parser and the database helpers import nothing from Nest and move as they are, and the services, which use Nest only for injection, `NotFoundException` and `Logger`, become plain modules. The controllers become route handlers under `/api`, and the guard becomes a helper that reads the Supabase session from cookies (`@supabase/ssr`) and builds the reader's database client from it, so row-level security works unchanged. The web app drops `output: 'export'`, and `@kb/contracts` becomes a slice of its `shared/` layer.
 
 ### Node's test runner, not Vitest
 
 `node:test` stays because, at this size, it does everything the suites ask of it with no dependency and no config file. The API's 41 unit tests run in about 1.4 seconds. Across the repo, the suites use only `describe`, `it`, the `before`/`after` hooks and `node:assert`. They need no module mocks, because the one fake sits on the HTTP boundary ([`fake-openai.ts`](../apps/api/test/fake-openai.ts)).
 
-For staying:
+For staying: there is nothing to install or configure, and each workspace's `test` script is one line ([`apps/api/package.json:11-12`](../apps/api/package.json#L11-L12), [`apps/web/package.json:10`](../apps/web/package.json#L10)). The API's tests compile through the same SWC setup as `pnpm dev` and `pnpm build` ([`register.js`](../apps/api/register.js)), so a test sees exactly the decorator metadata production gets. And Node 24 already covers much of what people pick Vitest for: sharding, watch mode, concurrency, and coverage with thresholds.
 
-- Nothing to install and nothing to configure. Each workspace's `test` script is one line ([`apps/api/package.json:11-12`](../apps/api/package.json#L11-L12), [`apps/web/package.json:10`](../apps/web/package.json#L10)).
-- The API's tests compile through the same SWC setup as `pnpm dev` and `pnpm build` ([`register.js`](../apps/api/register.js)), so a test sees exactly the decorator metadata production gets.
-- Node 24 already covers much of what people pick Vitest for: `--test-shard`, `--watch`, `--test-concurrency`, and coverage with thresholds (`--experimental-test-coverage`, `--test-coverage-lines`).
+Against, and growing with the suite: coverage and module mocking are still experimental in Node, and there is no Vitest UI and no type-level assertion like `expectTypeOf`. The biggest gap is that there is no DOM environment and no browser mode, so component tests have no natural home, which is why the web app's tests cover helper modules only. Two TypeScript loaders also run across the workspaces, `tsx` and `@swc-node/register`, where Vitest would have one config per workspace own the transform.
 
-Against, and these grow with the suite:
-
-- Coverage and module mocking are still experimental in Node.
-- There is no DOM environment and no browser mode, so component tests have no natural home. The web app's tests cover helper modules only. This is the gap where Vitest, with jsdom, happy-dom or its browser mode, is clearly ahead.
-- Vitest's UI and its type-level assertions (`expectTypeOf`) have no Node equivalent.
-- Two TypeScript loaders run across the workspaces (`tsx` and `@swc-node/register`). With Vitest, one config per workspace would own the transform.
-
-The first component test is the point where the switch starts to pay. The path over:
-
-1. Add Vitest and a `vitest.config.ts` to each workspace, and change `test` to `vitest run`. The Turborepo task stays as it is.
-2. Swap each `node:test` import for Vitest's, with `before` becoming `beforeAll` and `after` becoming `afterAll`. `node:assert` can stay, because Vitest fails a test on any thrown error.
-3. For the API, run the transform through SWC with `unplugin-swc`, as the NestJS docs' Vitest recipe does. Vitest's default esbuild transform does not emit decorator metadata.
-4. The end-to-end suite runs one file at a time (`--test-concurrency=1`, [`package.json:12`](../apps/api/package.json#L12)). In Vitest that becomes a project of its own with `fileParallelism: false`.
-5. Sharding in CI becomes `vitest run --shard=1/4`. Node's `--test-shard` would do the same job without the move.
+The first component test is the point where the switch starts to pay, and the path over is short. Each workspace gets Vitest and a `vitest.config.ts`, its `test` script becomes `vitest run`, and each test swaps its `node:test` import for Vitest's (`before` and `after` become `beforeAll` and `afterAll`; `node:assert` can stay). The API's transform goes through SWC with `unplugin-swc`, as the NestJS docs' Vitest recipe does, because Vitest's default esbuild transform emits no decorator metadata. The end-to-end suite, which runs one file at a time today ([`package.json:12`](../apps/api/package.json#L12)), becomes a Vitest project of its own with `fileParallelism: false`.
 
 ### A static export for the web app
 
@@ -265,19 +253,21 @@ The hand-drawn version is right for now because the damage a bug in it can do is
 
 The same reasoning applies to any makeshift part an agent writes in place of a library. The agent writes it in minutes, it does exactly one job, and nothing else depends on it.
 
-The risk is that the part keeps growing without anyone deciding it should. Each request is small: a second kind of series, a legend that toggles kinds on and off, zooming into a date range, axis labels that thin out on a narrow screen. Each is also code a library already has, tested against cases this component has never met. One feature at a time, the makeshift part becomes an unmaintained library. A spreadsheet reader in another app built the same way went that way: written to read one kind of upload, it is now fourteen modules that decode Excel's legacy binary format record by record, cells, strings and all, with a test suite to match.
+The risk is that the part keeps growing without anyone deciding it should. Each request is small: a second kind of series, a legend that toggles kinds on and off, zooming into a date range, axis labels that thin out on a narrow screen. Each is also code a library already has, tested against cases this component has never met. One feature at a time, the makeshift part becomes an unmaintained library. A spreadsheet reader in another app built the same way went that way: written to read one kind of upload, it is now fourteen modules that decode Excel's legacy binary format record by record, cells, strings and all, with a test suite to match. There it was the necessary call rather than drift: the only package that could read that format was unmaintained and carried an open security advisory, so the choice was between owning the reader and shipping a known hole.
+
+That kind of choice now comes up more often, because agents find vulnerabilities as well as write code. OpenAI's Codex Security reported 792 critical and 10,561 high-severity findings over 1.2 million commits in its first month of beta ([The Hacker News, March 2026](https://thehackernews.com/2026/03/openai-codex-security-scanned-12.html)). Anthropic's Project Glasswing reported more than ten thousand high- or critical-severity vulnerabilities in its first month, 271 of them in Firefox 150 alone ([Anthropic, May 2026](https://www.anthropic.com/research/glasswing-initial-update)). Attackers automate too: the Shai-Hulud worm stole the npm tokens on every machine that installed an infected package and used them to publish itself into more than 500 packages in September 2025, and a second wave followed that November ([CISA](https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem)). Every dependency is code somebody else can put an advisory on, or a malicious release into, so adding one is no longer the default it used to be, and a small part an agent writes and the repository owns is sometimes the safer of the two.
 
 The signal to switch is a change that is about charts in general rather than about this app's usage data. A second chart somewhere else in the app is one sign. So is a fix for an edge case libraries solved long ago, such as overlapping labels. At that point the library is the cheaper code. The switch itself stays local: `UsageChart` takes `daily` and nothing else ([`usage-chart.tsx:124`](../apps/web/src/pages/usage/ui/usage-chart.tsx#L124)), so a replacement fits behind the same prop.
 
-### The session in `useSyncExternalStore`, not Zustand
+### The session in `useSyncExternalStore`, not a store library
 
-Zustand would not make the session simpler. The session is one value with one writer, and Zustand's hook is built on the same React primitive. The whole module is 52 lines ([`session.ts`](../apps/web/src/entities/session/model/session.ts)). It holds the current value, a set of listeners, and one Supabase `onAuthStateChange` listener that replaces the value on every sign-in, sign-out and token refresh ([`session.ts:18-36`](../apps/web/src/entities/session/model/session.ts#L18-L36)). React's `useSyncExternalStore` reads the value, and reports `loading` during the server prerender ([`session.ts:38-45`](../apps/web/src/entities/session/model/session.ts#L38-L45)).
+A store library would not make the session simpler. The session is one value with one writer, and libraries such as Zustand and React Redux build their hooks on this same React primitive. The whole module is 52 lines ([`session.ts`](../apps/web/src/entities/session/model/session.ts)). It holds the current value, a set of listeners, and one Supabase `onAuthStateChange` listener that replaces the value on every sign-in, sign-out and token refresh ([`session.ts:18-36`](../apps/web/src/entities/session/model/session.ts#L18-L36)). React's `useSyncExternalStore` reads the value, and reports `loading` during the server prerender ([`session.ts:38-45`](../apps/web/src/entities/session/model/session.ts#L38-L45)).
 
 Only Supabase writes to this store. Signing out calls Supabase, and its listener then reports the change ([`session.ts:47-52`](../apps/web/src/entities/session/model/session.ts#L47-L52)). Two components read it: the signed-in layout's guard and the sign-in page's redirect. The API client does not read it at all. It asks Supabase for the current token on every request ([`api.ts:8-13`](../apps/web/src/shared/api/api.ts#L8-L13)), so the token it sends is always the latest one.
 
-A Zustand version would be `create(() => LOADING)` plus the same listener calling `setState`. The part that needs care would still be there. The listener is attached the first time a component uses the session, not when the module is imported, so the static prerender never runs it ([`session.ts:18-21`](../apps/web/src/entities/session/model/session.ts#L18-L21)). A Zustand store is created at import, so it would need the same guard.
+In a store library the session would be a one-field store fed by the same listener, and the part that needs care would still be there. The listener is attached the first time a component uses the session, not when the module is imported, so the static prerender never runs it ([`session.ts:18-21`](../apps/web/src/entities/session/model/session.ts#L18-L21)). A store created at import would need the same guard.
 
-Zustand pays off once client state has several fields and several writers. It gives selectors, so a component re-renders only for the field it reads, actions kept beside the state, and middleware such as `persist` and devtools. Server data belongs to TanStack Query (next entry), so a store here would hold client-only state shared by components far apart in the tree. The nearest candidate is the answer being streamed. It lives in the chat page's `useAsking` ([`use-asking.ts:22-31`](../apps/web/src/pages/chat/model/use-asking.ts#L22-L31)), so it stops when the reader leaves the chat. Keeping it running while the reader moves around the app means holding it above the router, and that is where a store would go.
+A store earns its place when components far apart in the tree share client-only state that several of them change; server data belongs to TanStack Query (next entry). The one case in sight is an answer that keeps streaming after the reader leaves the chat for another page. Today it lives in the chat page's `useAsking` ([`use-asking.ts:22-31`](../apps/web/src/pages/chat/model/use-asking.ts#L22-L31)) and goes when the page does; to outlive the page it has to live above the router, and a store is where it would go.
 
 ### TanStack Query for everything the server owns
 
@@ -292,7 +282,15 @@ What it does here:
 - **Only failures that might pass get a retry.** A 5xx or a network failure is retried twice. A 4xx, or a response the contract rejects, fails at once ([`query-client.ts:7-25`](../apps/web/src/shared/api/query-client.ts#L7-L25)).
 - **Signing out clears the cache.** The next reader in the same tab starts with none of the previous reader's data ([`session.ts:47-52`](../apps/web/src/entities/session/model/session.ts#L47-L52)).
 
-Without it, each component would call `fetch` in a `useEffect` and track its own loading, error and cached data by hand, which means writing the code above again on every page. SWR does the same job with a smaller API. Mutations and invalidation by key prefix are the parts of TanStack Query this app relies on most.
+Without it, each component would call `fetch` in a `useEffect` and track its own loading, error and cached data by hand, which means writing the code above again on every page. SWR, Vercel's data-fetching library named after HTTP's `stale-while-revalidate`, does the same job with a smaller API. Mutations and invalidation by key prefix are the parts of TanStack Query this app relies on most.
+
+### Plain model calls, not an agent framework
+
+The API calls models through the OpenAI SDK and nothing above it: one chat model with `complete` and `stream` ([`openai-compatible.ts:85`](../apps/api/src/ai/openai-compatible.ts#L85)), and one embedding model with `embed` ([`:142`](../apps/api/src/ai/openai-compatible.ts#L142)). Frameworks such as Mastra, LangChain.js with LangGraph, LlamaIndex.TS and the Vercel AI SDK sit a layer above that. Between them they offer a router over many providers, agents that run a model-driven loop over tools, workflows as typed step graphs that can suspend and resume, conversation memory, RAG helpers from chunkers to vector-store adapters (pgvector among them), evals, and tracing.
+
+This app's answer is a fixed pipeline, not a loop: condense, embed, search, stream, store, always in that order (§1). The model never chooses a tool or a next step, so an agent loop would have nothing to decide. The rest a framework brings, the app already has in the narrow form it needs. The provider abstraction is the OpenAI API itself plus a preset per provider (§3), the vector store is a Postgres function that runs under row-level security, and memory is the conversation's last messages, read from the database. A framework would add a dependency and a layer of its own types between the code and the provider, for no step the app takes.
+
+It starts to pay once the model decides the path. Agentic retrieval is the likely first case: the model decides whether to search at all, splits or rewrites the query, narrows by tag, and searches again when the first results are thin. A tool loop, a trace of each step, and evals that score retrieval and faithfulness are then what a framework provides out of the box, and writing them by hand is the makeshift-library trap from the chart entry above. The seam is already there: `AnswerService.answer` is the one place that sequences the steps ([`answer.service.ts:71`](../apps/api/src/chat/answer.service.ts#L71)), so a framework's agent or workflow would replace it and leave the controller and the storage as they are.
 
 ## 3. How it works
 
@@ -343,8 +341,9 @@ next to its cause: a line in `.env`. The boot also compares the embedding width
 with the vector column's, for the same reason
 ([`ai.module.ts:43-53`](../apps/api/src/ai/ai.module.ts#L43-L53)).
 
-"A local Ollama" is a program on the same machine, not a hosted service.
-`ollama serve`, or the desktop app, runs an HTTP server on `localhost:11434`
+The app can also work with a local LLM, like a Llama or Qwen model run by
+Ollama, which serves it from the same machine rather than from a hosted
+service. `ollama serve`, or the desktop app, runs an HTTP server on `localhost:11434`
 that answers the OpenAI API under `/v1`, for whichever models `ollama pull` has
 fetched. The `ollama` preset already points there
 ([`providers.ts:47-53`](../apps/api/src/ai/providers.ts#L47-L53)), so
@@ -359,39 +358,6 @@ address in `CHAT_BASE_URL` instead. Moving the embeddings to Ollama too changes
 the vector width, and
 [README § "Swapping AI providers"](../README.md#swapping-ai-providers) walks
 through that migration.
-
-### How the API knows a request is a `ReaderRequest`
-
-It is known by construction, not by parsing. `getRequest<ReaderRequest>()` in
-the auth guard is an unchecked type argument: Nest declares it as
-`getRequest<T = any>(): T` and checks nothing at runtime
-([`apps/api/src/auth/auth.guard.ts:68`](../apps/api/src/auth/auth.guard.ts#L68)).
-The type holds for a different reason for each of its two parts.
-
-`ReaderRequest` is Express's `Request` plus an optional `reader`
-([`auth.guard.ts:31`](../apps/api/src/auth/auth.guard.ts#L31)). The `Request`
-part is true because Express built the object: the app runs on Nest's Express
-adapter ([`apps/api/src/app.ts:15-18`](../apps/api/src/app.ts#L15-L18)), so its
-shape is the server's own, not something a client sent. The optional `reader`
-is true because only one place writes it, the guard, after the token is verified
-([`auth.guard.ts:78-81`](../apps/api/src/auth/auth.guard.ts#L78-L81)). The one
-place that reads it, `@CurrentReader()`, checks at runtime that it is there
-([`auth.guard.ts:97-108`](../apps/api/src/auth/auth.guard.ts#L97-L108)).
-
-What the client does control is parsed. The type gives
-`headers.authorization` as `string | undefined`, and the guard treats it as
-untrusted text: a regular expression takes the token out
-([`auth.guard.ts:38-42`](../apps/api/src/auth/auth.guard.ts#L38-L42)). The
-token's signature, issuer, audience and expiry are verified, and its claims
-parsed with Zod
-([`apps/api/src/auth/token-verifier.ts:4-7`](../apps/api/src/auth/token-verifier.ts#L4-L7),
-[`:59-67`](../apps/api/src/auth/token-verifier.ts#L59-L67)). Bodies, route
-parameters and query strings go through `ZodPipe` and a schema from
-`@kb/contracts` before a handler sees them
-([`apps/api/src/http/zod.pipe.ts:10-24`](../apps/api/src/http/zod.pipe.ts#L10-L24)).
-So a request sent with `Authorization: Basic abc` finds no bearer token and gets
-a 401, and a well-formed token with a forged signature gets a 401 too. Neither
-reaches a handler.
 
 ### Condensing a follow-up before retrieval
 
@@ -523,7 +489,9 @@ It is the file `supabase init` writes, with these changes:
   gitignored. An asymmetric key is what lets the API verify tokens against the
   published key set instead of holding a shared secret.
 - **Auth's site URL is the web app's**, `http://localhost:3000`
-  ([`:160`](../supabase/config.toml#L160)).
+  ([`:160`](../supabase/config.toml#L160)). Studio, the dashboard for browsing
+  the local database, its users and its logs, keeps its default,
+  `http://localhost:54323` ([`:98`](../supabase/config.toml#L98)).
 
 The defaults it keeps matter too: sign-up is on with email confirmation off,
 which is why any address can sign up locally
@@ -566,7 +534,8 @@ row-level security paragraph, states the rule. The mechanism runs as a chain:
 6. **The functions are `security invoker`**, so the policies apply inside them
    as well (see the next entry).
 
-The pgTAP suite tests the rule where it lives. It does what PostgREST does per
+The pgTAP suite, unit tests written in SQL with Postgres's pgTAP extension, tests
+the rule where it lives. It does what PostgREST does per
 request, `set local role authenticated` and the claims in
 `request.jwt.claims`, then checks that a second user reaches none of the first
 user's rows through any table or function, and that `anon` reaches nothing
@@ -580,6 +549,16 @@ document gets a 404, because to him the row does not exist
 The API also filters on the reader's id wherever a query names rows, so a policy
 dropped by mistake would still leave another user's rows out of reach
 ([`apps/api/src/auth/auth.guard.ts:20-29`](../apps/api/src/auth/auth.guard.ts#L20-L29)).
+
+What nothing checks is that the next table gets any of this. The suite covers
+the tables it names, and Supabase grants every role access to new tables in
+`public` by default, so a table created without `enable row level security`
+would be open to anyone holding the publishable key, and no test would fail. The direction
+to improve is one more pgTAP assertion over the catalog: every table in `public`
+has `relrowsecurity` set and at least one policy in `pg_policies`. It runs over
+whatever the migrations built, so a new table without row-level security fails
+`pnpm test:db` in the same change that adds it. Supabase's Security Advisor in
+Studio flags the same thing, but only for someone who opens it.
 
 ### The database functions
 
@@ -777,28 +756,6 @@ The difference is how much of the system a test runs. A `*.test.ts` beside a mod
 
 The database needs a suite of its own because the API guards most reads twice. Its queries also filter on the reader's id ([`documents.service.ts:86`](../apps/api/src/documents/documents.service.ts#L86)), so through the API a policy that let every user read every row would still pass the end-to-end suite: the filter would hide the leak. The pgTAP suite queries the tables with no API in between, so the same broken policy fails there.
 
-### The usage chart's SVG, from data to path commands
-
-The usage chart is a plain `<svg>` drawn in pixels: [`usage-chart.tsx`](../apps/web/src/pages/usage/ui/usage-chart.tsx) places every bar, gridline and label by arithmetic, using a handful of SVG primitives.
-
-**Coordinates.** An SVG's origin is its top-left corner, and y grows downward, so a bar is drawn from its top. The plot's floor is 196 px down (the 220 px height less the 24 px date strip, [lines 13-26](../apps/web/src/pages/usage/ui/usage-chart.tsx#L13-L26)), and a bar h pixels tall starts at y = 196 − h.
-
-**No `viewBox`.** A `viewBox="0 0 400 220"` would give the drawing a coordinate system of its own, which the browser scales to the element's size, text and one-pixel gridlines included. The chart has none. It measures its container with `useElementSize` ([line 131](../apps/web/src/pages/usage/ui/usage-chart.tsx#L131)) and sets `width` to the result, so one unit is one CSS pixel at any width: the labels stay 12 px and the bars widen instead. It draws nothing until that width is known ([line 152](../apps/web/src/pages/usage/ui/usage-chart.tsx#L152)).
-
-**Data to pixels** is one linear map per axis. Vertically, a token count becomes `count / ceiling × 188`, the plot's height ([line 180](../apps/web/src/pages/usage/ui/usage-chart.tsx#L180)). The ceiling is the busiest day rounded up to 1, 2 or 5 × 10ⁿ ([`niceCeiling`, lines 44-52](../apps/web/src/pages/usage/ui/usage-chart.tsx#L44-L52)), so the gridlines at zero, half and the top fall on round numbers. Horizontally, each day gets an equal band of the width right of the axis labels, and its column fills the middle 70% ([lines 135-137](../apps/web/src/pages/usage/ui/usage-chart.tsx#L135-L137)). With a ceiling of 5,000, a 3,000-token day is 3,000 / 5,000 × 188 = 112.8 px tall, so its top is at y = 196 − 112.8 = 83.2.
-
-**Path commands.** A `<path>`'s `d` attribute is a sequence of pen moves. `M x,y` moves without drawing; `H x` and `V y` draw a horizontal or vertical line to that x or y; `Q cx,cy x,y` draws a curve bent toward the control point `cx,cy` and ending at `x,y`; `Z` closes the shape. A lowercase letter takes distances from the current point instead of positions. So a plain segment of a stack ([line 216](../apps/web/src/pages/usage/ui/usage-chart.tsx#L216)) is
-
-```js
-`M${x},${y}h${columnWidth}v${height}h${-columnWidth}Z`;
-```
-
-from the top-left corner: right by the width, down by the height, back left, closed. The top segment of each column is `roundedTop` ([lines 55-72](../apps/web/src/pages/usage/ui/usage-chart.tsx#L55-L72)): the same rectangle traced from its bottom-left, with each top corner replaced by a `Q` curve whose control point is the corner itself, which rounds it. The radius is capped at half the width and at the height, so a thin or short column still gets a clean shape rather than curves that cross.
-
-**Stacking** ([`segments`, lines 77-90](../apps/web/src/pages/usage/ui/usage-chart.tsx#L77-L90)) walks the usage kinds bottom up, each segment starting where the one below it ended and giving up 2 px at its base, so a strip of background separates two colours.
-
-The rest is ordinary SVG: `<line>` for the gridlines, `<text>` for the labels, and a transparent `<rect>` over each day's whole band ([lines 231-240](../apps/web/src/pages/usage/ui/usage-chart.tsx#L231-L240)), so hovering anywhere in the band selects the day, not only over a thin column. The tooltip is HTML laid over the SVG, not part of it.
-
 ## 4. House style and what the process produced
 
 This codebase was written by an agent working through a loop of plans, implementation and review passes, under conventions the repository states and its checks enforce. These entries are the conventions a reader notices first, and what the review passes changed.
@@ -851,14 +808,6 @@ After:
 
 The first sentence described the message list, which the function body shows in three lines just below it. The second states a rule the body cannot show, because the order is the caller's: the sources arrive most similar first, and `[1]` in an answer names the first of them. The pass kept that sentence only.
 
-### The confirmation copy
-
-The app's confirmation text says what happens and stops, and it was written that way in the first draft rather than trimmed afterwards. The document delete's warning reads the same today as in the commit that added the documents pages (`45aef6f`), and no `polish:` commit touches it ([`delete-document.tsx:23-24`](../apps/web/src/pages/document-editor/ui/delete-document.tsx#L23-L24)):
-
-> “{title}” and its embeddings are deleted, and the chat stops answering from it. This cannot be undone.
-
-Each warning answers what a reader needs before confirming: what goes, what stays, and whether it can be undone. The conversation delete adds the one thing a reader might fear it takes: "The documents it cites stay" ([`thread.tsx:131-132`](../apps/web/src/pages/chat/ui/thread.tsx#L131-L132)). The plainness comes from the house voice, the register [`.claude/voice/voice.md`](../.claude/voice/voice.md) sets for what the agent writes to a person, carried into the interface.
-
 ### Small component modules
 
 The web app's components are small: 35 component files under `ui/` segments, a median of 54 lines, the largest being the hand-drawn usage chart at 255. Part of the reason, as a hunch from working with agents and not a measured result, is where the files live.
@@ -879,7 +828,7 @@ The generated file closes the loop. `_tokens.scss` is a `colors` mixin with one 
 
 The API shows the result. `ModelIdentity` declares `provider` and `model` once ([`models.ts:10-13`](../apps/api/src/ai/models.ts#L10-L13)), and the chat model, the embedding model, the client settings ([`openai-compatible.ts:20`](../apps/api/src/ai/openai-compatible.ts#L20)), the usage record ([`usage.service.ts:13`](../apps/api/src/usage/usage.service.ts#L13)) and the provider error ([`ai-provider.error.ts:16`](../apps/api/src/ai/ai-provider.error.ts#L16)) all build on it. So "which model answered" means one thing in all five.
 
-The clearest record is a run that failed. After the commit that added the web app's sign-in and API client (`3a0d33b`), the check reported three members the web app had written again, each already declared in the API:
+The check also finds what nobody would have gone looking for. The commit that added the web app's sign-in and API client (`3a0d33b`) wrote three types in the web app that each declared a member the API already declared. Nothing connected the pairs: they sat in different apps, under different names, and all six compiled. The check put them side by side:
 
 ```text
 baseUrl: string;       ModelSettings (API)   ApiClientOptions (web)
@@ -887,11 +836,13 @@ model: string;         ModelIdentity (API)   ModelCardProps (web)
 signal?: AbortSignal;  Cancellable (API)     ApiRequest (web)
 ```
 
-No fix imported an API type into the web app. Each took the fix its case needed (`f81617a`):
+Looking at each pair then answered a question the code had never asked, whether the two describe the same thing, and each got its own answer (`f81617a`):
 
-- **`baseUrl` was a name that meant two things.** The API's is a model provider's address, the web app's is this app's own API. A shared base would have tied together two unrelated settings, so the web app's became `apiUrl`, after the `NEXT_PUBLIC_API_URL` it is read from ([`api-client.ts:20-24`](../apps/web/src/shared/api/api-client.ts#L20-L24)).
-- **`model` was a copy of the contract.** The home page's model card now takes `provider` and `model` from `AiSettings['chat']` in `@kb/contracts` ([`home-page.tsx:12-15`](../apps/web/src/pages/home/ui/home-page.tsx#L12-L15)), so it follows whatever the API says it sends.
-- **`signal` was a copy of the platform.** The request options take `method` and `signal` from `fetch`'s own `RequestInit` ([`api-client.ts:15`](../apps/web/src/shared/api/api-client.ts#L15)).
+- **`model` was the same thing.** The model card on the home page shows the model the API reports, so its `provider` and `model` were a hand-written copy of the contract. It now takes them from `AiSettings['chat']` in `@kb/contracts` ([`home-page.tsx:12-15`](../apps/web/src/pages/home/ui/home-page.tsx#L12-L15)), and changes when the contract does.
+- **`signal` was the same thing too, but the source was neither app.** Both copies were the platform's own `AbortSignal` option, so the web app's request options now take `method` and `signal` from `fetch`'s `RequestInit` ([`api-client.ts:15`](../apps/web/src/shared/api/api-client.ts#L15)).
+- **`baseUrl` only looked the same.** The API's is a model provider's address, the web app's is this app's own API. Sharing one declaration would have tied two unrelated settings together, so the web app's was renamed `apiUrl`, after the `NEXT_PUBLIC_API_URL` it is read from ([`api-client.ts:20-24`](../apps/web/src/shared/api/api-client.ts#L20-L24)).
+
+So two of the three were real duplicates that would have drifted, and the third was a name that meant two things, which the rename now says.
 
 `@kb/contracts` itself never trips the check: its types are all inferred from Zod schemas, so they derive rather than declare.
 
@@ -940,26 +891,7 @@ A few small copies are still in the code, each a handful of lines and each with 
 
 A copy costs drift: someone edits one and not the other. The risk grows with how many copies there are and how far apart they sit. Here there are two of each, the pairs are identical, and the two services sit side by side, so a reader who opens one sees the other. The code went through `/dry` passes as it was written (§4). What they left behind needed a decision, not just a mechanical extraction: for example, which module a shared not-found error belongs to when the feature modules may reach each other only through their `index.ts`.
 
-A real app gives the not-found error one class, built from the entity's name and id, and one scoped-row helper (the next entries show where it would live). The password rule is read from one source, or the form leaves the check to Auth and shows Auth's error.
-
-### Query code without a helper layer
-
-Every query spells out its filters one `.eq` at a time. Every query on a reader's rows also repeats `.eq('user_id', reader.userId)`, ten times across three services. Marking an embedding as failed ([`ingestion.service.ts:93-96`](../apps/api/src/ingestion/ingestion.service.ts#L93-L96)) is typical:
-
-```ts
-.update({ embedding_status: 'failed', embedding_error: message })
-.eq('id', id)
-.eq('user_id', reader.userId)
-.eq('content_hash', contentHash),
-```
-
-The same `id` and `user_id` pair appears in [`documents.service.ts`](../apps/api/src/documents/documents.service.ts#L85-L86) (three times) and [`conversations.service.ts`](../apps/api/src/chat/conversations.service.ts#L111-L112) (twice). The find-by-id-or-404 shape is written out in both services.
-
-That repetition is safe to leave for now. Row-level security already limits every query to the reader's rows, so the explicit filter is a second safeguard, not the only one. And with twenty queries, each still reads plainly.
-
-As a codebase grows, it tends to grow a small helper for this. One pattern, from a Drizzle codebase, is `matches(table, { column: value, … })`. It builds the `WHERE` clause from a partial map of columns: each defined key becomes an equality, undefined keys are skipped, and the values are typed to their columns. A lint rule then flags repeated equality filters on one table and points them at `matches`, so it becomes the only way the filter is written.
-
-Here the equivalent would sit over supabase-js, which already builds equalities from an object (`.match({ id, user_id })`). What the helper adds is this app's own rule: a reader-scoped filter that always includes `user_id: reader.userId` and takes the rest as a typed partial row. The block above would shrink to `.update(…)` plus one call over `{ id, content_hash }`, and no query could leave out `user_id`. The find-by-id-or-404 would become a single `findOwn(table, id)` that throws the one not-found error from the entry above.
+A real app gives the not-found error one class, built from the entity's name and id, and one helper that finds or removes one of the reader's rows by id, throwing that error when there is none. The password rule is read from one source, or the form leaves the check to Auth and shows Auth's error.
 
 ### Files that outgrow a single read
 
