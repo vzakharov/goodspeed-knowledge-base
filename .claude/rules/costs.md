@@ -8,8 +8,8 @@ paths:
   - scripts/lib/cost-totals.ts
   - scripts/lib/ledger.ts
   - scripts/lib/session-identity.ts
+  - scripts/lib/write-atomic.ts
   - .claude/hooks/stop-session-cost.sh
-  - .claude/hooks/prompt-session-name.sh
 ---
 
 # The API-rate cost ledger
@@ -53,8 +53,8 @@ Anthropic's prices exists, so the table goes stale by sitting still.
 
 ## What names a session
 
-Nothing in the transcript is the title Claude Code shows. Four fields stand in
-for one, and only the last is not read out of the file:
+Nothing in the transcript is the title Claude Code shows. Three fields stand in
+for one:
 
 - **`openingPrompt`** — the session's first prompt, unwrapped from the envelope a
   slash command arrives in, so it reads `/handle <branch>`.
@@ -65,11 +65,12 @@ for one, and only the last is not read out of the file:
   attribution reminder the harness re-sends on a remote session change. That one
   record is what is matched: a commit trailer quoted anywhere in a transcript
   carries a session URL too, usually another session's.
-- **`name`** — a few words from the agent whose session it is, which is the only
-  thing here that knows what the session turned out to be about. A row is written
-  with it null and `.claude/hooks/prompt-session-name.sh` asks for it on the next
-  prompt until it is set; each rewrite carries the existing name forward, since
-  re-reading the transcript could never produce one.
+
+**`operator`** is whose session it was: the GitHub handle
+`.claude/hooks/operator-voice.sh` resolved at startup, read off the record that
+hook leaves in the transcript. It is null wherever the hook named nobody — no
+`gh`, or a token that is a bot's — rather than guessed from the pusher, who is
+the token and so may be the agent's own account.
 
 ## Checking the arithmetic
 
@@ -94,6 +95,15 @@ Applied to Claude Code's own token counts, the table reproduces its cost to the
 last digit — so a divergence is a gap in what a row **read**, never in what it
 charged.
 
+**A turn the transcript had not caught up with is warned about, not assumed
+away.** The `Stop` hook runs the pricer with `--at-stop`: the turn is over, so the
+session's own last response should be the `end_turn` that closed it, and a row
+whose last one stopped on anything else gains a warning naming that response.
+A later run reads a transcript that has caught up and cannot recompute the
+warning, so each rewrite carries it forward, and a row
+ends up listing every turn the hook read short. Each run rewrites the row from
+the whole file, which is what prices such a tail on the next turn.
+
 **The usage panel is not a third opinion.** It agrees to within 1% until a
 session compacts, drifts by tens of dollars with each compaction after, and
 disagrees with its own Breakdown; anthropics/claude-code#95837 carries the
@@ -107,20 +117,29 @@ unclean, holds untracked files, or is ahead of its remote. **Hooks for one event
 run in parallel**, so writing and committing the row is work done while that
 check may be reading the tree.
 
-**The hook waits the check out.** That check leaves nothing on disk — it
-reads the tree and writes to stderr — so its process is the only thing there is
-to wait on, and the hook polls for it by name at the last moment before anything
-it does can touch the tree. A match that is an **ancestor** of the hook is not
-the check: the check is a sibling, and an ancestor carrying the name is a shell
-that merely mentions it, so waiting on one would outlast the turn.
+**The row never makes the tree look unfinished.** It is priced into `tmp/`,
+committed in a throwaway index, and pushed before the branch moves; only then do
+the branch, the index entry and the file follow. So the tree differs from `HEAD`
+only between the ref move and the rename, and is never ahead of `origin` while a
+push is in flight. `commit-tree` runs no commit hooks, which suits a file no
+formatter should rewrite, and signs only when asked, so the hook passes `-S`
+where `commit.gpgsign` is on.
 
-Every way the wait can fail — no `pgrep`, a renamed check, a look that lands
-before the process exists, a check still running after five seconds — falls back
-to racing, and so does a failed push, which leaves a commit the check will refuse
-on the _next_ turn, attributed to nobody. So the hook re-reads the same two
-conditions after its own work and, when they hold, exits 2 with one line naming
-the row — the only channel a `Stop` hook has to the agent, spent solely where a
-block is already happening. It bails on a re-fired `Stop` (`stop_hook_active`)
+**The hook also waits the check out**, which leaves it only those two steps to
+guard. That check leaves nothing on disk — it reads the tree and writes to
+stderr — so its process is the only thing there is to wait on, and the hook
+polls for it by name at the last moment before anything it does can touch the
+tree. A match that is an **ancestor** of the hook is not the check: the check is
+a sibling, and an ancestor carrying the name is a shell that merely mentions it,
+so waiting on one would outlast the turn.
+
+**What neither covers is a tree that was unclean before the hook started.** A
+hand run of `scripts/session-cost.ts` rewrites the row in place, and a failed
+push leaves a commit the check will refuse on the _next_ turn, attributed to
+nobody. So the hook reads the tree after its own work and, where the row was part
+of what the check saw, exits 2 with one line naming it — the only channel a
+`Stop` hook has to the agent, spent solely where the check's own exit 2 is
+already continuing the turn. It bails on a re-fired `Stop` (`stop_hook_active`)
 exactly as the harness's check does: two hooks that can both block and neither
 bail would hold the turn open forever.
 
@@ -133,27 +152,25 @@ adjusting quietly is what would leave the rest of this section false.
 
 ## The report
 
-`pnpm costs` sums the rows four ways every run — by month, week and day, and by
-the branch that spent it with the pull requests it touched named beside it;
-`--json` prints the lot. The spend is the branch's rather than each PR's, since
+`pnpm costs` sums the rows five ways every run — by month, week and day, by the
+branch that spent it with the pull requests it touched named beside it, and by
+operator; `--json` prints the lot. The spend is the branch's rather than each PR's, since
 a session that touched two would otherwise be counted twice.
 
-**Nothing is written to disk.** The totals are wholly derived from the rows, so a
-file of them committed beside its own sources would be a merge conflict on every
-branch that ran a session — and settling one by summing the two sides
+**The totals are never written to disk.** They are wholly derived from the rows,
+so a file of them committed beside its own sources would be a merge conflict on
+every branch that ran a session — and settling one by summing the two sides
 double-counts every session both of them saw. The rows themselves never collide:
 one file per session id.
 
+**The rows can be.** A row carrying a key the current shape no longer writes is
+rewritten without it as the report reads it, and the report names each one on
+stderr. Retiring a field is therefore a change to the shape alone: the first
+report in each repository clears it, and those rewrites are ordinary changes to
+commit.
+
 ## What the totals do not cover
 
-- **The last turn of a session.** The transcript lags the live conversation, so
-  each run rewrites the row from the whole file and picks up what the previous
-  run was too early to see — but the final turn has no successor, and **no turn
-  can close that**: a `/finalize` step is followed by the turns that invoked it.
-  Only a read that is not a turn can — a later session re-pricing a transcript
-  that outlived this one (false in a remote container), or a transcript watcher,
-  which would write and commit with no turn in progress and so give up the
-  serialisation § "Running beside the harness's Stop check" is built on.
 - **Each compact.** The transcript records the compaction call without its
   `usage`, so there is nothing to price. Bounded: two measured compacts read
   526k tokens, about $0.30 at the cache-read rate.

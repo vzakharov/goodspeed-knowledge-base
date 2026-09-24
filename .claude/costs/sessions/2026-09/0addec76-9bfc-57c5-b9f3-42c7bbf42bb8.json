@@ -2,12 +2,12 @@
   "sessionId": "0addec76-9bfc-57c5-b9f3-42c7bbf42bb8",
   "branch": "claude/decision-doc-1lmvss",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": null,
   "openingPrompt": "/handle claude/decision-doc-1lmvss",
   "prs": [
     3
   ],
   "url": "https://claude.ai/code/session_01XRNj7RfpnDdYEh9HYD1sYp",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-24T00:07:57.445Z",
   "lastResponseAt": "2026-09-24T00:12:35.335Z",
   "pricesAsOf": "2026-09-23",

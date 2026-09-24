@@ -2,12 +2,12 @@
   "sessionId": "a6d3a02f-5ba8-5fd4-a618-5254fc3a2108",
   "branch": "claude/knowledge-base-f6yidh",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": null,
   "openingPrompt": "давай /go claude/knowledge-base-f6yidh, финишная прямая",
   "prs": [
     1
   ],
   "url": "https://claude.ai/code/session_018q6VSR9J98vTEJxyVpy9N3",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-23T18:24:12.109Z",
   "lastResponseAt": "2026-09-23T18:28:13.611Z",
   "pricesAsOf": "2026-09-23",

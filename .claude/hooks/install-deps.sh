@@ -11,7 +11,7 @@
 # Remote-only: a local session installs its own dependencies when it wants them,
 # and paying an install on every `claude` launch is not what anyone wants.
 #
-# The paired site of `scripts/vet.sh`, per CLAUDE.md § "Vetting": both name this
+# The paired site of `scripts/vet.sh`, per `.claude/rules/stack.md`: both name this
 # project's package manager, and a toolchain change moves both.
 
 set -euo pipefail

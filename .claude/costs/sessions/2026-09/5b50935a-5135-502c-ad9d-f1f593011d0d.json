@@ -2,13 +2,13 @@
   "sessionId": "5b50935a-5135-502c-ad9d-f1f593011d0d",
   "branch": "claude/docs-only-no-vet-7a3w62",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": "README edits from voice review",
   "openingPrompt": "@\"/root/.claude/uploads/5b50935a-5135-502c-ad9d-f1f593011d0d/246d5260-Read_me.m4a.zip\" редактура readme",
   "prs": [
     14,
     16
   ],
   "url": "https://claude.ai/code/session_01G5WjVMXUzAjuwhLrTyUrkD",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-24T10:06:10.525Z",
   "lastResponseAt": "2026-09-24T11:07:26.280Z",
   "pricesAsOf": "2026-09-23",

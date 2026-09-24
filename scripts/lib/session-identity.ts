@@ -36,6 +36,25 @@ export const sessionUrlIn = (
     ? SESSION_URL.exec(line)?.[0]
     : undefined;
 
+const SessionStartOutputSchema = z.object({
+  attachment: z.object({
+    hookEvent: z.literal('SessionStart'),
+    content: z.string(),
+  }),
+});
+
+// `.claude/hooks/operator-voice.sh` prints `Name (@handle)` or a bare `@handle`,
+// already lowercased, and only this phrasing when it resolved a person: the
+// lines it prints for a bot's token or an unreachable `gh` do not match.
+const OPERATOR_LINE =
+  /^session-start: the operator is (?:[^\n]* \()?@([\da-z-]+)\)? — the GitHub token/;
+
+export const operatorOf = (record: unknown): string | undefined => {
+  const content =
+    SessionStartOutputSchema.safeParse(record).data?.attachment.content;
+  return content === undefined ? undefined : OPERATOR_LINE.exec(content)?.[1];
+};
+
 const PromptRecordSchema = z.object({
   isMeta: z.boolean().nullable().optional(),
   isSidechain: z.boolean().optional(),

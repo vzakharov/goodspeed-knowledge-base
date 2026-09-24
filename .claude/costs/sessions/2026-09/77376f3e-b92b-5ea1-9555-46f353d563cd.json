@@ -2,12 +2,12 @@
   "sessionId": "77376f3e-b92b-5ea1-9555-46f353d563cd",
   "branch": "claude/loom-walkthrough-script-07aomg",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": "Loom walkthrough script",
   "openingPrompt": "Начитал текст для основного лума, давай обсудим (ты дашь отклик), потом переведём и создадим скрипт уже на английском для чистовой записи. Предлагаю так: ты ком…",
   "prs": [
     15
   ],
   "url": "https://claude.ai/code/session_01FdubK2cCFChsJ1AEZWrXdL",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-24T10:39:49.450Z",
   "lastResponseAt": "2026-09-24T11:22:09.581Z",
   "pricesAsOf": "2026-09-23",

@@ -7,7 +7,11 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { parsePrices, summariseTranscript } from './session-cost.ts';
+import {
+  isUnwrittenTail,
+  parsePrices,
+  summariseTranscript,
+} from './session-cost.ts';
 
 const prices = parsePrices(
   JSON.stringify({
@@ -33,6 +37,7 @@ const prices = parsePrices(
 
 type ResponseOverrides = {
   id?: string;
+  stopReason?: string;
   speed?: string | null;
   model?: string;
   branch?: string;
@@ -56,6 +61,7 @@ const response = (overrides: ResponseOverrides = {}): string =>
     message: {
       id: overrides.id ?? 'msg_1',
       model: overrides.model ?? 'test-model',
+      stop_reason: overrides.stopReason ?? 'end_turn',
       usage: {
         input_tokens: overrides.input ?? 0,
         output_tokens: overrides.output ?? 0,
@@ -77,11 +83,16 @@ const response = (overrides: ResponseOverrides = {}): string =>
     },
   });
 
-const summarise = (lines: string[], subagents: string[][] = []) =>
+const summarise = (
+  lines: string[],
+  subagents: string[][] = [],
+  atStop = false,
+) =>
   summariseTranscript(
     { main: lines.join('\n'), subagents: subagents.map((s) => s.join('\n')) },
     prices,
     'fallback',
+    atStop,
   );
 
 describe('session-cost: what a response costs', () => {
@@ -192,6 +203,47 @@ describe('session-cost: what it refuses to guess', () => {
   });
 });
 
+describe('session-cost: a tail the transcript had not caught up with', () => {
+  it('warns at stop when the session’s last response did not end its turn', () => {
+    const cost = summarise(
+      [
+        response({ id: 'msg_a' }),
+        response({ id: 'msg_b', stopReason: 'tool_use' }),
+      ],
+      [],
+      true,
+    );
+    assert.equal(
+      cost.warnings.filter((warning) => isUnwrittenTail(warning)).length,
+      1,
+    );
+    assert.ok(cost.warnings.join('').includes('msg_b'));
+  });
+
+  it('stays quiet at stop when the turn closed on end_turn', () => {
+    const cost = summarise(
+      [response({ stopReason: 'tool_use' }), response({ id: 'msg_2' })],
+      [],
+      true,
+    );
+    assert.deepEqual(cost.warnings, []);
+  });
+
+  it('reads only the session’s own responses, not a subagent’s', () => {
+    const cost = summarise(
+      [response()],
+      [[response({ id: 'msg_sub', stopReason: 'tool_use' })]],
+      true,
+    );
+    assert.deepEqual(cost.warnings, []);
+  });
+
+  it('checks nothing outside the Stop hook, where a turn is still running', () => {
+    const cost = summarise([response({ stopReason: 'tool_use' })]);
+    assert.deepEqual(cost.warnings, []);
+  });
+});
+
 const prompt = (content: unknown, extra: object = {}): string =>
   JSON.stringify({ type: 'user', message: { content }, ...extra });
 
@@ -200,6 +252,12 @@ const link = (prNumber: number): string =>
 
 const costState = (totalCostUSD: number): string =>
   JSON.stringify({ type: 'cost-state', totalCostUSD });
+
+const sessionStart = (content: string): string =>
+  JSON.stringify({
+    type: 'attachment',
+    attachment: { type: 'hook_success', hookEvent: 'SessionStart', content },
+  });
 
 describe('session-cost: what names a session', () => {
   it('takes the opening prompt as the session name, unwrapping a slash command', () => {
@@ -253,6 +311,30 @@ describe('session-cost: what names a session', () => {
       response({ output: 1 }),
     ]);
     assert.equal(cost.url, 'https://claude.ai/code/session_01REALone');
+  });
+
+  it('takes the operator from the first SessionStart that resolved a person', () => {
+    const cost = summarise([
+      sessionStart(
+        'session-start: the operator is Vova Zakharov (@vzakharov) — the GitHub token in this session is that user’s own.',
+      ),
+      response({ output: 1 }),
+      // A resume runs the hook again; the session stays whose it was.
+      sessionStart(
+        'session-start: the operator is @someone-else — the GitHub token in this session is that user’s own.',
+      ),
+    ]);
+    assert.equal(cost.operator, 'vzakharov');
+  });
+
+  it('leaves the operator null when the hook named nobody', () => {
+    const cost = summarise([
+      sessionStart(
+        'session-start: the GitHub token in this session belongs to a bot, not a person.',
+      ),
+      response({ output: 1 }),
+    ]);
+    assert.equal(cost.operator, null);
   });
 
   it('keeps Claude Code’s own last word on what the session cost', () => {

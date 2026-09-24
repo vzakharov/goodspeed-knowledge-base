@@ -6,6 +6,7 @@ import { z } from 'zod';
 import {
   costStateOf,
   kindOf,
+  operatorOf,
   prNumberOf,
   promptTextOf,
   sessionUrlIn,
@@ -53,7 +54,12 @@ const ResponseRecordSchema = z.object({
   cwd: z.string().optional(),
   timestamp: z.string().optional(),
   isSidechain: z.boolean().optional(),
-  message: z.object({ id: z.string(), model: z.string(), usage: UsageSchema }),
+  message: z.object({
+    id: z.string(),
+    model: z.string(),
+    stop_reason: z.string().nullish(),
+    usage: UsageSchema,
+  }),
 });
 
 const TokenTallySchema = z.object({
@@ -81,10 +87,10 @@ const SessionCostSchema = z.object({
   branch: z.string().nullable(),
   cwd: z.string().nullable(),
   // The defaults let a row that predates its field still parse.
-  name: z.string().nullable().default(null),
   openingPrompt: z.string().nullable().default(null),
   prs: z.array(z.number()).default([]),
   url: z.string().nullable().default(null),
+  operator: z.string().nullable().default(null),
   firstResponseAt: z.string().nullable(),
   lastResponseAt: z.string().nullable(),
   pricesAsOf: z.string(),
@@ -193,13 +199,28 @@ export type TranscriptSources = {
   subagents: readonly string[];
 };
 
-/** Throws on a `(model, speed)` pair the table cannot price, or a response record that does not parse. */
+// Marks the warning `atStop` raises, which is what lets a rewrite of the row
+// carry it forward: the next run reads a transcript that has caught up.
+const UNWRITTEN_TAIL = 'not yet written when the Stop hook read the transcript';
+
+export const isUnwrittenTail = (warning: string): boolean =>
+  warning.includes(UNWRITTEN_TAIL);
+
+/**
+ * Throws on a `(model, speed)` pair the table cannot price, or a response record that does not parse.
+ *
+ * `atStop` says the turn is over, so the session's own last response should be
+ * the `end_turn` that closed it; anything else is warned about as a tail the
+ * file had not yet been given.
+ */
 export const summariseTranscript = (
   sources: TranscriptSources,
   prices: PriceTable,
   fallbackSessionId: string,
+  atStop = false,
 ): SessionCost => {
   const warnings: string[] = [];
+  let lastOwn: Response | undefined;
   const seen = new Set<string>();
   const byRate: Record<string, Tally> = {};
   const total = emptyTally();
@@ -213,6 +234,7 @@ export const summariseTranscript = (
   let cwd: string | undefined;
   let openingPrompt: string | undefined;
   let url: string | undefined;
+  let operator: string | undefined;
   let claudeCodeTotalUsd: number | undefined;
 
   // `delegated` files a subagent's own file as subagent spend, whatever its
@@ -241,12 +263,21 @@ export const summariseTranscript = (
         }
         if (kind === 'attachment') {
           url ??= sessionUrlIn(record, line);
+          // The first one any SessionStart resolved, since a resume runs the
+          // hook again.
+          operator ??= operatorOf(record);
           continue;
         }
       }
 
       if (!isResponseRecord(record)) continue;
       const response = ResponseRecordSchema.parse(record);
+      if (
+        !delegated &&
+        response.isSidechain !== true &&
+        response.message.model !== SYNTHETIC_MODEL
+      )
+        lastOwn = response;
       // One record per content block, each carrying the whole response's usage.
       if (seen.has(response.message.id)) continue;
       seen.add(response.message.id);
@@ -303,15 +334,24 @@ export const summariseTranscript = (
       `No rates for ${[...unpriced].toSorted().join(', ')} in the price table (as of ${prices.as_of}). Add them to .claude/costs/prices.json — a response counted as free is worse than no ledger at all.`,
     );
 
+  if (
+    atStop &&
+    lastOwn !== undefined &&
+    lastOwn.message.stop_reason !== 'end_turn'
+  )
+    warnings.push(
+      `${lastOwn.message.id}: the session's last response stopped on \`${lastOwn.message.stop_reason ?? 'null'}\` rather than \`end_turn\` — the turn's tail was ${UNWRITTEN_TAIL}`,
+    );
+
   const inOrder = timestamps.toSorted();
   return {
     sessionId: sessionId ?? fallbackSessionId,
     branch: branch ?? null,
     cwd: cwd ?? null,
-    name: null,
     openingPrompt: openingPrompt ?? null,
     prs: [...prs].toSorted((a, b) => a - b),
     url: url ?? null,
+    operator: operator ?? null,
     firstResponseAt: inOrder.at(0) ?? null,
     lastResponseAt: inOrder.at(-1) ?? null,
     pricesAsOf: prices.as_of,
