@@ -38,10 +38,10 @@ describe('readDocumentFile', () => {
   before(async () => {
     // Under Node pdf.js runs its worker in-process, loaded from this path; a
     // browser gets the bundled worker the module wires itself.
-    const { GlobalWorkerOptions } = await import('pdfjs-dist/legacy/build/pdf.mjs');
-    GlobalWorkerOptions.workerSrc = import.meta.resolve(
-      'pdfjs-dist/legacy/build/pdf.worker.mjs',
-    );
+    const { GlobalWorkerOptions } =
+      await import('pdfjs-dist/legacy/build/pdf.mjs');
+    GlobalWorkerOptions.workerSrc = import.meta
+      .resolve('pdfjs-dist/legacy/build/pdf.worker.mjs');
   });
 
   it('reads a PDF into paragraphs, mending a broken word', async () => {
@@ -75,7 +75,9 @@ describe('readDocumentFile', () => {
 
   it('refuses text that is not UTF-8', async () => {
     await assert.rejects(
-      readDocumentFile(file('latin1.txt', new Uint8Array([0x63, 0x61, 0x66, 0xe9]))),
+      readDocumentFile(
+        file('latin1.txt', new Uint8Array([0x63, 0x61, 0x66, 0xe9])),
+      ),
       { message: 'This file is not UTF-8 text' },
     );
   });
@@ -88,7 +90,9 @@ describe('readDocumentFile', () => {
 
   it('refuses text over the document limit rather than cutting it', async () => {
     await assert.rejects(
-      readDocumentFile(file('long.txt', 'a'.repeat(DOCUMENT_LIMITS.content + 1))),
+      readDocumentFile(
+        file('long.txt', 'a'.repeat(DOCUMENT_LIMITS.content + 1)),
+      ),
       { message: /holds 200,001 characters/u },
     );
   });

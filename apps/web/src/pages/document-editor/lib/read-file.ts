@@ -11,6 +11,8 @@ async function utf8Text(file: File): Promise<string> {
   try {
     return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
   } catch (error) {
+    // What a fatal decoder throws on a malformed sequence.
+    if (!(error instanceof TypeError)) throw error;
     throw new Error('This file is not UTF-8 text', { cause: error });
   }
 }
@@ -21,9 +23,9 @@ type FileKind = {
   maxBytes: number;
   /** Why a file over `maxBytes` is refused. */
   oversize: string;
-  /** Whether the form waits behind an overlay while the file is read. */
+  /** Whether the page waits for the file, as for one slow enough to notice. */
   blocks: boolean;
-  read: (file: File) => Promise<string>;
+  read: (file: File, signal?: AbortSignal) => Promise<string>;
   /** Why a file of this kind came out with no text. */
   empty: string;
 };
@@ -47,7 +49,7 @@ const FILE_KINDS: readonly FileKind[] = [
     maxBytes: 50 * MEGABYTE,
     oversize: 'The PDF is over 50 MB',
     blocks: true,
-    read: async (file) => pdfText(await file.arrayBuffer()),
+    read: async (file, signal) => pdfText(await file.arrayBuffer(), signal),
     empty:
       'This PDF has no text to extract — it is probably a scan, and scans are not read here',
   },
@@ -58,33 +60,41 @@ export const ACCEPTED_FILES = Object.fromEntries(
   FILE_KINDS.map(({ mimeType, extensions }) => [mimeType, [...extensions]]),
 );
 
-const extensions = FILE_KINDS.flatMap((kind) => kind.extensions);
+/** `.txt, .md, .markdown, or .pdf` — the kinds read, as a reader is told them. */
+export const ACCEPTED_EXTENSIONS = new Intl.ListFormat('en', {
+  type: 'disjunction',
+}).format(FILE_KINDS.flatMap(({ extensions }) => extensions));
 
-export const UNSUPPORTED_FILE = `Only ${extensions.slice(0, -1).join(', ')} and ${extensions.at(-1)} files are read here`;
+export const UNSUPPORTED_FILE = `Only ${ACCEPTED_EXTENSIONS} files are read here`;
 
 // The extension first: what a browser reports as a `.md` file's type varies by
 // operating system, and is as often empty or `application/octet-stream`.
-function kindOf({ name, type }: File): FileKind {
+function findKind({ name, type }: File): FileKind | undefined {
   const extension = name.slice(name.lastIndexOf('.')).toLowerCase();
-  const kind =
-    FILE_KINDS.find((candidate) => candidate.extensions.includes(extension)) ??
-    FILE_KINDS.find(({ mimeType }) => mimeType === type);
-  if (kind === undefined) throw new Error(UNSUPPORTED_FILE);
-  return kind;
+  return (
+    FILE_KINDS.find((kind) => kind.extensions.includes(extension)) ??
+    FILE_KINDS.find(({ mimeType }) => mimeType === type)
+  );
 }
 
-export const blocksWhileReading = (file: File): boolean => kindOf(file).blocks;
+export const blocksWhileReading = (file: File): boolean =>
+  findKind(file)?.blocks ?? false;
 
 /**
  * The file's text, ready for the Content field, or an error saying in the
  * reader's words why there is none. Text over the document limit is refused
  * rather than cut: a truncated document reads as a whole one.
  */
-export async function readDocumentFile(file: File): Promise<string> {
-  const { maxBytes, oversize, read, empty } = kindOf(file);
+export async function readDocumentFile(
+  file: File,
+  signal?: AbortSignal,
+): Promise<string> {
+  const kind = findKind(file);
+  if (kind === undefined) throw new Error(UNSUPPORTED_FILE);
+  const { maxBytes, oversize, read, empty } = kind;
   if (file.size > maxBytes) throw new Error(oversize);
 
-  const text = (await read(file)).replaceAll('\r\n', '\n');
+  const text = (await read(file, signal)).replaceAll('\r\n', '\n');
   if (text.trim() === '') throw new Error(empty);
   if (text.length > DOCUMENT_LIMITS.content) {
     throw new Error(
@@ -94,3 +104,10 @@ export async function readDocumentFile(file: File): Promise<string> {
 
   return text;
 }
+
+/** A title for the document a file came from: its name, less the extension. */
+export const titleFromFileName = (name: string): string =>
+  name
+    .replace(/\.[^.]+$/u, '')
+    .trim()
+    .slice(0, DOCUMENT_LIMITS.title);

@@ -1,8 +1,13 @@
 import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 
-export type PdfTextItem = Pick<TextItem, 'str' | 'hasEOL' | 'transform' | 'height'>;
+import type { WithText } from '@/shared/typings';
 
-type Line = { text: string; baseline: number; height: number };
+export type PdfTextItem = Pick<
+  TextItem,
+  'str' | 'hasEOL' | 'transform' | 'height'
+>;
+
+type Line = WithText & Pick<PdfTextItem, 'height'> & { baseline: number };
 
 // A line advance past this many times the font's height is a paragraph gap:
 // ordinary leading sits around 1.2.
@@ -10,7 +15,10 @@ const PARAGRAPH_GAP = 1.5;
 
 // `transform` is the item's text matrix; its sixth entry is the baseline's y,
 // measured upward from the page's bottom edge.
-const baselineOf = ({ transform }: PdfTextItem): number => transform[5] ?? 0;
+function baselineOf({ transform }: PdfTextItem): number {
+  const y: unknown = transform[5];
+  return typeof y === 'number' ? y : 0;
+}
 
 function linesOf(items: readonly PdfTextItem[]): Line[] {
   const lines: Line[] = [];
@@ -84,11 +92,13 @@ function pageText(items: readonly PdfTextItem[]): string {
       previous === undefined ? 0 : previous.baseline - line.baseline;
     const paragraph = paragraphs.at(-1);
     // A baseline that climbs is a new column or a new block, never the next
-    // line of the same paragraph.
+    // line of the same paragraph. The smaller of the two heights, so the gap
+    // under a heading counts against the text that follows it.
     if (
       paragraph === undefined ||
       advance <= 0 ||
-      advance > PARAGRAPH_GAP * Math.max(line.height, previous?.height ?? 0)
+      advance >
+        PARAGRAPH_GAP * Math.min(line.height, previous?.height ?? line.height)
     ) {
       paragraphs.push([line.text]);
     } else {
@@ -97,7 +107,7 @@ function pageText(items: readonly PdfTextItem[]): string {
     previous = line;
   }
 
-  return paragraphs.map(paragraphText).join('\n\n');
+  return paragraphs.map((lines) => paragraphText(lines)).join('\n\n');
 }
 
 /**
@@ -106,6 +116,6 @@ function pageText(items: readonly PdfTextItem[]): string {
  */
 export const assemblePdfText = (pages: readonly PdfTextItem[][]): string =>
   pages
-    .map(pageText)
+    .map((items) => pageText(items))
     .filter((text) => text !== '')
     .join('\n\n');

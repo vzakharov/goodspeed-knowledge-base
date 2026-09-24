@@ -13,7 +13,6 @@
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-
 import { z } from 'zod';
 
 const require = createRequire(import.meta.url);
@@ -25,7 +24,11 @@ const { version } = z
 const target = path.join(import.meta.dirname, '..', 'public', 'pdfjs');
 fs.rmSync(target, { recursive: true, force: true });
 for (const directory of ['cmaps', 'standard_fonts']) {
-  fs.cpSync(path.join(pdfjs, directory), path.join(target, version, directory), {
-    recursive: true,
-  });
+  fs.cpSync(
+    path.join(pdfjs, directory),
+    path.join(target, version, directory),
+    {
+      recursive: true,
+    },
+  );
 }

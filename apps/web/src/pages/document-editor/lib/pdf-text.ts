@@ -1,15 +1,22 @@
-import type { TextItem, TextMarkedContent } from 'pdfjs-dist/types/src/display/api';
+import type {
+  TextItem,
+  TextMarkedContent,
+} from 'pdfjs-dist/types/src/display/api';
 
-import { assemblePdfText, type PdfTextItem } from './assemble-pdf-text';
+import { assemblePdfText } from './assemble-pdf-text';
 
 const isTextItem = (item: TextItem | TextMarkedContent): item is TextItem =>
   'str' in item;
 
 /**
  * The PDF's text, read by pdf.js in its own worker so the page stays
- * responsive however long the file takes.
+ * responsive however long the file takes. Aborting `signal` tears the worker's
+ * document down and rejects with the signal's reason.
  */
-export async function pdfText(data: ArrayBuffer): Promise<string> {
+export async function pdfText(
+  data: ArrayBuffer,
+  signal?: AbortSignal,
+): Promise<string> {
   // Loaded when a PDF arrives, so the editor never pays for pdf.js on a text
   // file. The legacy build because the modern one leans on APIs a year-old
   // browser lacks (`Uint8Array.prototype.toHex`), and Node does too.
@@ -27,24 +34,34 @@ export async function pdfText(data: ArrayBuffer): Promise<string> {
     standardFontDataUrl: `${assets}/standard_fonts/`,
   });
 
+  let destroying: Promise<void> | undefined;
+  const abort = () => {
+    destroying = loading.destroy();
+  };
+  signal?.addEventListener('abort', abort, { once: true });
+
   try {
     const document = await loading.promise;
-    const pages: PdfTextItem[][] = [];
-    for (let number = 1; number <= document.numPages; number += 1) {
-      const page = await document.getPage(number);
-      const { items } = await page.getTextContent();
-      pages.push(items.filter(isTextItem));
-    }
+    const pages = await Promise.all(
+      Array.from({ length: document.numPages }, async (_, index) => {
+        const page = await document.getPage(index + 1);
+        const { items } = await page.getTextContent();
+        return items.filter((item) => isTextItem(item));
+      }),
+    );
     return assemblePdfText(pages);
   } catch (error) {
-    if (error instanceof pdfjs.PasswordException) {
-      throw new Error(
-        'This PDF is protected by a password, and protected PDFs are not read here',
-        { cause: error },
-      );
+    // What a destroyed document rejects with says nothing of why it was.
+    signal?.throwIfAborted();
+    if (!(error instanceof Error) || error.name !== 'PasswordException') {
+      throw error;
     }
-    throw error;
+    throw new Error(
+      'This PDF is protected by a password, and protected PDFs are not read here',
+      { cause: error },
+    );
   } finally {
-    await loading.destroy();
+    signal?.removeEventListener('abort', abort);
+    await (destroying ?? loading.destroy());
   }
 }
