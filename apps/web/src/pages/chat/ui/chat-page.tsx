@@ -12,10 +12,9 @@ import { ConversationList } from './conversation-list';
 import { NewConversation, Thread } from './thread';
 
 /**
- * The conversation is the `c` search parameter, so each has a URL. On a wide
- * screen the list is a sidebar at the screen's edge and the thread keeps the
- * reading width every page has; on a narrow one an open conversation takes the
- * width, and the list is a link away.
+ * The conversation is the `c` search parameter, so each has a URL. Where the
+ * list is not a sidebar, an open conversation takes the width, and the list is
+ * a link away.
  */
 function Chat() {
   const conversationId = useSearchParam('c');
