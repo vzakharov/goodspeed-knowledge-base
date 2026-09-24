@@ -1,5 +1,3 @@
-> ⛔ **DRAFT — DO NOT IMPLEMENT.** This plan is not approved. Do not edit source while this file is named `*.draft.do-not-implement.md` — prep and spikes go in `tmp/`. On an explicit operator go-ahead, `git mv` it to `*.in-progress.md` and delete this banner (quoting the go-ahead in the commit) _before_ touching code.
-
 # #2, carved: the decision document first, then the code changes
 
 #2 collects the review of #1 into two parts: code changes (Part A) and one new document (Part B). The operator's comment on #2 settles the carve's shape: Part B is the first issue, taken whole; the UI items go together, with the bootstrap item riding along; the rest splits into only as many issues as show how the debt decomposes.
