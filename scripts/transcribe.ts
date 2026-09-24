@@ -5,9 +5,9 @@
 //
 //   pnpm transcribe <audio-file> [--language <code>]
 //
-// DEEPGRAM_API_KEY must be set. `--language` defaults to `multi`, nova-3's
-// code-switching mode, so a recording that mixes Russian and English comes out
-// in both rather than forced into one.
+// DEEPGRAM_API_KEY must be set. Without `--language` the language is detected.
+// nova-3's code-switching `multi` does markedly worse than that on a recording
+// in one language, so it is for a genuinely mixed one only.
 
 /* eslint-disable no-console -- stdout is this script's interface: the
    transcript, for a person or an agent to read. */
@@ -31,9 +31,10 @@ if (key === undefined || key === '') {
   process.exit(2);
 }
 
+const language = flag('language');
 const params = new URLSearchParams({
   model: 'nova-3',
-  language: flag('language') ?? 'multi',
+  ...(language === undefined ? { detect_language: 'true' } : { language }),
   smart_format: 'true',
   paragraphs: 'true',
 });
