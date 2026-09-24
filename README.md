@@ -293,6 +293,17 @@ CHAT_MODEL=my-model
 CHAT_BASE_URL=http://localhost:8000/v1
 ```
 
+## How it was built
+
+Agents wrote the code — Claude Code in its web interface, run through
+[muthur](https://github.com/vzakharov/muthur), the loop of skills, rules and
+hooks I keep for every repository. One plan carried the app across nine
+bounded sessions, each picking up from what the last had recorded in it; the
+guardrails — Feature-Sliced Design, the strictest lint ruleset, my own lint
+rules — are checked by `./scripts/vet.sh` rather than asked for; and I read
+every file of the result and turned the review into the issues that followed. The whole
+account, with what it cost, is in [How it was built](docs/how-it-was-built.md).
+
 ## What I would do with more time
 
 - **Study the code far more closely, and make the calls at the forks.** It
