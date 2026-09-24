@@ -13,7 +13,7 @@ import { queryOptions } from '@tanstack/react-query';
 import { api, queryClient } from '@/shared/api';
 import { pick } from '@/shared/lib/collections';
 import { readEvents } from '@/shared/lib/event-stream';
-import type { WithSignal } from '@/shared/typings';
+import type { WithAbortSignal } from '@/shared/typings';
 
 const CONVERSATIONS = ['conversations'] as const;
 
@@ -58,7 +58,7 @@ export async function startConversation(
 }
 
 type Question = QuestionInput &
-  WithSignal & {
+  WithAbortSignal & {
     onDelta: (text: string) => void;
   };
 

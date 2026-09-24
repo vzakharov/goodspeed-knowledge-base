@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { FileCheck, FileUp, FileX } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-import type { WithSignal } from '@/shared/typings';
+import type { WithAbortSignal } from '@/shared/typings';
 import { ErrorAlert } from '@/shared/ui';
 
 import {
@@ -25,7 +25,7 @@ type FileImportProps = {
   onRead: (text: string, file: File) => void;
 };
 
-type Reading = WithSignal & { file: File };
+type Reading = WithAbortSignal & { file: File };
 
 const rejectionError = (rejections: FileRejection[]) =>
   new Error(
