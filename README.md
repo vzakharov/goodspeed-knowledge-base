@@ -11,10 +11,10 @@ documents by retrieving the passages relevant to each question (RAG).
 - **AI** — any provider that speaks the OpenAI API specification
 
 What is there: sign-up and sign-in; documents in markdown with tags, a preview
-and each one's embedding status; a chat that streams its answers, cites the
-passages it used and keeps its conversations across sessions; and a usage page
-counting tokens per model per day. Of the brief's stretch goals, all but file
-upload are in.
+and each one's embedding status, typed in or read from a dropped `.txt`, `.md`
+or `.pdf` file; a chat that streams its answers, cites the passages it used and
+keeps its conversations across sessions; and a usage page counting tokens per
+model per day. All of the brief's stretch goals are in.
 
 ## Setup
 
@@ -291,8 +291,10 @@ CHAT_BASE_URL=http://localhost:8000/v1
 - **A dimension-agnostic schema.** One vector column per supported width, or
   `halfvec` with the width chosen at setup, so a fully local setup is
   configuration rather than a migration.
-- **File upload** — PDF and TXT, extracted into a document — the one stretch
-  goal left out.
+- **PDF extraction on the API, with OCR.** A PDF is read in the browser, by
+  pdf.js, into the document form, so a scan has no text to give and only the
+  web app can turn a file into a document. The reader already runs under Node,
+  so an API endpoint that also OCRs scans is mostly a move.
 - **Deployment and CI**: a hosted Supabase project, the API in a container,
   the static web app on a CDN, and `./scripts/vet.sh` on every pull request.
 - **Limits**: a per-user rate limit and token budget, which the usage table

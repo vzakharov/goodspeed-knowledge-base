@@ -3,6 +3,7 @@
 // The aggregate, not one sheet per component: `.claude/rules/styling.md`
 // § Styling carries why.
 import '@mantine/core/styles.layer.css';
+import '@mantine/dropzone/styles.layer.css';
 
 import { type CSSVariablesResolver, MantineProvider } from '@mantine/core';
 
