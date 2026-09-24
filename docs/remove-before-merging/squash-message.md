@@ -32,6 +32,10 @@ turn's spend; the session name, the one field the agent wrote mid-turn,
 is gone; and no procedure carries another repo's rows. /finalize no
 longer claims the merge deploys.
 
+A PostToolUse hook, taken as an opt-in, tells the agent when the
+session's context passes 200k tokens and pauses the plan at 300k,
+unless the work is under 100k from done.
+
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
 
