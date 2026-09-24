@@ -311,7 +311,8 @@ CHAT_BASE_URL=http://localhost:8000/v1
   in a test assignment, which is why the setup here is a local
   `pnpm bootstrap`: the fastest and most convenient option.
 - **The UI.** Not gradients and shine — round the cards here, drop an
-  underline there. Even with design ownership I would lean ascetic.
+  underline there. Even with more time, and the design mine to own, I would
+  lean ascetic.
 
 ## Walkthroughs
 
