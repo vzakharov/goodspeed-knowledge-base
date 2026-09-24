@@ -1,0 +1,221 @@
+WEBVTT
+
+1
+00:00:01.760 --> 00:00:06.480
+Hello everyone, I'm Vova, and this is the presentation of my test assignment.
+
+2
+00:00:06.640 --> 00:00:10.960
+So here we have the knowledge base, with a chat that you can ask
+
+3
+00:00:10.960 --> 00:00:15.280
+about your documents. It opens with the chat window when you have documents.
+
+4
+00:00:15.360 --> 00:00:19.483
+When you don't, it opens with the documents window.
+
+5
+00:00:20.363 --> 00:00:23.163
+So, first of all, let's go and upload a document.
+
+6
+00:00:24.363 --> 00:00:27.243
+I made it possible to upload PDFs,
+
+7
+00:00:27.323 --> 00:00:29.723
+and what's interesting is that it's uploaded on the front end,
+
+8
+00:00:29.883 --> 00:00:34.085
+so it happens almost instantly. And what is sent to the back end is just
+
+9
+00:00:34.085 --> 00:00:37.765
+the text, what we need for embedding, not the actual file.
+
+10
+00:00:38.645 --> 00:00:41.125
+Once you create the document, it becomes searchable,
+
+11
+00:00:41.285 --> 00:00:45.925
+available for asking. So this is an article I wrote that argues that
+
+12
+00:00:46.245 --> 00:00:49.168
+agents should be used on the web, not in a console interface.
+
+13
+00:00:49.248 --> 00:00:53.808
+So let's see: how should I use my agents?
+
+14
+00:00:54.128 --> 00:00:56.208
+Let's see if it fetches anything.
+
+15
+00:00:59.088 --> 00:01:02.768
+And while it fetches, to clarify: it does streaming when it comes to this.
+
+16
+00:01:03.088 --> 00:01:06.811
+What it does now is embed the same prompt with the same embedding model,
+
+17
+00:01:07.051 --> 00:01:11.851
+then compare it to the vector database with pgvector, feed the
+
+18
+00:01:11.851 --> 00:01:16.411
+most similar chunks into the context, and answer with references to this context.
+
+19
+00:01:16.491 --> 00:01:19.851
+So you can see that it gathered sources
+
+20
+00:01:20.293 --> 00:01:25.173
+from different documents, so you can go there and check what the document
+
+21
+00:01:25.173 --> 00:01:28.213
+is about. The design is pretty rudimentary,
+
+22
+00:01:28.293 --> 00:01:31.253
+as you see. As the brief put it,
+
+23
+00:01:31.413 --> 00:01:33.573
+I went for usable, not beautiful,
+
+24
+00:01:33.893 --> 00:01:36.053
+so it can be rough around the edges in places.
+
+25
+00:01:37.456 --> 00:01:39.856
+What else do we have here? We have the usage tab.
+
+26
+00:01:40.656 --> 00:01:44.016
+And what's interesting is that it's all home-written by the agent,
+
+27
+00:01:44.096 --> 00:01:46.976
+so nothing here is from an external package.
+
+28
+00:01:47.136 --> 00:01:50.096
+And I think that while the functionality is small,
+
+29
+00:01:50.416 --> 00:01:53.339
+it is fine to have it written by yourself,
+
+30
+00:01:53.659 --> 00:01:58.379
+and then you can consider moving on to a third-party package when you
+
+31
+00:01:58.379 --> 00:02:01.499
+need it. We also have the models page,
+
+32
+00:02:01.819 --> 00:02:06.619
+which shows which models we use, and this is configured, as the brief
+
+33
+00:02:06.699 --> 00:02:09.062
+asked, via the .env file.
+
+34
+00:02:09.381 --> 00:02:13.622
+So now let's go there and see how it all works from the setup
+
+35
+00:02:13.622 --> 00:02:16.582
+standpoint. So I deleted this from here.
+
+36
+00:02:16.742 --> 00:02:21.382
+Let's stop the server. I will save it without any
+
+37
+00:02:21.382 --> 00:02:24.261
+API keys, and we will run the bootstrap command,
+
+38
+00:02:24.624 --> 00:02:28.944
+which is basically the only command you need to run when you clone the
+
+39
+00:02:28.944 --> 00:02:33.264
+repo. It asks for the OpenAI API keys,
+
+40
+00:02:33.824 --> 00:02:37.024
+and you can reuse the chat key, and it writes them there.
+
+41
+00:02:37.264 --> 00:02:40.304
+If you need other providers, you can change this later.
+
+42
+00:02:40.587 --> 00:02:43.227
+So after this, you go here.
+
+43
+00:02:45.067 --> 00:02:47.307
+You can write something else here.
+
+44
+00:02:52.347 --> 00:02:55.227
+What frameworks do we use?
+
+45
+00:02:57.990 --> 00:03:00.470
+And just to make sure it still works.
+
+46
+00:03:02.950 --> 00:03:06.390
+Yep. So, as far as the technical stack is concerned,
+
+47
+00:03:06.630 --> 00:03:09.030
+we will discuss it in more detail in the call,
+
+48
+00:03:09.110 --> 00:03:13.632
+but basically it's a Turborepo monorepo, with an API app
+
+49
+00:03:13.632 --> 00:03:19.232
+on NestJS, an FSD-sliced front end
+
+50
+00:03:19.392 --> 00:03:24.272
+on Next.js, and packages for all the shared contracts,
+
+51
+00:03:24.272 --> 00:03:28.272
+types and stuff like this. Everything runs locally:
+
+52
+00:03:29.195 --> 00:03:31.675
+Next.js, NestJS, Supabase,
+
+53
+00:03:31.835 --> 00:03:34.155
+Supabase Auth, and all these kinds of things.
+
+54
+00:03:34.475 --> 00:03:37.755
+So yeah, it would be cool to discuss it with you in the call
+
+55
+00:03:37.995 --> 00:03:39.195
+in more detail.
