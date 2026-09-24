@@ -81,6 +81,11 @@ log` inside the source clone, so a path that was renamed on adoption must stay
   different facts — `lastSyncedSha` advances on every sync, `lineage[0].atSha`
   never moves.
 
+- **`divergence`** — optional prose: why a verbatim-adopted file still differs
+  from the source's copy, where the reason spans many files and no single
+  `{path: note}` holds it. Read it before treating a diff as drift worth
+  porting back or overwriting.
+
 **A declined path is not declined forever.** Most reasons are conditions that can
 flip, which is why the map stores prose instead of a bare list, and why reasons
 are written in the present tense. **Re-read them on every sync** and re-offer

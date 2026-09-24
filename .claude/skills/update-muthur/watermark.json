@@ -1,7 +1,7 @@
 {
   "repo": "vzakharov/muthur",
-  "lastSyncedSha": "6884e9605b98feeac41190624c1e3860e8d9c65e",
-  "lastSyncedAt": "2026-09-23",
+  "lastSyncedSha": "574ef3c1e2fd366c21080fc2759ce92b74905525",
+  "lastSyncedAt": "2026-09-24",
   "adopted": [
     {
       "CLAUDE.md": "adopted by way of vzakharov/vovazakharov.com, whose rewrite of the source's file this one derives from: § \"Language\" filled in rather than left as the source's adopter stub, no decision docs, and the source's § \"Vetting\" stackless-exit rule absent because this repo's vet.sh is real. The project sections — about, layout, deployment, vetting, testing, the skill list — are this repo's own, so a source commit touching them is read for the idea."
@@ -39,7 +39,9 @@
     {
       ".claude/skills/spinoff/": "taken with two translations, neither of which the closure check can see. The relative link to the source's catalog.md resolves to nothing here and reads as any catalog.md under .claude/skills/. And the stackless-vet rule it cites as CLAUDE.md § \"Vetting\" is the source's clause, declined here, so the skill states it itself. Everything else lands verbatim, its § \"The watermark\" pointer included: this repo carries the source's own name for the sync skill and for the watermark file, so the paragraph on what the target's copy is named holds here as written. Its catalog refusal needs no translation either — this repo has no catalog, which is exactly the signal that says a caller may spin off."
     },
-    ".claude/skills/squash-message/",
+    {
+      ".claude/skills/squash-message/": "taken with one local edit: the commit types are read off CLAUDE.md § \"Git conventions\", whose list here carries the branch-local `polish:` type, rather than restated in the skill."
+    },
     ".claude/skills/sync-branch/",
     ".claude/skills/tend-prose/",
     ".claude/skills/watch-ci/",
@@ -51,12 +53,30 @@
     "scripts/extract-session-images.py",
     "scripts/gh_export/",
     "scripts/lib/gh-repo.sh",
-    "scripts/lib/github.py",
+    {
+      "scripts/lib/github.py": "taken with one local edit: it imports `die` from `scripts/lib/cli.py` rather than defining its own."
+    },
     "scripts/lib/media.py",
     "scripts/lib/watch-tick-common.sh",
     "scripts/pr-body.py",
-    "scripts/run-parallel.sh",
+    {
+      "scripts/run-parallel.sh": "taken with one local edit: its comments and its `labeled` variable use the American spelling."
+    },
     ".claude/rules/README.md",
+    ".claude/rules/staging.md",
+    "scripts/staged.sh",
+    {
+      ".claude/rules/skills.md": "the source's rule, rewritten where its catalog assertions do not apply: those skip here by design, and the no-stub assertion is named instead."
+    },
+    {
+      ".claude/rules/stack.md": "the source's stack rule, filled in for this stack: it carries the vet roster's rationale that the source moved out of CLAUDE.md, and the three sites a toolchain change touches here (vet.sh, install-deps.sh, the environment setup script)."
+    },
+    {
+      ".claude/costs/": "the session cost ledger (catalog G7), opted in on the operator's yes and re-expressed in TypeScript: the pricer is scripts/lib/session-cost.ts and scripts/session-cost.ts, the report scripts/costs-report.ts, the hook .claude/hooks/stop-session-cost.sh, the contract .claude/rules/costs.md, and the tests `scripts/**/*.test.ts` in place of the source's `test_*.py`. Only `prices.json` lives at the source's path; its rates are copied, its notes are local. The source's `sessions/` rows are never synced (the skill's invariant); this repo's rows are its own."
+    },
+    {
+      ".claude/context-budget/": "the context budget hook (catalog G8), opted in on the operator's yes at the 2026-09-24 sync, laid out as the ledger is: .claude/hooks/post-tool-context-budget.sh (verbatim bar its lib.sh path and rule pointer), its contract in .claude/rules/context-budget.md, its tests in scripts/context-budget.test.ts in place of `test_context_budget.py`."
+    },
     {
       ".claude/hooks/": "adopted whole. `install-deps.sh` ships upstream as a stub with a TODO where the install goes; here it carries this project's `corepack enable pnpm` + `pnpm install --frozen-lockfile`, so the source's edits to that file are read for the idea and the body never lands."
     },
@@ -86,6 +106,7 @@
     "scripts/check-repo-identity.sh": "never — it holds the source's own owner/repo to one home, the watermark's `repo` field, across the clone lines and gh recipes a human copies. The source's own vet.sh calls it the one line there that is that repo's alone: it keys on the catalog, which this repo declines, so it exits 0 here and would certify nothing",
     "scripts/test_*.py": "never, which is the catalog's own disposition for the row — the unit tests over the source's own scripts, `scripts/gh_export/` included. They rode in here as a side effect of porting the exporter's commits, and an adopter that carries them either runs them, certifying code it never edits, or carries two files nothing reaches. The suite stays where the code is edited; `scripts/gh_export/` itself is adopted, being what this repo runs. See vzakharov/muthur#82 on why the disposition never reached the triage"
   },
+  "divergence": "Most of what a diff of a verbatim-adopted Markdown file against the source's copy shows is formatting: this repo runs prettier over every `.md`, re-wrapping lines and re-padding tables. Format the source's copy with this repo's prettier before comparing; what remains is a `{path: note}` translation or one of the edits those notes name. Nothing was shortened wholesale here: a sweep suspected of trimming text across the vendored files during PR #1 turned out, on measurement, to be this formatting.",
   "lineage": [
     {
       "repo": "vzakharov/vovazakharov.com",
