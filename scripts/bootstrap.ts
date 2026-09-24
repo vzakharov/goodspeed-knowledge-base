@@ -187,10 +187,9 @@ async function askForApiKey(
 }
 
 /**
- * The API keys `.env` still needs, asked for — the operator may not have one to
- * hand, so each is skippable. Where the embeddings reach the same endpoint as
- * the chat, they default to its key. Off a terminal nothing is asked, and the
- * closing check names what is missing.
+ * Where the embeddings reach the same endpoint as the chat, they default to its
+ * key. Off a terminal nothing is asked, and the closing check names what is
+ * missing.
  */
 async function askForApiKeys(env: Map<string, string>) {
   const answers = new Map<string, string>();

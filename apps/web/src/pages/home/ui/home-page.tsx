@@ -12,11 +12,7 @@ import { documentQueries, documentsHref } from '@/entities/document';
 
 const CHAT_HREF = '/chat';
 
-/**
- * `/` is where a reader starts, which is the documents page until there is
- * something to ask about and the chat from then on. A redirect rather than
- * either page rendered here: both build their links on their own path.
- */
+/** A redirect rather than either page rendered at `/`: both build their links on their own path. */
 export function HomePage() {
   const list = useQuery(documentQueries.list(null));
   const router = useRouter();
