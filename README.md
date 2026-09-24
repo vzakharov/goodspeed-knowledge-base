@@ -348,5 +348,5 @@ account, with what it cost, is in [How it was built](docs/how-it-was-built.md).
 
 ## Walkthroughs
 
-- The app: _(Loom link to come)_
-- How AI accelerated the work: _(Loom link to come)_
+- [The app](https://www.loom.com/share/e4cd3a06ca7e4f799d3946301f0d91c3)
+- [How AI accelerated the work](https://www.loom.com/share/f0a00289f0254304a0da6f4aed5b3409)
