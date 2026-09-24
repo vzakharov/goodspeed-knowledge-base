@@ -47,7 +47,7 @@ All of it lives in `apps/web/src/pages/document-editor/`: the editor is the only
 
 ## Tests
 
-- **`assemble-pdf-text.test.ts`** — lines, paragraph gaps, hyphen joins (and a capitalized next line that is *not* joined), page breaks, empty pages, whitespace-only items.
+- **`assemble-pdf-text.test.ts`** — lines, paragraph gaps, hyphen joins (and a capitalized next line that is _not_ joined), page breaks, empty pages, whitespace-only items.
 - **`read-file.test.ts`** — against a real PDF: the test writes a minimal one-page PDF as bytes (a Helvetica content stream with two paragraphs and a hyphenated word) and runs `readDocumentFile` on it under Node, through pdf.js's legacy build, so the adapter — item filtering, the page loop, cleanup — is covered along with the assembler. Plus a non-UTF-8 `.txt`, an over-limit text, an unknown extension, and a PDF with no text. No fixture file is committed; the bytes live in the test.
 - **By hand, through `/preview`:** drop each kind on both editor pages, in both themes; confirm the overlay blocks the form during a large PDF while the page stays scrollable; confirm the confirmation on non-empty content.
 
@@ -72,10 +72,10 @@ All of it lives in `apps/web/src/pages/document-editor/`: the editor is the only
 Each carries a recommendation, and the plan above is written with it in force.
 
 1. **Content that is already in the field when a file is dropped.**
-   a. *(recommended)* Replace it after a confirmation; fill an empty field with no question. The edit page is where refreshing a document from a new version of its file is useful, and the confirmation is what keeps that from destroying unsaved typing.
+   a. _(recommended)_ Replace it after a confirmation; fill an empty field with no question. The edit page is where refreshing a document from a new version of its file is useful, and the confirmation is what keeps that from destroying unsaved typing.
    b. Offer the import on the New document page only.
    c. Append the file's text to what is there.
 2. **Predefined CMaps for PDFs with non-embedded CJK fonts.**
-   a. *(recommended)* Copy them from `pdfjs-dist` into `public/` at build, gitignored, and load them from the app's own origin.
+   a. _(recommended)_ Copy them from `pdfjs-dist` into `public/` at build, gitignored, and load them from the app's own origin.
    b. Load them from a CDN (`cdn.jsdelivr.net/npm/pdfjs-dist@<version>/cmaps/`) — no build step, but a runtime dependency on a third party, and the reader's PDF text never leaves the browser either way, so this only trades the build step for an outside host.
    c. Leave them out; such PDFs fail with the "no text to extract" message.
