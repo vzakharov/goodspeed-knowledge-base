@@ -38,6 +38,8 @@ Anything that holds only over part of that tree lives as a path-scoped rule in `
 - **It needs the local stack running.** `test:db` and `test:e2e` run against it, and each fails naming `pnpm bootstrap` when it is down. A cloud session starts `dockerd` by hand (`nohup dockerd &`, not the tool's background mode), and again after a resume, which restarts the container; the CLI pulls its images from `public.ecr.aws`.
 - **`pnpm lint` is `eslint . --fix`**, and a fix it picks is a judgment about source someone wrote. The checking forms are `pnpm exec eslint .` and `pnpm lint:css`.
 
+**A docs-only diff finalizes in `no vet` mode whether or not the flag was typed.** Docs-only means every changed file is Markdown, the session cost rows under `.claude/costs/` aside. The full run would spend minutes and a running stack on a diff that only two of its checks read, so those two still run, in seconds: `pnpm exec prettier --check` over the changed files, and `scripts/check-skill-catalog.sh` when the diff reaches `.claude/`. The attestation names both.
+
 **A workspace landing, or any toolchain change, has three sites to wire**: `scripts/vet.sh`, `.claude/hooks/install-deps.sh`, and the environment setup script, which no agent can edit — so the report says what the operator must add there.
 
 ## Key principles
@@ -162,6 +164,8 @@ The default is not to write it. Prose costs context on every session that loads 
 **Retiring a doc leaves a tombstone**, so every surviving citation still resolves: a file recording the last commit that contained it, the `git show <sha>:<path>` recipe to read it, and where any still-live content went. One tombstone per retirement, with a row per file: `retired.md` at the root of a retired directory, `<name>.retired.md` beside a retired file's siblings — so every tombstone matches `*retired.md`.
 
 **Plans are the exception, being transient**: keep them current as the work deviates, with checklist items in forward-looking voice.
+
+**An audio recording the operator attaches is read with `pnpm transcribe <file>`** — Deepgram (keyed by `DEEPGRAM_API_KEY` from the environment) and a local faster-whisper, merged word by word, that one text saved under `docs/remove-before-merging/transcripts/` for review, so the merge never carries it. Where the two disagree, neither is authoritative: settle it from context and the repo's own vocabulary, and a term both mishear belongs in the script's `VOCABULARY`.
 
 ## Language
 

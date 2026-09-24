@@ -27,6 +27,8 @@ dist/
 .turbo/
 *.tsbuildinfo
 next-env.d.ts
+# pdf.js's run-time files, copied out of pdfjs-dist by the web app's dev and build
+apps/web/public/pdfjs/
 
 # Environment — .env.example is the committed, documented template
 .env*

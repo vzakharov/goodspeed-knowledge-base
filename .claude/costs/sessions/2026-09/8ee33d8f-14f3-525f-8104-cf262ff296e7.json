@@ -1,0 +1,58 @@
+{
+  "sessionId": "8ee33d8f-14f3-525f-8104-cf262ff296e7",
+  "branch": "claude/chat-sidebar-foz8zp",
+  "cwd": "/home/user/goodspeed-knowledge-base",
+  "name": "chat conversation list as a sidebar",
+  "openingPrompt": "давай попробуем убрать список чатов в сайдбар, при этом расширив саму зону чата до стандартной ширины",
+  "prs": [
+    10
+  ],
+  "url": "https://claude.ai/code/session_01VqtZ6HTLhxZ2vrsaowP9jm",
+  "firstResponseAt": "2026-09-24T02:02:09.854Z",
+  "lastResponseAt": "2026-09-24T02:14:29.853Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 92,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 139866,
+    "cacheReadTokens": 5901143,
+    "outputTokens": 23528,
+    "thinkingTokens": 6814,
+    "responses": 46,
+    "costUsd": 2.7700846
+  },
+  "ownTurns": {
+    "inputTokens": 92,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 139866,
+    "cacheReadTokens": 5901143,
+    "outputTokens": 23528,
+    "thinkingTokens": 6814,
+    "responses": 46,
+    "costUsd": 2.7700846
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 92,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 139866,
+      "cacheReadTokens": 5901143,
+      "outputTokens": 23528,
+      "thinkingTokens": 6814,
+      "responses": 46,
+      "costUsd": 2.7700846
+    }
+  },
+  "warnings": []
+}

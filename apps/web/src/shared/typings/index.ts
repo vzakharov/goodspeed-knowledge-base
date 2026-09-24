@@ -17,6 +17,9 @@ export type Labeled = { label: string };
 /** Rendered or authored text, as opposed to a title or a label. */
 export type WithText = { text: string };
 
+/** What cancels the work a call starts. */
+export type WithAbortSignal = { signal: AbortSignal };
+
 /** Extra classes a caller merges into the component's own. */
 export type WithOptionalClassName = { className?: string };
 
