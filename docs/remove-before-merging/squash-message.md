@@ -1,14 +1,23 @@
 Proposed squash title/body:
 
 ```
-docs: link the two Loom walkthroughs from the README (pr #19)
+docs: #17 the Loom walkthroughs, and error alerts that wrap (pr #19)
 ```
 
 ```
 The brief asks the README to link a Loom of the app and one of how AI
-accelerated the work. Both are recorded — 3:40 and 4:49, inside the
-brief's five minutes — and the Walkthroughs section links them in place
-of its placeholders.
+accelerated the work. Both are recorded, at 3:40 and 4:49. The README
+links each one on Loom, and to its copy in docs/loom/: an mp4 with
+WebVTT captions, which are Loom's, proofread against what was said.
+The copies let the videos be watched from a clone and outlast the Loom
+account, at the cost of ~91 MB in the history.
+
+Recording them surfaced #17: a provider's 401 quotes the API key as one
+unbroken token, and the error alert grew to its length, scrolling the
+chat sideways. ErrorAlert's message now breaks anywhere, so an alert
+of any content keeps to its column.
+
+Fixes #17
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
