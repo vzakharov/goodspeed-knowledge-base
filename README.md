@@ -279,24 +279,34 @@ CHAT_BASE_URL=http://localhost:8000/v1
 
 ## What I would do with more time
 
-- **Background ingestion.** Embedding in the request is simple and honest
-  about failure, but a long document holds the request for as long as the
-  provider takes. A queue (a Postgres table polled by a worker, or pgmq) with
-  the status pushed to the page would free it.
-- **Better retrieval, measured.** A small evaluation set of questions with the
-  chunks that answer them, then hybrid search — Postgres full-text alongside
-  the vectors, merged by reciprocal rank — and a reranker, each kept only if
-  the set says it helps. The chunk size and threshold above are reasoned, not
-  measured.
-- **A dimension-agnostic schema.** One vector column per supported width, or
-  `halfvec` with the width chosen at setup, so a fully local setup is
-  configuration rather than a migration.
-- **File upload** — PDF and TXT, extracted into a document — the one stretch
-  goal left out.
-- **Deployment and CI**: a hosted Supabase project, the API in a container,
-  the static web app on a CDN, and `./scripts/vet.sh` on every pull request.
-- **Limits**: a per-user rate limit and token budget, which the usage table
-  already has the data for.
+- **Make the design calls myself, at the forks.** After four or five hours of
+  agent work I read through some 250 files it had written, instead of taking
+  each decision as it came up and knowing what every part does because I chose
+  it. The calls it made aren't necessarily bad, but I would have made far more
+  of them. Two examples:
+  - _The static export._ It has real upsides, and trade-offs with them: a
+    loader shown on every page, and not the prettiest URLs (`/chat?c=…`). I
+    would probably have landed on the same choice, but as an informed one.
+  - _The chat's data model._ A question and its answer are separate rows in
+    `messages`. There is never a question without an answer, so for a system
+    like this one row per exchange often makes more sense.
+- **Branching conversations**: regenerate an answer and move back and forth
+  between the versions, the way chat products do.
+- **Document processing in the background, tested on hard files.** I have
+  tried it on small PDFs, where it works fine. Large PDFs, scans with no text
+  layer and broken files each need working out how the app should handle them,
+  and those edge cases are a line of work of their own.
+- **Retrieval quality.** RAG doesn't always get it right — the walkthrough
+  shows a fairly simple question it misses. Semantic chunking and the like;
+  in any system like this, the main work is in those details.
+- **A cloud deployment**, on something simple like Railway, so the app can be
+  shown with a link — and PR preview deployments on top, which always pay off:
+  any feature can be tried live without running a local server. That work is
+  tedious — auth, basic rate limits and so on — so it doesn't pay for itself
+  in a test assignment, which is why the setup here is a local
+  `pnpm bootstrap`: the fastest and most convenient option.
+- **The UI.** Not gradients and shine — round the cards here, drop an
+  underline there. Even with design ownership I would lean ascetic.
 
 ## Walkthroughs
 
