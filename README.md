@@ -301,6 +301,9 @@ CHAT_BASE_URL=http://localhost:8000/v1
 - **Retrieval quality.** RAG doesn't always get it right — the walkthrough
   shows a fairly simple question it misses. Semantic chunking and the like;
   in any system like this, the main work is in those details.
+- **Adapters for genuinely different model APIs**, Anthropic's first, rather
+  than only providers that speak the OpenAI specification. `ChatModel` and
+  `EmbeddingModel` above are the seam each would implement.
 - **A cloud deployment**, on something simple like Railway, so the app can be
   shown with a link — and Railway's PR deployments on top, which always pay off:
   any feature can be tried live without running a local server. That work is

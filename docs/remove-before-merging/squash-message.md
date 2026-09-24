@@ -11,8 +11,9 @@ Vova's own list, taken from a recorded note: making the design calls
 at the forks himself (the static export's loader and search-parameter
 URLs, one row per question-and-answer exchange), branching
 conversations, background processing stress-tested on large, scanned,
-broken and encrypted PDFs, retrieval quality, a Railway deployment
-with PR deployments, and restrained UI polish.
+broken and encrypted PDFs, retrieval quality, adapters for model APIs
+beyond the OpenAI specification (Anthropic's first), a Railway
+deployment with PR deployments, and restrained UI polish.
 
 `pnpm transcribe <file>` sends a recording to Deepgram nova-3, prints
 the transcript and parks it under docs/remove-before-merging/, which
