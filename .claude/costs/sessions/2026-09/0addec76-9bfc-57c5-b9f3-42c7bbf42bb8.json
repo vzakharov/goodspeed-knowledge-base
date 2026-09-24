@@ -1,0 +1,58 @@
+{
+  "sessionId": "0addec76-9bfc-57c5-b9f3-42c7bbf42bb8",
+  "branch": "claude/decision-doc-1lmvss",
+  "cwd": "/home/user/goodspeed-knowledge-base",
+  "name": null,
+  "openingPrompt": "/handle claude/decision-doc-1lmvss",
+  "prs": [
+    3
+  ],
+  "url": "https://claude.ai/code/session_01XRNj7RfpnDdYEh9HYD1sYp",
+  "firstResponseAt": "2026-09-24T00:07:57.445Z",
+  "lastResponseAt": "2026-09-24T00:12:35.335Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 114,
+    "cacheWrite5mTokens": 163367,
+    "cacheWrite1hTokens": 127776,
+    "cacheReadTokens": 6432739,
+    "outputTokens": 27292,
+    "thinkingTokens": 7898,
+    "responses": 57,
+    "costUsd": 3.6718868000000007
+  },
+  "ownTurns": {
+    "inputTokens": 68,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 127776,
+    "cacheReadTokens": 4702335,
+    "outputTokens": 25200,
+    "thinkingTokens": 7898,
+    "responses": 34,
+    "costUsd": 2.466947
+  },
+  "subagents": {
+    "inputTokens": 46,
+    "cacheWrite5mTokens": 163367,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 1730404,
+    "outputTokens": 2092,
+    "thinkingTokens": 0,
+    "responses": 23,
+    "costUsd": 1.2049398000000002
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 114,
+      "cacheWrite5mTokens": 163367,
+      "cacheWrite1hTokens": 127776,
+      "cacheReadTokens": 6432739,
+      "outputTokens": 27292,
+      "thinkingTokens": 7898,
+      "responses": 57,
+      "costUsd": 3.6718868000000007
+    }
+  },
+  "warnings": []
+}
