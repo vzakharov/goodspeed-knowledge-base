@@ -2,12 +2,12 @@
   "sessionId": "633b5ba1-3e65-5442-ad98-37b498bd9814",
   "branch": "claude/decision-doc-1lmvss",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": "Design notes (#4) and the carve of #2",
   "openingPrompt": "/go claude/decision-doc-1lmvss -- but handle the single unresolved comment first",
   "prs": [
     3
   ],
   "url": "https://claude.ai/code/session_01MWcKrLxD4Xr78bFaSV2rTF",
+  "operator": "vzakharov",
   "firstResponseAt": "2026-09-24T00:17:23.712Z",
   "lastResponseAt": "2026-09-24T00:35:46.183Z",
   "pricesAsOf": "2026-09-23",
