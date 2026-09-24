@@ -18,35 +18,10 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
+import { assistantRecord, PRICES } from './lib/cost-fixtures.ts';
 import { isUnwrittenTail, parseSessionCost } from './lib/session-cost.ts';
 
 const SCRIPT = path.resolve(import.meta.dirname, 'session-cost.ts');
-
-const PRICES = JSON.stringify({
-  as_of: '2026-01-01',
-  rates: {
-    'test-model/standard': {
-      input: 1,
-      output: 10,
-      cache_write_5m: 2,
-      cache_write_1h: 4,
-      cache_read: 0.5,
-    },
-  },
-});
-
-const response = (id: string, stopReason: string): string =>
-  JSON.stringify({
-    type: 'assistant',
-    sessionId: 'sess',
-    timestamp: '2026-03-04T05:06:07.000Z',
-    message: {
-      id,
-      model: 'test-model',
-      stop_reason: stopReason,
-      usage: { input_tokens: 1, output_tokens: 1, speed: 'standard' },
-    },
-  });
 
 const project = (): { dir: string; transcript: string } => {
   const dir = mkdtempSync(path.join(tmpdir(), 'session-cost-'));
@@ -68,12 +43,15 @@ const run = (dir: string, transcript: string, ...args: string[]): string => {
 describe('session-cost: what a rewrite carries forward', () => {
   it('keeps an unwritten-tail warning once the transcript has caught up', () => {
     const { dir, transcript } = project();
-    writeFileSync(transcript, response('msg_1', 'tool_use'));
+    writeFileSync(transcript, assistantRecord('msg_1', 'tool_use'));
     run(dir, transcript, '--at-stop');
 
     writeFileSync(
       transcript,
-      [response('msg_1', 'tool_use'), response('msg_2', 'end_turn')].join('\n'),
+      [
+        assistantRecord('msg_1', 'tool_use'),
+        assistantRecord('msg_2', 'end_turn'),
+      ].join('\n'),
     );
     const row = parseSessionCost(
       readFileSync(run(dir, transcript, '--at-stop'), 'utf8'),
@@ -86,7 +64,7 @@ describe('session-cost: what a rewrite carries forward', () => {
 
   it('writes the row to --out, leaving the ledger as it was', () => {
     const { dir, transcript } = project();
-    writeFileSync(transcript, response('msg_1', 'end_turn'));
+    writeFileSync(transcript, assistantRecord('msg_1', 'end_turn'));
     const out = path.join(dir, 'staged.json');
     const row = run(dir, transcript, '--at-stop', '--out', out);
 

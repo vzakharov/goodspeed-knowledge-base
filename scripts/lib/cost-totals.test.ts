@@ -7,39 +7,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
+import { row, tally } from './cost-fixtures.ts';
 import { branchLabel, isoWeek, totalsOf } from './cost-totals.ts';
-import type { SessionCost } from './session-cost.ts';
-
-const tally = (costUsd: number) => ({
-  inputTokens: 0,
-  cacheWrite5mTokens: 0,
-  cacheWrite1hTokens: 0,
-  cacheReadTokens: 0,
-  outputTokens: 0,
-  thinkingTokens: 0,
-  responses: 1,
-  costUsd,
-});
-
-const row = (overrides: Partial<SessionCost> = {}): SessionCost => ({
-  sessionId: 'sess',
-  branch: 'a-branch',
-  cwd: null,
-  openingPrompt: null,
-  prs: [],
-  url: null,
-  operator: null,
-  firstResponseAt: '2026-03-04T05:06:07.000Z',
-  lastResponseAt: '2026-03-04T06:06:07.000Z',
-  pricesAsOf: '2026-01-01',
-  total: tally(1),
-  ownTurns: tally(1),
-  subagents: tally(0),
-  byRate: {},
-  warnings: [],
-  claudeCodeTotalUsd: null,
-  ...overrides,
-});
 
 describe('cost-totals: where a session is counted', () => {
   it('files a session under the day, week and month it started in', () => {

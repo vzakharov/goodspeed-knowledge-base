@@ -9,35 +9,12 @@ import {
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
+import { row } from './cost-fixtures.ts';
 import { readRow, root, rowText } from './ledger.ts';
 import { parseSessionCost } from './session-cost.ts';
 
-const tally = {
-  inputTokens: 0,
-  cacheWrite5mTokens: 0,
-  cacheWrite1hTokens: 0,
-  cacheReadTokens: 0,
-  outputTokens: 0,
-  thinkingTokens: 0,
-  responses: 0,
-  costUsd: 0,
-};
-
-const ROW = parseSessionCost(
-  JSON.stringify({
-    sessionId: 'sess',
-    branch: 'a-branch',
-    cwd: null,
-    firstResponseAt: null,
-    lastResponseAt: null,
-    pricesAsOf: '2026-01-01',
-    total: tally,
-    ownTurns: tally,
-    subagents: tally,
-    byRate: {},
-    warnings: [],
-  }),
-);
+// Parsed, so its keys fall in the order a written row's do.
+const ROW = parseSessionCost(JSON.stringify(row()));
 
 // Under the repo's `tmp/`, where `writeAtomic` stages: a rename out of the
 // system temp directory may cross filesystems.

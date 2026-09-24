@@ -23,22 +23,11 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { beforeEach, describe, it } from 'node:test';
 
+import { assistantRecord, PRICES } from './lib/cost-fixtures.ts';
+
 const REPO = path.resolve(import.meta.dirname, '..');
 const HOOK = '.claude/hooks/stop-session-cost.sh';
 const ROW = '.claude/costs/sessions/2026-03/sess.json';
-
-const PRICES = JSON.stringify({
-  as_of: '2026-01-01',
-  rates: {
-    'test-model/standard': {
-      input: 1,
-      output: 10,
-      cache_write_5m: 2,
-      cache_write_1h: 4,
-      cache_read: 0.5,
-    },
-  },
-});
 
 /**
  * A branch pushed to a bare `origin`, carrying the ledger's code and none of its
@@ -111,17 +100,7 @@ const clone = () => {
     responses += 1;
     appendFileSync(
       transcript,
-      `${JSON.stringify({
-        type: 'assistant',
-        sessionId: 'sess',
-        timestamp: '2026-03-04T05:06:07.000Z',
-        message: {
-          id: `msg_${responses}`,
-          model: 'test-model',
-          stop_reason: 'end_turn',
-          usage: { input_tokens: 1, output_tokens: 1000, speed: 'standard' },
-        },
-      })}\n`,
+      `${assistantRecord(`msg_${responses}`, 'end_turn', 1000)}\n`,
     );
   };
   respond();
