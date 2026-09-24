@@ -1,13 +1,13 @@
 @use '../../../../styles/mantine' as mantine;
 
-// The sidebar takes the screen's left edge from `lg` up, where a reading-width
-// thread still fits beside it; below that the list is inline, as `chat-page.tsx`
-// renders it. `visibleFrom`/`hiddenFrom` there name the same breakpoint.
+// From `lg` up, where a reading-width thread still fits beside it, the list is
+// a sidebar at the screen's left edge; below that it is inline.
 $sidebar-width: 280px;
 
 .sidebar {
+  display: none;
   position: fixed;
-  top: var(--app-shell-header-offset, 0rem);
+  top: var(--app-shell-header-offset, 0);
   bottom: 0;
   left: 0;
   width: $sidebar-width;
@@ -15,6 +15,16 @@ $sidebar-width: 280px;
   padding: var(--mantine-spacing-md);
   border-right: 1px solid var(--color-border-hairline);
   background: var(--mantine-color-body);
+
+  @include mantine.larger-than(mantine.$breakpoint-lg) {
+    display: block;
+  }
+}
+
+.inlineList {
+  @include mantine.larger-than(mantine.$breakpoint-lg) {
+    display: none;
+  }
 }
 
 .content {
