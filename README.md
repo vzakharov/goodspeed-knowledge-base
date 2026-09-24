@@ -60,6 +60,10 @@ scripts/            bootstrap, vet and the checks it runs
 
 ## Architecture decisions
 
+[`docs/design-notes.md`](docs/design-notes.md) weighs each of these against
+its alternatives, explains the parts of the code that are not obvious from
+reading it, and lists the shortcuts taken on purpose.
+
 **One contract package, types inferred from it.** Every body the API and the
 web app exchange is a Zod schema in `@kb/contracts`. The API validates requests
 with it, the web client parses every response with it, and both infer their
