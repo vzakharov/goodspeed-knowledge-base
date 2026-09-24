@@ -22,7 +22,8 @@ a PDF arrives, its CMaps and standard fonts served from the app. Its
 text items are rebuilt into lines, paragraphs at widened gaps, words
 broken by a hyphen mended, pages separated. A scan, a protected PDF,
 non-UTF-8 text and text over the document limit each fail with a
-message; nothing is truncated.
+message; nothing is truncated. The design notes name an imported PDF
+as the first text reaching the prompt that the reader did not write.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
