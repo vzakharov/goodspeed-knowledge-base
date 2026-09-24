@@ -14,10 +14,11 @@ conversations, background processing stress-tested on large, scanned,
 broken and encrypted PDFs, retrieval quality, a Railway deployment
 with PR deployments, and restrained UI polish.
 
-`pnpm transcribe <file>` sends a recording to Deepgram nova-3 and
-prints the transcript, detecting the language unless `--language` is
-given: the code-switching `multi` mode heard a Russian-only note far
-worse. CLAUDE.md points sessions at it for attached recordings.
+`pnpm transcribe <file>` sends a recording to Deepgram nova-3, prints
+the transcript and parks it under docs/remove-before-merging/, which
+the merge never carries. It detects the language unless `--language`
+is given: the code-switching `multi` mode heard a Russian-only note
+far worse. CLAUDE.md points sessions at it for attached recordings.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```

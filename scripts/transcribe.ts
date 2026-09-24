@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
-// Transcribes an audio recording through Deepgram and prints the text in
-// paragraphs.
+// Transcribes an audio recording through Deepgram, prints the text in
+// paragraphs and saves it under `docs/remove-before-merging/transcripts/`, so
+// it rides the branch for review and `/finalize` sweeps it before the merge.
 //
 //   pnpm transcribe <audio-file> [--language <code>]
 //
@@ -12,10 +13,12 @@
 /* eslint-disable no-console -- stdout is this script's interface: the
    transcript, for a person or an agent to read. */
 
-import { readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 import { z } from 'zod';
 
 import { flag } from './lib/argv.ts';
+import { root } from './lib/ledger.ts';
 
 const file = process.argv[2];
 if (file === undefined || file.startsWith('--')) {
@@ -83,10 +86,20 @@ const {
   },
 } = Transcription.parse(await response.json());
 
-console.log(
+const transcript =
   best.paragraphs === undefined
     ? best.transcript
     : best.paragraphs.paragraphs
         .map(({ sentences }) => sentences.map(({ text }) => text).join(' '))
-        .join('\n\n'),
+        .join('\n\n');
+
+const out = path.join(
+  root,
+  'docs/remove-before-merging/transcripts',
+  `${path.parse(file).name}.txt`,
 );
+mkdirSync(path.dirname(out), { recursive: true });
+writeFileSync(out, `${transcript}\n`);
+
+console.log(transcript);
+console.error(`transcribe: saved to ${path.relative(root, out)}`);
