@@ -26,9 +26,11 @@ The cost ledger records whose session each row is (the operator
 handle the SessionStart hook resolved, every earlier row filed under
 @vzakharov) and sums spend by operator. Its Stop hook warns when the
 transcript had not caught up with the turn, rather than the rule
-assuming the last turn is lost; cost commits state the turn's spend;
-the naming hook asks from the first prompt; and no procedure carries
-another repo's rows. /finalize no longer claims the merge deploys.
+assuming the last turn is lost, and commits the row by plumbing so the
+harness's git check never finds the tree dirty; cost commits state the
+turn's spend; the session name, the one field the agent wrote mid-turn,
+is gone; and no procedure carries another repo's rows. /finalize no
+longer claims the merge deploys.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
