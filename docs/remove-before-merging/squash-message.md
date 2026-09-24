@@ -8,22 +8,21 @@ feat: import a document's content from a .txt, .md or .pdf file (pr #12)
 A reader with the document already in a file had to paste it in by
 hand, and a PDF could not be brought in at all.
 
-The document editor now takes a .txt, .md or .pdf file, dropped
-anywhere on the page or picked from a Dropzone in the Content field,
-and fills Content with its text, and Title with the file name when it
-is empty. Content already in the field is replaced only after a
-confirmation. The file is read in the browser and never stored: only
-its text reaches the API, through the save path that exists, so the
-reader judges the extraction in the field before saving it.
+The document editor takes a .txt, .md or .pdf file, dropped anywhere
+on the page or picked from a Dropzone in the Content field, and fills
+Content with its text, and Title with the file name when it is empty.
+Content already in the field is replaced only after a confirmation.
+The file is read in the browser and never stored: only its text
+reaches the API, through the existing save path, so the reader judges
+the extraction in the field before saving it.
 
-PDFs are read by pdf.js in its own Web Worker, behind an overlay that
-blocks the form while the page stays responsive; pdf.js is loaded only
-when a PDF arrives. Its text items are reassembled into paragraphs,
-with hyphenated line breaks rejoined and pages separated, and Adobe's
-CMaps are served from the app for PDFs whose CJK fonts are not
-embedded. A scan, a broken or protected PDF, non-UTF-8 text and text
-over the document limit each fail with a message; nothing is
-truncated.
+A PDF holds the page behind a modal while pdf.js reads it in its own
+Web Worker, with a Cancel that aborts the read; pdf.js loads only when
+a PDF arrives, its CMaps and standard fonts served from the app. Its
+text items are rebuilt into lines, paragraphs at widened gaps, words
+broken by a hyphen mended, pages separated. A scan, a protected PDF,
+non-UTF-8 text and text over the document limit each fail with a
+message; nothing is truncated.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
