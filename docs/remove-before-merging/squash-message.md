@@ -16,11 +16,12 @@ knowledge graph over the documents), adapters for model APIs
 beyond the OpenAI specification (Anthropic's first), a Railway
 deployment with PR deployments, and restrained UI polish.
 
-`pnpm transcribe <file>` sends a recording to Deepgram nova-3, prints
-the transcript and parks it under docs/remove-before-merging/, which
-the merge never carries. It detects the language unless `--language`
-is given: the code-switching `multi` mode heard a Russian-only note
-far worse. CLAUDE.md points sessions at it for attached recordings.
+`pnpm transcribe <file>` hears a recording twice, through Deepgram
+nova-3 and a local faster-whisper (its virtualenv and model fetched on
+first use), both prompted with the project's vocabulary, and prints
+the two merged word by word so a misheard word shows up as a
+disagreement. The texts park under docs/remove-before-merging/, which
+the merge never carries. CLAUDE.md points sessions at it.
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
