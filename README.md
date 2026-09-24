@@ -178,9 +178,10 @@ implementation per capability covers them all and no second class was
 needed. A provider with an API of its own — Anthropic, say — would be one: a
 `ChatModel` over its Messages API, which takes the system prompt apart from
 the messages and streams its own events and usage. Its preset would name that
-implementation, and `createChatModel` would pick by it; the embeddings would
-stay on an OpenAI-compatible provider, since Anthropic serves none, which the
-split into two capabilities already allows.
+implementation, and `createChatModel` would pick by it. Anthropic serves no
+embeddings, so they would come from another provider, which the split into two
+capabilities already allows; one with an API of its own would be an
+`EmbeddingModel` the same way.
 
 **The web app is a static export.** There is nothing for a Next.js server to
 do here: the API holds the data, and sign-in goes from the browser straight to
