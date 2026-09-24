@@ -1,0 +1,58 @@
+{
+  "sessionId": "5b50935a-5135-502c-ad9d-f1f593011d0d",
+  "branch": "claude/readme-voice-review-7a3w62",
+  "cwd": "/home/user/goodspeed-knowledge-base",
+  "name": "README edits from voice review",
+  "openingPrompt": "@\"/root/.claude/uploads/5b50935a-5135-502c-ad9d-f1f593011d0d/246d5260-Read_me.m4a.zip\" редактура readme",
+  "prs": [
+    14
+  ],
+  "url": "https://claude.ai/code/session_01G5WjVMXUzAjuwhLrTyUrkD",
+  "firstResponseAt": "2026-09-24T10:06:10.525Z",
+  "lastResponseAt": "2026-09-24T10:42:06.049Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 2.586514,
+  "total": {
+    "inputTokens": 112,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 137091,
+    "cacheReadTokens": 7455230,
+    "outputTokens": 23500,
+    "thinkingTokens": 6158,
+    "responses": 56,
+    "costUsd": 3.0582219999999998
+  },
+  "ownTurns": {
+    "inputTokens": 112,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 137091,
+    "cacheReadTokens": 7455230,
+    "outputTokens": 23500,
+    "thinkingTokens": 6158,
+    "responses": 56,
+    "costUsd": 3.0582219999999998
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 112,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 137091,
+      "cacheReadTokens": 7455230,
+      "outputTokens": 23500,
+      "thinkingTokens": 6158,
+      "responses": 56,
+      "costUsd": 3.0582219999999998
+    }
+  },
+  "warnings": []
+}
