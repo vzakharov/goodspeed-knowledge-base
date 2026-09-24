@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// Transcribes an audio recording through Deepgram and prints the text,
-// one paragraph per line.
+// Transcribes an audio recording through Deepgram and prints the text in
+// paragraphs.
 //
 //   pnpm transcribe <audio-file> [--language <code>]
 //
