@@ -55,8 +55,9 @@ _On screen: #1's files → #2._
 - Not fixed in #1 — already **100+ commits** → it **landed as is**, the review
   became **ticket #2**.
 - **Split into five**, by **priority**: first a **document of the design
-  decisions** — a repo **someone else wrote**, so it **gets my head around
-  it** and teaches me **how to explain it** — then the **first-run polish**.
+  decisions** — a repo **someone else wrote**, so **talking them through** and
+  **seeing them written down** **gets my head around it** and teaches me **how
+  to explain it** — then the **first-run polish**.
 
 ## 2:40 — From one sentence to a PR
 
@@ -76,8 +77,8 @@ _On screen: the closed PR list → #12 → its session, the top of it._
 
 _On screen: #13._
 
-- Agents often **nail the technical parts** but **miss the big picture** — for
-  example:
+- As **#12 shows**, agents often **nail the technical parts**; at the same time,
+  they can **miss the big picture** — for example:
 - "More time" came out as **what the agent would do** → rewritten as **what I
   would**.
 

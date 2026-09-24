@@ -59,8 +59,9 @@ order of priority. First
 [#4](https://github.com/vzakharov/goodspeed-knowledge-base/issues/4), a
 document of the design decisions and why —
 [`docs/design-notes.md`](design-notes.md): I had just dived into a repository
-someone else wrote, and writing its decisions down is how I got my own head
-around it and learned how to explain it to others; then
+someone else wrote, and talking its decisions through with an agent and seeing
+them written down is how I got my own head around it and learned how to explain
+it to others; then
 [#5](https://github.com/vzakharov/goodspeed-knowledge-base/issues/5), what
 makes a reviewer's first run pleasant.
 
@@ -77,8 +78,9 @@ and I don't leave comments for the sake of leaving them.
 
 ## Where the human decides
 
-Agents often nail the technical parts and miss the big picture. For example,
-the README's "What I would do with more time" first came out as what
+As #12 shows, agents often nail the technical parts. At the same time, they can
+miss the big picture: the README's "What I would do with more time" first came
+out as what
 _the agent_ would do with more time;
 [#13](https://github.com/vzakharov/goodspeed-knowledge-base/pull/13) rewrote it
 as what I would.
