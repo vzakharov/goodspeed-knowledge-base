@@ -95,13 +95,21 @@ The sweep also weighed and dropped two: the configured model name interpolated i
 
 ## Steps
 
-- [ ] Export PR #1's threads and commit the export as context.
-- [ ] Write the opening, the contents list and §1, and check that the diagram renders (`@mermaid-js/mermaid-cli` under `tmp/`, against the pre-installed Chromium).
-- [ ] Write §2, §3, §4 and §5, one commit per section, each after its /plainly pass.
-- [ ] Add the README's pointer line.
-- [ ] Check that every `path:line` link and README anchor in the document resolves.
-- [ ] `pnpm format:check` over the new Markdown.
-- [ ] Hand the PR to `/pr` (quality passes via `/go`).
+- [x] Export PR #1's threads and commit the export as context.
+- [x] Write the opening, the contents list and §1, and check that the diagram renders (`@mermaid-js/mermaid-cli` under `tmp/`, against the pre-installed Chromium).
+- [x] Write §2, §3, §4 and §5, each after its /plainly pass.
+- [x] Add the README's pointer line.
+- [x] Check that every `path:line` link and README anchor in the document resolves.
+- [x] `pnpm format:check` over the new Markdown.
+- [x] Hand the PR to `/pr` (quality passes via `/go`).
+
+## Where the work departed from this plan
+
+- The sections were drafted in parallel and landed as one commit rather than one per section.
+- The export lives at `docs/pr/1/pr.md`, where `scripts/export-github-item.py` writes a PR, not under `docs/issue/1/`.
+- S8's sign-out claim was wrong: `signOut({ scope: 'local' })` revokes this session's refresh token on the server. What holds is that other devices stay signed in and the access token stays valid for its hour; the entry says that.
+- S11's "two `Logger` calls" are four call sites; the entry counts them.
+- The committed `database.types.ts` lacks `markdown_excerpt`, and nothing checks it against the schema. The entries say so, and #7 now carries regenerating it and adding the check.
 
 ## DRY notes
 
