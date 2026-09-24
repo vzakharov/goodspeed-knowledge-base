@@ -1,0 +1,56 @@
+{
+  "sessionId": "165f54cd-50f3-5cde-a5a7-3303584e080b",
+  "branch": "claude/gallant-ptolemy-2sg2t4",
+  "cwd": "/home/user/goodspeed-knowledge-base/apps/api/src",
+  "name": null,
+  "openingPrompt": "как бы нам нужно было поменять наши адаптеры/код, если бы нужно было поддержать не openai-compatible провайдера? ничего менять не нужно, просто здесь какие-то с…",
+  "prs": [],
+  "url": "https://claude.ai/code/session_01UeUFJRUbioUGhP4mrHQ6fm",
+  "firstResponseAt": "2026-09-24T08:41:15.109Z",
+  "lastResponseAt": "2026-09-24T08:41:45.969Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 50091,
+    "cacheReadTokens": 295985,
+    "outputTokens": 5452,
+    "thinkingTokens": 1450,
+    "responses": 4,
+    "costUsd": 0.568997
+  },
+  "ownTurns": {
+    "inputTokens": 8,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 50091,
+    "cacheReadTokens": 295985,
+    "outputTokens": 5452,
+    "thinkingTokens": 1450,
+    "responses": 4,
+    "costUsd": 0.568997
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 8,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 50091,
+      "cacheReadTokens": 295985,
+      "outputTokens": 5452,
+      "thinkingTokens": 1450,
+      "responses": 4,
+      "costUsd": 0.568997
+    }
+  },
+  "warnings": []
+}
