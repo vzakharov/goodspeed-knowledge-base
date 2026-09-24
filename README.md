@@ -110,9 +110,9 @@ heading always starts a new chunk, since it starts a new topic. The numbers:
 - **15% overlap**, only where a chunk continues the one before it mid-section:
   a sentence that sits on the seam is then whole in at least one chunk. A
   chunk that opens a new section carries nothing over.
-- **4 characters a token**, an estimate rather than a tokenizer, so no one
-  provider's tokenizer is baked into a pipeline meant to swap providers. Chunks
-  run some percent either side of their target, which costs nothing here.
+- **4 characters a token**, an estimate rather than a tokenizer. Chunks run
+  some percent either side of their target, which is accurate enough for a
+  proof of concept.
 - **What is embedded is the chunk under its document title and heading
   path**, so a chunk that says "it" is still found by what "it" is.
 
@@ -128,11 +128,14 @@ from the document.
 one that stands alone ("and how do I undo that?" retrieves nothing until
 "that" is named), from the last 8 messages. The rewrite is embedded and the 6
 nearest chunks at cosine similarity 0.25 or better become numbered sources.
-The threshold is low on purpose: the model is told to answer only from the
-sources, to cite each statement as `[n]`, and to say so when the sources do
-not cover the question, which fails better than a threshold that drops the one
-relevant chunk. Earlier answers' `[n]` are stripped from the history, since
-they point at sources that are not in this prompt.
+The model is told to answer only from the sources, to cite each statement as
+`[n]`, and to say so when the sources do not cover the question. The 0.25 is a
+proof-of-concept value, and by my experience a low one: the right threshold
+is measured, not chosen — embed a synthetic dataset whose close and distant
+pairs are known, and read the cut off the distribution
+([#8](https://github.com/vzakharov/goodspeed-knowledge-base/issues/8)).
+Earlier answers' `[n]` are stripped from the history, since they point at
+sources that are not in this prompt.
 
 **Streaming.** The chat is a `POST` answered with `text/event-stream`: text
 deltas as the model writes, then one final event with the stored message, its
@@ -171,6 +174,15 @@ embedding slot, or an embedding dimension that differs from the column's.
 Token counts a provider did not report are stored as unknown rather than zero,
 and the usage page names them.
 
+As it happens, every provider the brief lists speaks the OpenAI API, so one
+implementation per capability covers them all and no second class was
+needed. A provider with an API of its own — Anthropic, say — would be one: a
+`ChatModel` over its Messages API, which takes the system prompt apart from
+the messages and streams its own events and usage. Its preset would name that
+implementation, and `createChatModel` would pick by it; the embeddings would
+stay on an OpenAI-compatible provider, since Anthropic serves none, which the
+split into two capabilities already allows.
+
 **The web app is a static export.** There is nothing for a Next.js server to
 do here: the API holds the data, and sign-in goes from the browser straight to
 Supabase Auth. So routes use search parameters rather than dynamic segments
@@ -181,6 +193,10 @@ routes. Server state lives in TanStack Query, with no second store for it.
 `src/` follows Feature-Sliced Design (app, pages, features, entities, shared),
 its import rules enforced by ESLint's boundaries plugin and Steiger. The UI is
 Mantine over a small set of colour tokens with a light and a dark scheme.
+
+The export is one workable answer rather than the only one. A Next server
+would buy prettier URLs (`/chat/…` for `/chat?c=…`), pages rendered without a
+loader and the like, which is past what a test assignment needs.
 
 **The API's modules.** `config`, `http`, `database` and `auth` are
 infrastructure any module may use. The feature modules — `documents`,
@@ -302,9 +318,13 @@ CHAT_BASE_URL=http://localhost:8000/v1
   shows a fairly simple question it misses. Semantic chunking, retrieval over
   a knowledge graph built from the documents rather than flat chunks, and the
   like; in any system like this, the main work is in those details.
+- **A measured similarity threshold** in place of the proof-of-concept 0.25:
+  a script that embeds a synthetic dataset of known-close and known-distant
+  texts with the configured model, so the cut is read off the distribution
+  ([#8](https://github.com/vzakharov/goodspeed-knowledge-base/issues/8)).
 - **Adapters for genuinely different model APIs**, Anthropic's first, rather
-  than only providers that speak the OpenAI specification. `ChatModel` and
-  `EmbeddingModel` above are the seam each would implement.
+  than only providers that speak the OpenAI specification — the path is under
+  [Architecture decisions](#architecture-decisions), after the AI layer.
 - **A cloud deployment**, on something simple like Railway, so the app can be
   shown with a link — and Railway's PR deployments on top, which always pay off:
   any feature can be tried live without running a local server. That work is
