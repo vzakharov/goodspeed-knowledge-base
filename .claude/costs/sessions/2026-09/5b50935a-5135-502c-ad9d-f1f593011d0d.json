@@ -2,7 +2,7 @@
   "sessionId": "5b50935a-5135-502c-ad9d-f1f593011d0d",
   "branch": "claude/readme-voice-review-7a3w62",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": null,
+  "name": "README edits from voice review",
   "openingPrompt": "@\"/root/.claude/uploads/5b50935a-5135-502c-ad9d-f1f593011d0d/246d5260-Read_me.m4a.zip\" редактура readme",
   "prs": [
     14
