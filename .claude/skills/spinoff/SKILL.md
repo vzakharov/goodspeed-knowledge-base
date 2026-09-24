@@ -303,7 +303,7 @@ Three consequences, each stated by a check rather than by taste:
 - **`main`'s `vet.sh` is the stub, and the stub exits `0`** — `main` has no stack
   yet, so the loop's own checks are the whole run and they genuinely pass. That
   rule is the template's and is stated here because this repo does not carry it —
-  its own `vet.sh` is real, so its `CLAUDE.md` § "Vetting" has nothing to say
+  its own `vet.sh` is real, so its `.claude/rules/stack.md` has nothing to say
   about a stackless tree. The assertion worth making is the pair: the script
   passes **and** it names no stack-specific checks. A non-zero exit here would be a `main` whose `/finalize` cannot pass
   for a reason the contract calls legitimate.

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Vet: the fast checks the agent runs before pushing review-ready work.
 #
-# See CLAUDE.md → Vetting for the contract and for why this list is what it is.
+# See `.claude/rules/stack.md` for why this list is what it is.
 set -uo pipefail
 
 cd "$(dirname "$0")/.."

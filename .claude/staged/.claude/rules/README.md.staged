@@ -1,11 +1,22 @@
+---
+description: How the path-scoped rule files in this directory work, and what belongs in one
+paths:
+  - .claude/rules/**
+---
+
 # `.claude/rules/`
 
 Path-scoped convention files. Claude Code loads a rule file automatically when a
 session touches a file matching its `paths:` globs — so conventions reach the
 agent at the moment they're relevant, without being permanently resident in
-context the way `CLAUDE.md` is.
+context the way `CLAUDE.md` is. **A file with no `paths:` loads on every turn**,
+exactly as `CLAUDE.md` does, which is why this README carries one — and why
+editing such a file goes through a staged copy (`staging.md`).
 
-Rules are inherently project-specific; the reusable part is the mechanism. Add a
+Three rules here belong to the agent loop, and arrived with it: `stack.md` (why
+the vet run is shaped as it is, and what a workspace landing wires), `skills.md`
+(adding or renaming a skill) and `staging.md` (editing a file that loads on every
+turn). The rest are this project's: the reusable part is the mechanism, so add a
 rule file as a convention emerges.
 
 ## Format
@@ -41,7 +52,8 @@ paths:
 The test is scope, not importance. A load-bearing rule that only applies to one
 directory still belongs here — that's the point of the mechanism. Moving
 area-specific guidance out of `CLAUDE.md` keeps the always-loaded file short
-enough to actually be followed.
+enough to actually be followed; `CLAUDE.md` § "About this file" states the test
+for what may stay there.
 
 ## Good candidates
 
