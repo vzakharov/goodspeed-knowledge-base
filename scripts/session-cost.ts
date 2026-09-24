@@ -2,8 +2,10 @@
 
 // Prices one session's transcript and writes its row under
 // `.claude/costs/sessions/`, rewritten from the whole file on every run.
+// `--at-stop` is the Stop hook's: the turn is over, so the transcript should end
+// on its `end_turn`.
 //
-//   node scripts/session-cost.ts --transcript <path> [--session-id <id>] [--row-path]
+//   node scripts/session-cost.ts --transcript <path> [--session-id <id>] [--row-path] [--at-stop]
 //   node scripts/session-cost.ts --transcript <path> --name '<short label>'
 
 /* eslint-disable no-console -- stdout is this script's interface: the row's
@@ -16,6 +18,7 @@ import path from 'node:path';
 import { flag, given } from './lib/argv.ts';
 import { readPrices, root, sessionsDir } from './lib/ledger.ts';
 import {
+  isUnwrittenTail,
   parseSessionCost,
   type SessionCost,
   summariseTranscript,
@@ -48,13 +51,15 @@ const subagentsOf = (main: string): string[] => {
   }
 };
 
-// An unreadable row counts as no row: the point is to carry a name forward,
-// never to fail a write over one.
-const nameOn = (row: string): string | null => {
+// The name and any unwritten-tail warning are what no run can recompute from
+// the transcript, so a rewrite reads them back from the last one. An unreadable
+// row counts as no row: the point is to carry them forward, never to fail a
+// write over one.
+const previous = (row: string): SessionCost | undefined => {
   try {
-    return parseSessionCost(readFileSync(row, 'utf8')).name;
+    return parseSessionCost(readFileSync(row, 'utf8'));
   } catch {
-    return null;
+    return undefined;
   }
 };
 
@@ -65,10 +70,19 @@ const cost = summariseTranscript(
   },
   readPrices(),
   flag('session-id') ?? path.basename(transcript, '.jsonl'),
+  given('at-stop'),
 );
 
 const out = path.join(sessionsDir, monthOf(cost), `${cost.sessionId}.json`);
-const named: SessionCost = { ...cost, name: flag('name') ?? nameOn(out) };
+const before = previous(out);
+const carried = (before?.warnings ?? []).filter(
+  (warning) => isUnwrittenTail(warning) && !cost.warnings.includes(warning),
+);
+const named: SessionCost = {
+  ...cost,
+  name: flag('name') ?? before?.name ?? null,
+  warnings: [...carried, ...cost.warnings],
+};
 writeAtomic(root, out, `${JSON.stringify(named, null, 2)}\n`);
 
 console.log(

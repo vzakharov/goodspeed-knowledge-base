@@ -100,6 +100,15 @@ Applied to Claude Code's own token counts, the table reproduces its cost to the
 last digit — so a divergence is a gap in what a row **read**, never in what it
 charged.
 
+**A turn the transcript had not caught up with is warned about, not assumed
+away.** The `Stop` hook runs the pricer with `--at-stop`: the turn is over, so the
+session's own last response should be the `end_turn` that closed it, and a row
+whose last one stopped on anything else gains a warning naming that response.
+A later run reads a transcript that has caught up and cannot recompute the
+warning, so each rewrite carries it forward as it carries the name, and a row
+ends up listing every turn the hook read short. Each run rewrites the row from
+the whole file, which is what prices such a tail on the next turn.
+
 **The usage panel is not a third opinion.** It agrees to within 1% until a
 session compacts, drifts by tens of dollars with each compaction after, and
 disagrees with its own Breakdown; anthropics/claude-code#95837 carries the
@@ -152,14 +161,6 @@ one file per session id.
 
 ## What the totals do not cover
 
-- **The last turn of a session.** The transcript lags the live conversation, so
-  each run rewrites the row from the whole file and picks up what the previous
-  run was too early to see — but the final turn has no successor, and **no turn
-  can close that**: a `/finalize` step is followed by the turns that invoked it.
-  Only a read that is not a turn can — a later session re-pricing a transcript
-  that outlived this one (false in a remote container), or a transcript watcher,
-  which would write and commit with no turn in progress and so give up the
-  serialisation § "Running beside the harness's Stop check" is built on.
 - **Each compact.** The transcript records the compaction call without its
   `usage`, so there is nothing to price. Bounded: two measured compacts read
   526k tokens, about $0.30 at the cache-read rate.
