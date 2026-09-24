@@ -126,8 +126,6 @@ Steps (stop on first unresolved failure):
 
    The list is walked step by step so the verdict is auditable, and it is **not exhaustive** — a procedure that grows a step grows a way for a run to be eventful. So the predicate, not the list, is the verdict: **if the run made you decide anything the passes above don't cover, stand down.** Deciding it well is not the same as the operator having decided it.
 
-   **Here the merge is the deploy** — CLAUDE.md § "Deployment" carries the mechanism and the subject that switches it. So `and merge` authorizes a release rather than a button: standing down costs the operator a click, a merge they did not mean costs them the live site.
-
    **Merging.** Step 7 goes up first: the record of what the merge rests on belongs on the PR before the merge, not after it. Then squash-merge with the title and body **step 5 settled**, verbatim; do not recompose them here. The comment is the source, so read it back rather than reconstructing it:
 
    ```bash
