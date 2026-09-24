@@ -113,6 +113,7 @@ flowchart TB
     docs["documents"]
     editor["document-editor"]
     usagepage["usage"]
+    modelspage["models"]
     signin["sign-in"]
   end
   theme["features/switch-theme"]
@@ -129,8 +130,8 @@ flowchart TB
   routes --> wpages & wapp
   wapp --> esession & theme
   signin --> esession & theme
-  chatpage & docs & editor --> edoc
-  home & chatpage & usagepage & signin --> sapi
+  home & chatpage & docs & editor --> edoc
+  chatpage & usagepage & modelspage & signin --> sapi
   edoc & esession --> sapi
 
   sapi == "HTTPS, bearer token" ==> apiapp
@@ -234,7 +235,7 @@ Why it fits: every page sits behind sign-in and shows one reader's own data. The
 What it costs, all visible in the code:
 
 - **Ids go in search parameters, not in the path.** Links look like `/documents/edit?id=…` ([`document-href.ts:1-2`](../apps/web/src/entities/document/lib/document-href.ts#L1-L2)), because a static export needs every path segment's values at build time. Every component that reads a search parameter needs a `Suspense` boundary, because at build time there is no query string ([`search-param.ts:3-7`](../apps/web/src/shared/lib/search-param.ts#L3-L7)).
-- **A spinner on every full load of a signed-in page.** The guard can decide only after the browser has read the session ([`signed-in-layout.tsx:69-92`](../apps/web/src/app/ui/signed-in-layout.tsx#L69-L92)), and the page's data request starts after that. So the HTML, the scripts, the session and the data arrive one after another.
+- **A spinner on every full load of a signed-in page.** The guard can decide only after the browser has read the session ([`signed-in-layout.tsx:73-92`](../apps/web/src/app/ui/signed-in-layout.tsx#L73-L92)), and the page's data request starts after that. So the HTML, the scripts, the session and the data arrive one after another.
 - **Server features are unavailable:** no middleware, no redirects or headers in `next.config`, no image optimisation (`images.unoptimized`, [`next.config.ts:8-10`](../apps/web/next.config.ts#L8-L10)), and no server actions.
 
 What would push the other way:
@@ -335,7 +336,7 @@ groq serves no embeddings — pick another EMBEDDING_PROVIDER; chat and embeddin
 
 `pnpm bootstrap` runs the same check and prints the message as what is left to
 configure
-([`scripts/bootstrap.ts:165-174`](../scripts/bootstrap.ts#L165-L174)).
+([`scripts/bootstrap.ts:254-263`](../scripts/bootstrap.ts#L254-L263)).
 Refusing at boot, rather than when the first document is saved, puts the error
 next to its cause: a line in `.env`. The boot also compares the embedding width
 with the vector column's, for the same reason
@@ -467,7 +468,7 @@ involved. The Supabase CLI is a dev dependency of the repo, and
 containers: Postgres 17 with pgvector, Supabase Auth, the PostgREST data API
 behind a gateway on port 54321, and Studio, the dashboard for browsing the local
 database and its users, at `http://localhost:54323`
-([`scripts/bootstrap.ts:149-151`](../scripts/bootstrap.ts#L149-L151)). The
+([`scripts/bootstrap.ts:228-230`](../scripts/bootstrap.ts#L228-L230)). The
 bootstrap then applies the migrations and writes each app's `.env` from what
 `supabase status` reports: the local URL and the publishable key.
 
@@ -486,7 +487,7 @@ It is the file `supabase init` writes, with these changes:
 - **Auth signs tokens with a per-machine key**, `supabase/signing_keys.json`
   ([`:170`](../supabase/config.toml#L170)). The bootstrap generates an ES256 key
   there when none exists
-  ([`bootstrap.ts:54-79`](../scripts/bootstrap.ts#L54-L79)), and the file is
+  ([`bootstrap.ts:61-84`](../scripts/bootstrap.ts#L61-L84)), and the file is
   gitignored. An asymmetric key is what lets the API verify tokens against the
   published key set instead of holding a shared secret.
 - **Auth's site URL is the web app's**, `http://localhost:3000`
@@ -837,7 +838,7 @@ signal?: AbortSignal;  Cancellable (API)     ApiRequest (web)
 
 Looking at each pair then answered a question the code had never asked, whether the two describe the same thing, and each got its own answer (`f81617a`):
 
-- **`model` was the same thing.** The model card on the home page shows the model the API reports, so its `provider` and `model` were a hand-written copy of the contract. It now takes them from `AiSettings['chat']` in `@kb/contracts` ([`home-page.tsx:12-15`](../apps/web/src/pages/home/ui/home-page.tsx#L12-L15)), and changes when the contract does.
+- **`model` was the same thing.** The model card shows the model the API reports, so its `provider` and `model` were a hand-written copy of the contract. It now takes them from `AiSettings['chat']` in `@kb/contracts` ([`models-page.tsx:12-15`](../apps/web/src/pages/models/ui/models-page.tsx#L12-L15)), and changes when the contract does.
 - **`signal` was the same thing too, but the source was neither app.** Both copies were the platform's own `AbortSignal` option, so the web app's request options now take `method` and `signal` from `fetch`'s `RequestInit` ([`api-client.ts:15`](../apps/web/src/shared/api/api-client.ts#L15)).
 - **`baseUrl` only looked the same.** The API's is a model provider's address, the web app's is this app's own API. Sharing one declaration would have tied two unrelated settings together, so the web app's was renamed `apiUrl`, after the `NEXT_PUBLIC_API_URL` it is read from ([`api-client.ts:20-24`](../apps/web/src/shared/api/api-client.ts#L20-L24)).
 
@@ -853,9 +854,9 @@ By the standards of a proof of concept the codebase is strict: every wire shape 
 
 ### Routes are strings, matched by prefix
 
-The web app has no route table. Each path is a string literal where it is used, and the header works out which section is current by comparing strings. [`isCurrent`](../apps/web/src/app/ui/signed-in-layout.tsx#L38-L43) marks a link current when the path equals its `href` or starts with `href` plus a slash, with `/` excluded by hand, because every path starts with it. The section list above it, [`NAV`](../apps/web/src/app/ui/signed-in-layout.tsx#L26-L31), spells `/documents`, `/chat` and `/usage` again, next to the helpers that build the same paths with their search parameters ([`document-href.ts`](../apps/web/src/entities/document/lib/document-href.ts#L6-L14), [`chat-href.ts`](../apps/web/src/pages/chat/lib/chat-href.ts#L4-L6)).
+The web app has no route table. Each path is a string literal where it is used, and the header works out which section is current by comparing strings. [`isCurrent`](../apps/web/src/app/ui/signed-in-layout.tsx#L39-L41) marks a link current when the path equals its `href` or starts with `href` plus a slash. The section list above it, [`NAV`](../apps/web/src/app/ui/signed-in-layout.tsx#L27-L32), spells `/documents`, `/chat`, `/usage` and `/models` a second time, beside the helpers that build the same paths with their search parameters ([`document-href.ts`](../apps/web/src/entities/document/lib/document-href.ts#L6-L14), [`chat-href.ts`](../apps/web/src/pages/chat/lib/chat-href.ts#L4-L6)).
 
-That is enough for six routes and one level of nesting. It is also fragile, because nothing ties the string in `NAV` to the folder under `app/`. Move `/documents/edit` to `/library/edit` and everything still compiles: the header just stops highlighting the section, and nobody is told.
+That is enough for eight routes and one level of nesting. It is also fragile, because nothing ties the string in `NAV` to the folder under `app/`. Move `/documents/edit` to `/library/edit` and everything still compiles: the header just stops highlighting the section, and nobody is told.
 
 A real app keeps one route table, holding each route's path, its search parameters and the section it belongs to. The links, the helpers and the "current" check are all derived from it. The lighter option is Next's `typedRoutes`, which checks every `href` passed to `Link` against the `app/` tree at build time. Either way, renaming a route breaks the build instead of silently breaking the highlight.
 
