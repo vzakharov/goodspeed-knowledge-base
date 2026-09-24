@@ -1,28 +1,32 @@
 Proposed squash title/body:
 
 ```
-docs: design notes on how the knowledge base works, and why (pr #3)
+docs: #4 design notes on how the knowledge base works, and why (pr #3)
 ```
 
 ```
 The review of #1 asked for one document that explains the codebase's
 trickier parts and its choices to a reader who was not there, and for
 the code changes it raised to be carved into issues under #2. This is
-the document, the first of those issues.
+the document, the first of those issues; the other four are filed as
+#5 to #8, each a native sub-issue of #2.
 
 docs/design-notes.md opens with a diagram of every module across the
-API, the web app and @kb/contracts. Then come the choices, each against
-its alternatives with a migration path where one applies (NestJS beside
-Next.js, the contracts package, node:test, the static export, the
-hand-drawn chart, the session store, TanStack Query, the type-overlap
-check), and how the trickier parts work, from provider presets and the
-auth guard to RLS, migrations and the generated database types.
+API, the web app and @kb/contracts, and one chat question followed
+through it. Then come the choices, each against its alternatives with
+a migration path (NestJS beside Next.js, the contracts package,
+node:test, the static export, the hand-drawn chart, the session store,
+TanStack Query), and how the trickier parts work, from provider
+presets and the auth guard to RLS, migrations and the build.
 
-It closes on the house style the process produced and on the shortcuts
-the PoC took knowingly, each with what a real app would do. That list
-includes those a sweep of the codebase found beyond the review's. The
-README keeps its architecture sections and points here; entries it
-already covers link to it rather than restating it.
+It closes on the house style, including what the /polish passes
+produced and the type-overlap check, and on the shortcuts the PoC took
+knowingly, each with what a real app would do, including those a sweep
+of the codebase found beyond the review's. The README keeps its
+architecture sections and points here; entries it already covers link
+to it rather than restating it.
+
+Closes #4
 
 Co-authored-by: Claude <noreply@anthropic.com>
 ```
