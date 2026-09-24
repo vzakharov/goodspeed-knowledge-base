@@ -8,17 +8,24 @@
  * Re-running is safe and is how a changed stack reaches the apps: nothing
  * already running is restarted, no data is reset, and an existing `.env` keeps
  * every value in it except the Supabase ones, which follow the stack. A
- * variable a template gained since is appended with its default.
+ * variable a template gained since is appended with its default. A model API
+ * key the configured provider requires is asked for while it is empty.
  */
 
 /* eslint-disable no-console -- stdout is this script's interface: the stack's
    progress and the list of what is left to configure. */
 
+import password from '@inquirer/password';
 import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { z } from 'zod';
 
+import {
+  PROVIDER_NAMES,
+  PROVIDER_PRESETS,
+} from '../apps/api/src/ai/providers.ts';
 import { ConfigError, loadConfig } from '../apps/api/src/config/env.ts';
 import { localSupabase } from '../apps/api/test/local-supabase.ts';
 
@@ -117,11 +124,12 @@ function assign(text: string, values: Map<string, string>) {
   return `${[...lines, ...appended].join('\n').trimEnd()}\n`;
 }
 
+const envFile = (app: string) => path.join(root, 'apps', app, '.env');
+
 /** Writes `<app>/.env` and returns what it now assigns. */
 function writeEnv(app: string, fromStack: Record<string, string>) {
-  const dir = path.join(root, 'apps', app);
-  const template = fs.readFileSync(path.join(dir, '.env.example'), 'utf8');
-  const file = path.join(dir, '.env');
+  const file = envFile(app);
+  const template = fs.readFileSync(`${file}.example`, 'utf8');
   const existing = fs.existsSync(file)
     ? fs.readFileSync(file, 'utf8')
     : undefined;
@@ -146,13 +154,85 @@ function writeEnv(app: string, fromStack: Record<string, string>) {
   return parseEnv(text);
 }
 
+const providerSchema = z.enum(PROVIDER_NAMES);
+
+/**
+ * Asks for `<capability>_API_KEY` where its provider requires one and `env`
+ * leaves it empty. Enter answers with `chatKey`, or skips the key without one;
+ * `undefined` is a key skipped or never asked for.
+ */
+async function askForApiKey(
+  env: Map<string, string>,
+  capability: 'CHAT' | 'EMBEDDING',
+  chatKey = '',
+) {
+  const name = `${capability}_API_KEY`;
+  const provider = providerSchema.safeParse(env.get(`${capability}_PROVIDER`));
+
+  if (
+    !provider.success ||
+    !PROVIDER_PRESETS[provider.data].requiresApiKey ||
+    (env.get(name) ?? '') !== ''
+  ) {
+    return;
+  }
+
+  const answer = await password({
+    message: `${name} for ${provider.data} (Enter ${chatKey === '' ? 'skips' : 'reuses the chat key'}):`,
+    mask: true,
+  });
+  const key = answer.trim() === '' ? chatKey : answer.trim();
+
+  return key === '' ? undefined : key;
+}
+
+/**
+ * The API keys `.env` still needs, asked for — the operator may not have one to
+ * hand, so each is skippable. Where the embeddings reach the same endpoint as
+ * the chat, they default to its key. Off a terminal nothing is asked, and the
+ * closing check names what is missing.
+ */
+async function askForApiKeys(env: Map<string, string>) {
+  const answers = new Map<string, string>();
+
+  if (!process.stdin.isTTY) return answers;
+
+  const chat = await askForApiKey(env, 'CHAT');
+  const sameEndpoint =
+    env.get('CHAT_PROVIDER') === env.get('EMBEDDING_PROVIDER') &&
+    env.get('CHAT_BASE_URL') === env.get('EMBEDDING_BASE_URL');
+  const embedding = await askForApiKey(
+    env,
+    'EMBEDDING',
+    sameEndpoint ? (chat ?? env.get('CHAT_API_KEY')) : undefined,
+  );
+
+  if (chat !== undefined) answers.set('CHAT_API_KEY', chat);
+  if (embedding !== undefined) answers.set('EMBEDDING_API_KEY', embedding);
+
+  return answers;
+}
+
+/** Assigns `values` in `<app>/.env` and returns what it now assigns. */
+function updateEnv(app: string, values: Map<string, string>) {
+  const file = envFile(app);
+  const text = assign(fs.readFileSync(file, 'utf8'), values);
+
+  if (values.size > 0) {
+    fs.writeFileSync(file, text);
+    console.log(`Set ${[...values.keys()].join(', ')} in apps/${app}/.env`);
+  }
+
+  return parseEnv(text);
+}
+
 ensureSigningKey();
 supabase(['start']);
 supabase(['migration', 'up', '--local']);
 
 const { url, publishableKey } = localSupabase();
 
-const apiEnv = writeEnv('api', {
+const writtenApiEnv = writeEnv('api', {
   SUPABASE_URL: url,
   SUPABASE_PUBLISHABLE_KEY: publishableKey,
 });
@@ -161,6 +241,16 @@ writeEnv('web', {
   NEXT_PUBLIC_SUPABASE_URL: url,
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: publishableKey,
 });
+
+const apiKeys = await askForApiKeys(writtenApiEnv).catch((error: unknown) => {
+  // Ctrl-C at a prompt: the keys already answered are not written.
+  if (error instanceof Error && error.name === 'ExitPromptError') {
+    process.exit(130);
+  }
+
+  throw error;
+});
+const apiEnv = updateEnv('api', apiKeys);
 
 try {
   loadConfig(Object.fromEntries(apiEnv));

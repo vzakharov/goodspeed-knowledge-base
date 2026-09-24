@@ -27,9 +27,11 @@ pnpm bootstrap
 
 That installs the dependencies, starts the local stack, applies the
 migrations, and writes `apps/api/.env` and `apps/web/.env` from the
-`.env.example` beside each. It ends by saying what is left to configure —
-with the defaults, an OpenAI key in `CHAT_API_KEY` and `EMBEDDING_API_KEY`.
-Set it, then:
+`.env.example` beside each. With the defaults, what is left is an OpenAI key
+for `CHAT_API_KEY` and `EMBEDDING_API_KEY`, and it asks for both. Enter skips
+a key — to set in `apps/api/.env` later, or on
+[another provider](#swapping-ai-providers) — and at the second prompt reuses
+the first. It ends by saying what is still left to configure. Then:
 
 ```bash
 pnpm dev
