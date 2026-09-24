@@ -79,11 +79,15 @@ and I don't leave comments for the sake of leaving them.
 ## Where the human decides
 
 As #12 shows, agents often nail the technical parts. At the same time, they can
-miss the big picture: the README's "What I would do with more time" first came
-out as what
-_the agent_ would do with more time;
-[#13](https://github.com/vzakharov/goodspeed-knowledge-base/pull/13) rewrote it
-as what I would.
+miss the big picture. The README's "What I would do with more time" first came
+out as a sound engineering backlog — background ingestion, hybrid search, a
+dimension-agnostic vector schema — with nothing a user of the app would notice,
+such as branching conversations, and without the thing I most wanted back: the
+calls at the forks. Both lists name deployment; the agent's was a hosted
+Supabase, a container and a CDN, mine a link to show the app with and a live
+preview for every PR.
+[#13](https://github.com/vzakharov/goodspeed-knowledge-base/pull/13) rewrote the
+section as mine.
 
 ## What it cost
 

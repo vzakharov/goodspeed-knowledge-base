@@ -79,8 +79,9 @@ _On screen: #13._
 
 - As **#12 shows**, agents often **nail the technical parts**; at the same time,
   they can **miss the big picture** — for example:
-- "More time" came out as **what the agent would do** → rewritten as **what I
-  would**.
+- "More time" came out as **a sound engineering backlog** — and where it named
+  **deployment**, it meant **Supabase, a container, a CDN**; I meant **a link to
+  show the app** and **a preview per PR**.
 
 ## 3:55 — What it cost
 
