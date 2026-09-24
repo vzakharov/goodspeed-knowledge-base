@@ -37,6 +37,8 @@ There is deliberately no Playwright dependency — Chrome's own `--screenshot` i
   --screenshot=tmp/preview/<name>.png "http://localhost:<port><route>"
 ```
 
+**Headless Chromium has no hover-capable pointer**, so a `@media (hover: hover)` rule — Mantine's `underline="hover"` among them — never applies, however the mouse moves, and CDP's `Emulation.setEmulatedMedia` cannot change that. Launching with `--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4` gives it one.
+
 `--screenshot` captures the **viewport, not the full page** — a `1280,900` window yields a 1280×900 image and everything below the fold is simply absent. To see a whole page, raise the height (`--window-size=1280,3000`); the image grows to match.
 
 **Put the theme in `<name>`.** The two themes differ only by a launch flag, so a filename without it silently overwrites one capture with the other, leaving whichever ran last as the evidence for both.
@@ -50,7 +52,8 @@ There is deliberately no Playwright dependency — Chrome's own `--screenshot` i
 | Route                  | Why                                                                     |
 | ---------------------- | ----------------------------------------------------------------------- |
 | `/sign-in`             | sign-in and sign-up, the one route outside the guard                    |
-| `/`                    | the signed-in overview; signed out, it sends to sign-in                 |
+| `/`                    | sends to `/documents` with none, `/chat` with some; signed out, sign-in |
+| `/models`              | the chat and embedding models the API is configured with                |
 | `/documents`           | the list, its tag filter (`?tag=`) and the not-searchable notice        |
 | `/documents/new`       | the document form, with its Write/Preview tabs                          |
 | `/documents/edit?id=…` | the same form over a saved document, its status notice and delete modal |
