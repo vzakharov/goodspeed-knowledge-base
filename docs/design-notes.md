@@ -255,7 +255,7 @@ The same reasoning applies to any makeshift part an agent writes in place of a l
 
 The risk is that the part keeps growing without anyone deciding it should. Each request is small: a second kind of series, a legend that toggles kinds on and off, zooming into a date range, axis labels that thin out on a narrow screen. Each is also code a library already has, tested against cases this component has never met. One feature at a time, the makeshift part becomes an unmaintained library. A spreadsheet reader in another app built the same way went that way: written to read one kind of upload, it is now fourteen modules that decode Excel's legacy binary format record by record, cells, strings and all, with a test suite to match. There it was the necessary call rather than drift: the only package that could read that format was unmaintained and carried an open security advisory, so the choice was between owning the reader and shipping a known hole.
 
-That kind of choice now comes up more often, because agents find vulnerabilities as well as write code. OpenAI's Codex Security reported 792 critical and 10,561 high-severity findings over 1.2 million commits in its first month of beta ([The Hacker News, March 2026](https://thehackernews.com/2026/03/openai-codex-security-scanned-12.html)). Anthropic's Project Glasswing reported more than ten thousand high- or critical-severity vulnerabilities in its first month, 271 of them in Firefox 150 alone ([Anthropic, May 2026](https://www.anthropic.com/research/glasswing-initial-update)). Attackers automate too: the Shai-Hulud worm stole the npm tokens on every machine that installed an infected package and used them to publish itself into more than 500 packages in September 2025, and a second wave followed that November ([CISA](https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem)). Every dependency is code somebody else can put an advisory on, or a malicious release into, so adding one is no longer the default it used to be, and a small part an agent writes and the repository owns is sometimes the safer of the two.
+That kind of choice now comes up more often, because agents find vulnerabilities as well as write code. OpenAI's Codex Security reported 792 critical and 10,561 high-severity findings over 1.2 million commits in its first month of beta ([The Hacker News, March 2026](https://thehackernews.com/2026/03/openai-codex-security-scanned-12.html)). Anthropic's Project Glasswing reported more than ten thousand high- or critical-severity vulnerabilities in its first month, 271 of them in Firefox 150 alone ([Anthropic, May 2026](https://www.anthropic.com/research/glasswing-initial-update)). Attackers automate too: the Shai-Hulud worm stole the npm tokens on every machine that installed an infected package and used them to publish itself into more than 500 packages in September 2025, and a second wave followed that November ([CISA](https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem)). Every dependency is code somebody else can put an advisory on, or a malicious release into, so adding one is a cost to weigh rather than a default, and a small part an agent writes and the repository owns is sometimes the safer of the two.
 
 The signal to switch is a change that is about charts in general rather than about this app's usage data. A second chart somewhere else in the app is one sign. So is a fix for an edge case libraries solved long ago, such as overlapping labels. At that point the library is the cheaper code. The switch itself stays local: `UsageChart` takes `daily` and nothing else ([`usage-chart.tsx:124`](../apps/web/src/pages/usage/ui/usage-chart.tsx#L124)), so a replacement fits behind the same prop.
 
@@ -465,7 +465,8 @@ The whole of Supabase runs on the local machine, and no cloud project is
 involved. The Supabase CLI is a dev dependency of the repo, and
 `supabase start`, which `pnpm bootstrap` runs, starts its services as Docker
 containers: Postgres 17 with pgvector, Supabase Auth, the PostgREST data API
-behind a gateway on port 54321, and Studio on port 54323
+behind a gateway on port 54321, and Studio, the dashboard for browsing the local
+database and its users, at `http://localhost:54323`
 ([`scripts/bootstrap.ts:149-151`](../scripts/bootstrap.ts#L149-L151)). The
 bootstrap then applies the migrations and writes each app's `.env` from what
 `supabase status` reports: the local URL and the publishable key.
@@ -489,9 +490,7 @@ It is the file `supabase init` writes, with these changes:
   gitignored. An asymmetric key is what lets the API verify tokens against the
   published key set instead of holding a shared secret.
 - **Auth's site URL is the web app's**, `http://localhost:3000`
-  ([`:160`](../supabase/config.toml#L160)). Studio, the dashboard for browsing
-  the local database, its users and its logs, keeps its default,
-  `http://localhost:54323` ([`:98`](../supabase/config.toml#L98)).
+  ([`:160`](../supabase/config.toml#L160)).
 
 The defaults it keeps matter too: sign-up is on with email confirmation off,
 which is why any address can sign up locally
