@@ -279,26 +279,41 @@ CHAT_BASE_URL=http://localhost:8000/v1
 
 ## What I would do with more time
 
-- **Background ingestion.** Embedding in the request is simple and honest
-  about failure, but a long document holds the request for as long as the
-  provider takes. A queue (a Postgres table polled by a worker, or pgmq) with
-  the status pushed to the page would free it.
-- **Better retrieval, measured.** A small evaluation set of questions with the
-  chunks that answer them, then hybrid search — Postgres full-text alongside
-  the vectors, merged by reciprocal rank — and a reranker, each kept only if
-  the set says it helps. The chunk size and threshold above are reasoned, not
-  measured.
-- **A dimension-agnostic schema.** One vector column per supported width, or
-  `halfvec` with the width chosen at setup, so a fully local setup is
-  configuration rather than a migration.
-- **PDF extraction on the API, with OCR.** A PDF is read in the browser, by
-  pdf.js, into the document form, so a scan has no text to give and only the
-  web app can turn a file into a document. The reader already runs under Node,
-  so an API endpoint that also OCRs scans is mostly a move.
-- **Deployment and CI**: a hosted Supabase project, the API in a container,
-  the static web app on a CDN, and `./scripts/vet.sh` on every pull request.
-- **Limits**: a per-user rate limit and token budget, which the usage table
-  already has the data for.
+- **Study the code far more closely, and make the calls at the forks.** It
+  feels a little uncomfortable to walk into my own app like this: after four
+  or five hours of agent work I read through some 250 files, instead of having
+  a say at each fork midway, the way my process usually runs, and knowing what
+  every piece does. The decisions made aren't necessarily bad, but I would
+  have thought harder about some of them. Two examples:
+  - _The whole site being a static export._ It has real upsides, and
+    trade-offs with them: a loader shown on every page, and not the prettiest
+    URLs (`/chat?c=…`). I would probably have landed on the same choice, but
+    as an informed one.
+  - _The chat's data model._ A question and its answer are separate rows in
+    `messages`. There is never a question without an answer, so for a system
+    like this one row per exchange often makes more sense.
+- **Branching conversations**: regenerate an answer and move back and forth
+  between the versions, the way mature chat systems do.
+- **Document processing in the background, stress-tested.** I have tried it
+  on small PDFs, where it works fine. Large, scanned, broken and encrypted
+  PDFs each need working out how the app should handle them, and moving the
+  processing into the background would be one of the first things I'd do.
+- **Retrieval quality.** RAG doesn't always get it right — the walkthrough
+  shows a fairly simple question it misses. Semantic chunking, retrieval over
+  a knowledge graph built from the documents rather than flat chunks, and the
+  like; in any system like this, the main work is in those details.
+- **Adapters for genuinely different model APIs**, Anthropic's first, rather
+  than only providers that speak the OpenAI specification. `ChatModel` and
+  `EmbeddingModel` above are the seam each would implement.
+- **A cloud deployment**, on something simple like Railway, so the app can be
+  shown with a link — and Railway's PR deployments on top, which always pay off:
+  any feature can be tried live without running a local server. That work is
+  tedious — auth, basic rate limits and so on — so it doesn't pay for itself
+  in a test assignment, which is why the setup here is a local
+  `pnpm bootstrap`: the fastest and most convenient option.
+- **The UI.** Not gradients and shine — round the cards here, drop an
+  underline there. Even with more time, and the design mine to own, I would
+  lean ascetic.
 
 ## Walkthroughs
 

@@ -214,6 +214,8 @@ The default is not to write it. Prose costs context on every session that loads 
 
 **An image the operator attached is a file on disk — decide whether it stays.** `.claude/hooks/session-images.sh` writes every attachment into gitignored `tmp/session-images/` with a manifest row carrying the prompt it arrived with. The transcript is the only other copy and both die with the machine, so an image nobody moves into the repo is gone. An image the repo has a lasting use for — a screenshot a doc points at, a diagram worth citing — moves to a permanent home and is committed there together with the prose that references it. Everything else is left where it is.
 
+**An audio recording the operator attaches is read with `pnpm transcribe <file>`** — Deepgram (keyed by `DEEPGRAM_API_KEY` from the environment) and a local faster-whisper, merged word by word, that one text saved under `docs/remove-before-merging/transcripts/` for review, so the merge never carries it. Where the two disagree, neither is authoritative: settle it from context and the repo's own vocabulary, and a term both mishear belongs in the script's `VOCABULARY`.
+
 ## Language
 
 **Human-facing prose is English** — `README.md`, the docs a person reads to decide something, commit subjects and bodies, PR titles and bodies, and the plans and issue exports published for review.

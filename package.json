@@ -19,6 +19,7 @@
     "format:check": "prettier --check .",
     "styles:codegen": "node scripts/generate-styles.ts",
     "costs": "node scripts/costs-report.ts",
+    "transcribe": "NODE_USE_ENV_PROXY=1 node scripts/transcribe.ts",
     "test:e2e": "turbo run test:e2e",
     "test:db": "supabase test db",
     "db:start": "supabase start",
