@@ -54,7 +54,7 @@ Anthropic's prices exists, so the table goes stale by sitting still.
 ## What names a session
 
 Nothing in the transcript is the title Claude Code shows. Three fields stand in
-for one, all read out of the file:
+for one:
 
 - **`openingPrompt`** — the session's first prompt, unwrapped from the envelope a
   slash command arrives in, so it reads `/handle <branch>`.
