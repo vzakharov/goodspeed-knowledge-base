@@ -255,6 +255,36 @@ describe('session-cost: what names a session', () => {
     assert.equal(cost.url, 'https://claude.ai/code/session_01REALone');
   });
 
+  const sessionStart = (content: string): string =>
+    JSON.stringify({
+      type: 'attachment',
+      attachment: { type: 'hook_success', hookEvent: 'SessionStart', content },
+    });
+
+  it('takes the operator from the first SessionStart that resolved a person', () => {
+    const cost = summarise([
+      sessionStart(
+        'session-start: the operator is Vova Zakharov (@vzakharov) — the GitHub token in this session is that user’s own.',
+      ),
+      response({ output: 1 }),
+      // A resume runs the hook again; the session stays whose it was.
+      sessionStart(
+        'session-start: the operator is @someone-else — the GitHub token in this session is that user’s own.',
+      ),
+    ]);
+    assert.equal(cost.operator, 'vzakharov');
+  });
+
+  it('leaves the operator null when the hook named nobody', () => {
+    const cost = summarise([
+      sessionStart(
+        'session-start: the GitHub token in this session belongs to a bot, not a person.',
+      ),
+      response({ output: 1 }),
+    ]);
+    assert.equal(cost.operator, null);
+  });
+
   it('keeps Claude Code’s own last word on what the session cost', () => {
     const cost = summarise([
       costState(1.5),

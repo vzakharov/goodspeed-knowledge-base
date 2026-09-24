@@ -74,6 +74,7 @@ table('month', totals.byMonth);
 table('week', totals.byWeek);
 table('day', totals.byDay);
 table('branch', totals.byBranch);
+table('operator', totals.byOperator);
 
 const subagents = rows.reduce((sum, row) => sum + row.subagents.costUsd, 0);
 console.log(

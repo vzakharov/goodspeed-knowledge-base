@@ -6,6 +6,7 @@ import { z } from 'zod';
 import {
   costStateOf,
   kindOf,
+  operatorOf,
   prNumberOf,
   promptTextOf,
   sessionUrlIn,
@@ -85,6 +86,7 @@ const SessionCostSchema = z.object({
   openingPrompt: z.string().nullable().default(null),
   prs: z.array(z.number()).default([]),
   url: z.string().nullable().default(null),
+  operator: z.string().nullable().default(null),
   firstResponseAt: z.string().nullable(),
   lastResponseAt: z.string().nullable(),
   pricesAsOf: z.string(),
@@ -213,6 +215,7 @@ export const summariseTranscript = (
   let cwd: string | undefined;
   let openingPrompt: string | undefined;
   let url: string | undefined;
+  let operator: string | undefined;
   let claudeCodeTotalUsd: number | undefined;
 
   // `delegated` files a subagent's own file as subagent spend, whatever its
@@ -241,6 +244,9 @@ export const summariseTranscript = (
         }
         if (kind === 'attachment') {
           url ??= sessionUrlIn(record, line);
+          // The first one any SessionStart resolved, since a resume runs the
+          // hook again.
+          operator ??= operatorOf(record);
           continue;
         }
       }
@@ -312,6 +318,7 @@ export const summariseTranscript = (
     openingPrompt: openingPrompt ?? null,
     prs: [...prs].toSorted((a, b) => a - b),
     url: url ?? null,
+    operator: operator ?? null,
     firstResponseAt: inOrder.at(0) ?? null,
     lastResponseAt: inOrder.at(-1) ?? null,
     pricesAsOf: prices.as_of,

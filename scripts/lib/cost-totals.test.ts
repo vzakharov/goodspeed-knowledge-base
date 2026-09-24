@@ -29,6 +29,7 @@ const row = (overrides: Partial<SessionCost> = {}): SessionCost => ({
   openingPrompt: null,
   prs: [],
   url: null,
+  operator: null,
   firstResponseAt: '2026-03-04T05:06:07.000Z',
   lastResponseAt: '2026-03-04T06:06:07.000Z',
   pricesAsOf: '2026-01-01',
@@ -87,6 +88,21 @@ describe('cost-totals: how a branch is labelled', () => {
 
   it('says so rather than dropping a row whose branch went unrecorded', () => {
     assert.equal(branchLabel(row({ branch: null })), '(no branch)');
+  });
+});
+
+describe('cost-totals: whose session it was', () => {
+  it('sums the spend by operator handle', () => {
+    const totals = totalsOf([
+      row({ operator: 'vzakharov' }),
+      row({ operator: 'vzakharov', total: tally(2) }),
+    ]);
+    assert.equal(totals.byOperator['@vzakharov']?.costUsd, 3);
+  });
+
+  it('files a row that named nobody under an unknown operator, not a guess', () => {
+    const totals = totalsOf([row()]);
+    assert.equal(totals.byOperator['(unknown)']?.sessions, 1);
   });
 });
 

@@ -9,6 +9,7 @@ const TotalsSchema = BucketSchema.extend({
   byWeek: z.record(z.string(), BucketSchema),
   byDay: z.record(z.string(), BucketSchema),
   byBranch: z.record(z.string(), BucketSchema),
+  byOperator: z.record(z.string(), BucketSchema),
 });
 
 export type Bucket = z.infer<typeof BucketSchema>;
@@ -65,21 +66,26 @@ const roundedAll = (buckets: Record<string, Bucket>): Record<string, Bucket> =>
 export const branchLabel = (row: SessionCost): string =>
   [row.branch ?? '(no branch)', ...row.prs.map((pr) => `#${pr}`)].join(' ');
 
+export const operatorLabel = (row: SessionCost): string =>
+  row.operator === null ? '(unknown)' : `@${row.operator}`;
+
 /**
  * Files a session under the day it **started**, as its row's month is, so one
  * running past midnight stays whole. A row with no priced response lands in the
- * grand total and its branch alone.
+ * grand total, its branch and its operator alone.
  */
 export const totalsOf = (rows: readonly SessionCost[]): Totals => {
   const byMonth: Record<string, Bucket> = {};
   const byWeek: Record<string, Bucket> = {};
   const byDay: Record<string, Bucket> = {};
   const byBranch: Record<string, Bucket> = {};
+  const byOperator: Record<string, Bucket> = {};
   const grand = emptyBucket();
 
   for (const row of rows) {
     addInto(grand, row);
     into(byBranch, branchLabel(row), row);
+    into(byOperator, operatorLabel(row), row);
     const startedAt = row.firstResponseAt;
     if (startedAt === null) continue;
     const day = new Date(startedAt);
@@ -94,5 +100,6 @@ export const totalsOf = (rows: readonly SessionCost[]): Totals => {
     byWeek: roundedAll(byWeek),
     byDay: roundedAll(byDay),
     byBranch: roundedAll(byBranch),
+    byOperator: roundedAll(byOperator),
   };
 };
