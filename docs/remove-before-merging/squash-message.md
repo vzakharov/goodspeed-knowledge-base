@@ -11,13 +11,13 @@ the code changes it raised to be carved into issues under #2. This is
 the document, the first of those issues; the other four are filed as
 #5 to #8, each a native sub-issue of #2.
 
-docs/design-notes.md opens with a diagram of every module across the
-API, the web app and @kb/contracts, and one chat question followed
-through it. Then come the choices, each against its alternatives with
-a migration path (NestJS beside Next.js, the contracts package,
-node:test, the static export, the hand-drawn chart, the session store,
-TanStack Query), and how the trickier parts work, from provider
-presets and the auth guard to RLS, migrations and the build.
+docs/design-notes.md opens with three diagrams, the system and then
+each app on its own, and one chat question followed through them. Then
+come the choices, each against its alternatives with a migration path
+(NestJS beside Next.js, node:test, the static export, the hand-drawn
+chart, the session store, TanStack Query, plain model calls rather
+than an agent framework), and how the trickier parts work, from
+provider presets to row-level security, migrations and the build.
 
 It closes on the house style, including what the /polish passes
 produced and the type-overlap check, and on the shortcuts the PoC took
