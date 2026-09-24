@@ -1,0 +1,5 @@
+// An error message can quote an unbroken token — a provider's 401 quotes the
+// key — which must wrap rather than widen the alert past its column.
+.message {
+  overflow-wrap: anywhere;
+}
