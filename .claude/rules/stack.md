@@ -26,7 +26,7 @@ paths:
 - **`scripts/check-skill-catalog.sh` asserts that every `@`-reference into `.claude/`, and every section citation into a `CLAUDE.md`, resolves** — the failure it catches is silent.
 - **`scripts/check-squash-message.sh` holds the squash proposal to the size caps `@.claude/skills/squash-message/SKILL.md` states**, and **`scripts/staged.sh check`** holds each staged copy to the rules `@.claude/rules/staging.md` states.
 
-**A workspace that lands brings its checks into the roster in the same change**, and a check a CI run would have caught is a signal to extend it.
+**A workspace that lands brings its checks into the roster in the same change**, and a failure the run let through is a signal to extend it.
 
 **A workspace landing, or a toolchain change, is unfinished until three sites agree:**
 
