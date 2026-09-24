@@ -348,5 +348,11 @@ account, with what it cost, is in [How it was built](docs/how-it-was-built.md).
 
 ## Walkthroughs
 
-- [The app](https://www.loom.com/share/e4cd3a06ca7e4f799d3946301f0d91c3)
-- [How AI accelerated the work](https://www.loom.com/share/f0a00289f0254304a0da6f4aed5b3409)
+- **The app** —
+  [on Loom](https://www.loom.com/share/e4cd3a06ca7e4f799d3946301f0d91c3), or
+  in the repo as [video](docs/loom/app-walkthrough.mp4) and
+  [captions](docs/loom/app-walkthrough.vtt)
+- **How AI accelerated the work** —
+  [on Loom](https://www.loom.com/share/f0a00289f0254304a0da6f4aed5b3409), or
+  in the repo as [video](docs/loom/ai-workflow.mp4) and
+  [captions](docs/loom/ai-workflow.vtt)
