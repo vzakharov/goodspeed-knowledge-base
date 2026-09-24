@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 
-// Totals the rows under `.claude/costs/sessions/` at Claude API rates.
+// Totals the rows under `.claude/costs/sessions/` at Claude API rates. A row
+// still carrying a retired field is rewritten without it, and the report says
+// which.
 //
 //   node scripts/costs-report.ts [--month YYYY-MM] [--json]
 
 /* eslint-disable no-console -- stdout is this script's interface: the report is
    the whole output. */
 
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync } from 'node:fs';
 import path from 'node:path';
 
 import { flag, given } from './lib/argv.ts';
 import { type Bucket, totalsOf } from './lib/cost-totals.ts';
-import { readPrices, sessionsDir } from './lib/ledger.ts';
-import { parseSessionCost, type SessionCost } from './lib/session-cost.ts';
+import { readPrices, readRow, sessionsDir } from './lib/ledger.ts';
+import type { SessionCost } from './lib/session-cost.ts';
 
 const wanted = flag('month');
 
@@ -32,9 +34,15 @@ const rowsIn = (month: string): SessionCost[] => {
   const dir = path.join(sessionsDir, month);
   return readdirSync(dir)
     .filter((name) => name.endsWith('.json'))
-    .map((name) =>
-      parseSessionCost(readFileSync(path.join(dir, name), 'utf8')),
-    );
+    .map((name) => {
+      const file = path.join(dir, name);
+      const { row, dropped } = readRow(file);
+      // Stderr, so `--json` stays parseable. A rewritten row is a change to
+      // commit, which is why it is named rather than done quietly.
+      if (dropped.length > 0)
+        console.error(`costs: dropped ${dropped.join(', ')} from ${file}`);
+      return row;
+    });
 };
 
 const shown = months.filter(

@@ -87,7 +87,6 @@ const SessionCostSchema = z.object({
   branch: z.string().nullable(),
   cwd: z.string().nullable(),
   // The defaults let a row that predates its field still parse.
-  name: z.string().nullable().default(null),
   openingPrompt: z.string().nullable().default(null),
   prs: z.array(z.number()).default([]),
   url: z.string().nullable().default(null),
@@ -349,7 +348,6 @@ export const summariseTranscript = (
     sessionId: sessionId ?? fallbackSessionId,
     branch: branch ?? null,
     cwd: cwd ?? null,
-    name: null,
     openingPrompt: openingPrompt ?? null,
     prs: [...prs].toSorted((a, b) => a - b),
     url: url ?? null,

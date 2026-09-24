@@ -2,7 +2,6 @@
   "sessionId": "8cfe021a-84e1-5e65-b711-95a0b8b82494",
   "branch": "claude/knowledge-base-f6yidh",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": "full polish, then the web foundation",
   "openingPrompt": "/go claude/knowledge-base-f6yidh но сперва полный /polish",
   "prs": [
     1

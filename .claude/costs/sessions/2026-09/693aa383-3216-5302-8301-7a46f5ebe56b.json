@@ -2,7 +2,6 @@
   "sessionId": "693aa383-3216-5302-8301-7a46f5ebe56b",
   "branch": "claude/sharp-lamport-f6yidh",
   "cwd": "/home/user/vovazakharov.com",
-  "name": "spinoff seed from vovazakharov.com",
   "openingPrompt": "@\"/root/.claude/uploads/693aa383-3216-5302-8301-7a46f5ebe56b/1fdb5227-Software_Developer_Technical_Assessment_-_Goodspeed.md\" /spinoff для вот такого тестового …",
   "prs": [
     1

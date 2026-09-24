@@ -2,7 +2,6 @@
   "sessionId": "c4626f77-796c-58c9-94b0-454ebfe9116e",
   "branch": "claude/knowledge-base-f6yidh",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": "knowledge base: documents pages",
   "openingPrompt": "пошли дальше (/go) по claude/knowledge-base-f6yidh",
   "prs": [
     1

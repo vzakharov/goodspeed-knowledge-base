@@ -7,7 +7,13 @@
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
@@ -78,14 +84,13 @@ describe('session-cost: what a rewrite carries forward', () => {
     assert.match(tails[0] ?? '', /msg_1/);
   });
 
-  it('keeps the name a hand run wrote', () => {
+  it('writes the row to --out, leaving the ledger as it was', () => {
     const { dir, transcript } = project();
     writeFileSync(transcript, response('msg_1', 'end_turn'));
-    run(dir, transcript, '--name', 'a named session');
+    const out = path.join(dir, 'staged.json');
+    const row = run(dir, transcript, '--at-stop', '--out', out);
 
-    const row = parseSessionCost(
-      readFileSync(run(dir, transcript, '--at-stop'), 'utf8'),
-    );
-    assert.equal(row.name, 'a named session');
+    assert.equal(existsSync(row), false);
+    assert.equal(parseSessionCost(readFileSync(out, 'utf8')).sessionId, 'sess');
   });
 });

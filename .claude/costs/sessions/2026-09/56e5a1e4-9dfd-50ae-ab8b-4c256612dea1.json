@@ -2,7 +2,6 @@
   "sessionId": "56e5a1e4-9dfd-50ae-ab8b-4c256612dea1",
   "branch": "claude/knowledge-base-f6yidh",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": null,
   "openingPrompt": "/go claude/knowledge-base-f6yidh",
   "prs": [
     1

@@ -2,7 +2,6 @@
   "sessionId": "de805882-93f7-5cc5-8154-e8ca0e06c922",
   "branch": "claude/knowledge-base-f6yidh",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": "pnpm bootstrap and per-chunk plan rules",
   "openingPrompt": "/from-branch claude/knowledge-base-f6yidh давай продолжать, но (и внеси это в план) каждая сессия должна делать какой-то удобоваримый кусок (потолок -- 200 с не…",
   "prs": [
     1

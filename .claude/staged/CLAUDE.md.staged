@@ -12,6 +12,8 @@ The static export is the constraint that shapes the web app: it is HTML and clie
 
 **Agent: this file is yours to grow**, with the human, and the test above says where each addition goes: propose the pattern worth codifying, the trap worth warning about, the command worth documenting.
 
+**On a branch, this file — and anything else that loads on every turn — is edited only through a staged copy**, because an edit in place invalidates the prompt cache of every session on the branch: `scripts/staged.sh stage <path>` and commit, edit the copy it makes, and `/finalize` swaps it in. **An operator's ask to swap it in now** — "swap it in", "unstage", in any words or language — runs `scripts/staged.sh swap` on the spot and commits, trading the cache for a branch that runs on the new text. `@.claude/rules/staging.md` defines the set and the rest of the convention.
+
 ## Repository layout
 
 - **`apps/web/`** — the Next.js app. `app/` is **routing only**; `src/` holds every module in Feature-Sliced Design layers — `shared/`, `entities/`, `features/`, `widgets/`, `pages/`, `app/` — and `@.claude/rules/fsd.md` carries the conventions, which both checkers enforce. `pages/` beside `app/` is an empty Pages Router that keeps Next away from the FSD pages layer. `styles/` holds the Sass partials: `_mantine.scss` (counterparts to the mixins Mantine documents as a PostCSS preset) plus the two `pnpm styles:codegen` writes — `_tokens.scss` from `src/shared/ui/css-color.ts` and `_breakpoints.scss` from `src/app/styles/breakpoints.ts`. They sit outside `src/` because a Sass partial is not an FSD module — it has no import graph for the layer checkers to reason about.

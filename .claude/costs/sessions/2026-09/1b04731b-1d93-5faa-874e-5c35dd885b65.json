@@ -2,7 +2,6 @@
   "sessionId": "1b04731b-1d93-5faa-874e-5c35dd885b65",
   "branch": "claude/knowledge-base-f6yidh",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": "knip and the web sign-in foundation",
   "openingPrompt": "/go claude/knowledge-base-f6yidh",
   "prs": [
     1

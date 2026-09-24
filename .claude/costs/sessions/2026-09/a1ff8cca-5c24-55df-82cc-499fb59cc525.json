@@ -2,7 +2,6 @@
   "sessionId": "a1ff8cca-5c24-55df-82cc-499fb59cc525",
   "branch": "claude/update-muthur-agtxi2",
   "cwd": "/home/user/goodspeed-knowledge-base",
-  "name": "muthur sync: staging, CLAUDE.md trim, ledger",
   "openingPrompt": "update muthur",
   "prs": [
     11
