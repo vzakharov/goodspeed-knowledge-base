@@ -33,6 +33,8 @@ Anything that holds only over part of that tree lives as a path-scoped rule in `
 
 Vetting is the fast local check the agent runs over a branch _before pushing_ — lint, type-check, format-check, and any tests fast enough to run in seconds. Entrypoint: `./scripts/vet.sh`. **Vetting is the run; attestation is the record that it happened** — `/finalize` does both, and its docs-only flag (`no vet`) skips the first while still posting the second.
 
+**A docs-only diff finalizes in `no vet` mode whether or not the flag was typed.** Docs-only means every changed file is Markdown, the session cost rows under `.claude/costs/` aside. The full run would spend minutes and a running stack on a diff that only two of its checks read, so those two still run, in seconds: `pnpm exec prettier --check` over the changed files, and `scripts/check-skill-catalog.sh` when the diff reaches `.claude/`. The attestation names both.
+
 Here that is:
 
 ```bash
