@@ -130,9 +130,8 @@ one that stands alone ("and how do I undo that?" retrieves nothing until
 nearest chunks at cosine similarity 0.25 or better become numbered sources.
 The model is told to answer only from the sources, to cite each statement as
 `[n]`, and to say so when the sources do not cover the question. The 0.25 is a
-proof-of-concept value, and by my experience a low one: the right threshold
-is measured, not chosen — embed a synthetic dataset whose close and distant
-pairs are known, and read the cut off the distribution
+proof-of-concept value, and in my experience a low one; the right threshold
+is to be measured on a synthetic dataset
 ([#8](https://github.com/vzakharov/goodspeed-knowledge-base/issues/8)).
 Earlier answers' `[n]` are stripped from the history, since they point at
 sources that are not in this prompt.
