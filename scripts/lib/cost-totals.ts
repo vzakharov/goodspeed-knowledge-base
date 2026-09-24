@@ -66,7 +66,7 @@ const roundedAll = (buckets: Record<string, Bucket>): Record<string, Bucket> =>
 export const branchLabel = (row: SessionCost): string =>
   [row.branch ?? '(no branch)', ...row.prs.map((pr) => `#${pr}`)].join(' ');
 
-export const operatorLabel = (row: SessionCost): string =>
+const operatorLabel = (row: SessionCost): string =>
   row.operator === null ? '(unknown)' : `@${row.operator}`;
 
 /**

@@ -73,9 +73,9 @@ describe('session-cost: what a rewrite carries forward', () => {
       readFileSync(run(dir, transcript, '--at-stop'), 'utf8'),
     );
 
-    const tails = row.warnings.filter(isUnwrittenTail);
+    const tails = row.warnings.filter((warning) => isUnwrittenTail(warning));
     assert.equal(tails.length, 1);
-    assert.ok(tails[0]?.includes('msg_1'));
+    assert.match(tails[0] ?? '', /msg_1/);
   });
 
   it('keeps the name a hand run wrote', () => {

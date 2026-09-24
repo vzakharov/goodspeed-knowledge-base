@@ -213,7 +213,10 @@ describe('session-cost: a tail the transcript had not caught up with', () => {
       [],
       true,
     );
-    assert.equal(cost.warnings.filter(isUnwrittenTail).length, 1);
+    assert.equal(
+      cost.warnings.filter((warning) => isUnwrittenTail(warning)).length,
+      1,
+    );
     assert.ok(cost.warnings.join('').includes('msg_b'));
   });
 
@@ -249,6 +252,12 @@ const link = (prNumber: number): string =>
 
 const costState = (totalCostUSD: number): string =>
   JSON.stringify({ type: 'cost-state', totalCostUSD });
+
+const sessionStart = (content: string): string =>
+  JSON.stringify({
+    type: 'attachment',
+    attachment: { type: 'hook_success', hookEvent: 'SessionStart', content },
+  });
 
 describe('session-cost: what names a session', () => {
   it('takes the opening prompt as the session name, unwrapping a slash command', () => {
@@ -303,12 +312,6 @@ describe('session-cost: what names a session', () => {
     ]);
     assert.equal(cost.url, 'https://claude.ai/code/session_01REALone');
   });
-
-  const sessionStart = (content: string): string =>
-    JSON.stringify({
-      type: 'attachment',
-      attachment: { type: 'hook_success', hookEvent: 'SessionStart', content },
-    });
 
   it('takes the operator from the first SessionStart that resolved a person', () => {
     const cost = summarise([
