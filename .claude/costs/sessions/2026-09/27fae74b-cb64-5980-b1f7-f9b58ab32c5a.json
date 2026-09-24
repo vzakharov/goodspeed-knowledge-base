@@ -1,0 +1,58 @@
+{
+  "sessionId": "27fae74b-cb64-5980-b1f7-f9b58ab32c5a",
+  "branch": "claude/document-file-import-bsnhcr",
+  "cwd": "/home/user/goodspeed-knowledge-base",
+  "name": null,
+  "openingPrompt": "Давай реализуем загрузку файлов в форматах txt, md и pdf (очевидно, что сложнее всего будет с последним). В случае с PDF сам процесс загрузки должен быть блокир…",
+  "prs": [
+    12
+  ],
+  "url": "https://claude.ai/code/session_01VYch6A7rGtBc1C4R57Lq2U",
+  "firstResponseAt": "2026-09-24T07:29:02.098Z",
+  "lastResponseAt": "2026-09-24T07:52:55.733Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": null,
+  "total": {
+    "inputTokens": 196,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 266252,
+    "cacheReadTokens": 20331885,
+    "outputTokens": 96904,
+    "thinkingTokens": 42178,
+    "responses": 98,
+    "costUsd": 8.135256999999998
+  },
+  "ownTurns": {
+    "inputTokens": 196,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 266252,
+    "cacheReadTokens": 20331885,
+    "outputTokens": 96904,
+    "thinkingTokens": 42178,
+    "responses": 98,
+    "costUsd": 8.135256999999998
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 196,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 266252,
+      "cacheReadTokens": 20331885,
+      "outputTokens": 96904,
+      "thinkingTokens": 42178,
+      "responses": 98,
+      "costUsd": 8.135256999999998
+    }
+  },
+  "warnings": []
+}
