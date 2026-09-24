@@ -58,6 +58,7 @@ export function DocumentForm({ document, save, onSaved }: DocumentFormProps) {
     },
   });
   const creating = document === undefined;
+  const blank = form.values.content.trim() === '';
 
   return (
     <form
@@ -84,7 +85,7 @@ export function DocumentForm({ document, save, onSaved }: DocumentFormProps) {
           error={form.errors['content']}
         >
           <FileImport
-            replaces={form.values.content.trim() !== ''}
+            replaces={!blank}
             onRead={(content, { name }) => {
               form.setFieldValue('content', content);
               if (form.getValues().title.trim() === '') {
@@ -109,7 +110,7 @@ export function DocumentForm({ document, save, onSaved }: DocumentFormProps) {
               />
             </Tabs.Panel>
             <Tabs.Panel value="preview" pt="sm">
-              {form.values.content.trim() === '' ? (
+              {blank ? (
                 <Text c="dimmed">Nothing to preview yet.</Text>
               ) : (
                 <Markdown source={form.values.content} />
