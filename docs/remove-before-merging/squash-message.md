@@ -20,7 +20,7 @@ deployment with PR deployments, and restrained UI polish.
 nova-3 and a local faster-whisper (its virtualenv and model fetched on
 first use), both prompted with the project's vocabulary, and prints
 the two merged word by word so a misheard word shows up as a
-disagreement. The texts park under docs/remove-before-merging/, which
+disagreement. That text parks under docs/remove-before-merging/, which
 the merge never carries. CLAUDE.md points sessions at it.
 
 Co-authored-by: Claude <noreply@anthropic.com>

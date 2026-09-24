@@ -2,9 +2,9 @@
 
 // Transcribes an audio recording twice — Deepgram's nova-3 and a local
 // faster-whisper — and prints the two merged word by word, so a word either
-// model misheard shows up as a disagreement. All three texts are saved under
-// `docs/remove-before-merging/transcripts/`, so they ride the branch for review
-// and `/finalize` sweeps them before the merge.
+// model misheard shows up as a disagreement. That text is saved under
+// `docs/remove-before-merging/transcripts/`, so it rides the branch for review
+// and `/finalize` sweeps it before the branch lands.
 //
 //   pnpm transcribe <audio-file> [--language <code>]
 //
@@ -164,13 +164,18 @@ const whisper = async (): Promise<string> => {
   return stdout.trim();
 };
 
-const dir = path.join(root, 'docs/remove-before-merging/transcripts');
-const stem = path.join(dir, path.parse(file).name);
-mkdirSync(dir, { recursive: true });
+const name = path.parse(file).name;
+// `git diff` compares files, so the two hearings are staged as scratch.
+const scratch = path.join(root, 'tmp/transcribe');
+const heard = {
+  deepgram: path.join(scratch, `${name}.deepgram.txt`),
+  whisper: path.join(scratch, `${name}.whisper.txt`),
+};
+mkdirSync(scratch, { recursive: true });
 
 const [fromDeepgram, fromWhisper] = await Promise.all([deepgram(), whisper()]);
-writeFileSync(`${stem}.deepgram.txt`, `${fromDeepgram}\n`);
-writeFileSync(`${stem}.whisper.txt`, `${fromWhisper}\n`);
+writeFileSync(heard.deepgram, `${fromDeepgram}\n`);
+writeFileSync(heard.whisper, `${fromWhisper}\n`);
 
 const diff = spawnSync(
   'git',
@@ -181,8 +186,8 @@ const diff = spawnSync(
     '--word-diff=plain',
     '--word-diff-regex=[^[:space:]]+',
     '-U1000000',
-    `${stem}.deepgram.txt`,
-    `${stem}.whisper.txt`,
+    heard.deepgram,
+    heard.whisper,
   ],
   { encoding: 'utf8' },
 );
@@ -198,9 +203,13 @@ const merged = [
 ]
   .join('\n')
   .trimEnd();
-writeFileSync(`${stem}.diff.txt`, `${merged}\n`);
+const out = path.join(
+  root,
+  'docs/remove-before-merging/transcripts',
+  `${name}.txt`,
+);
+mkdirSync(path.dirname(out), { recursive: true });
+writeFileSync(out, `${merged}\n`);
 
 console.log(merged);
-console.error(
-  `transcribe: saved ${path.relative(root, stem)}.{deepgram,whisper,diff}.txt`,
-);
+console.error(`transcribe: saved ${path.relative(root, out)}`);
