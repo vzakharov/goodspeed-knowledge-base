@@ -1,0 +1,14 @@
+// Mantine paints a drop target that accepts in the primary colour's `light`
+// variant, which on the monochrome palette is foreground text on a foreground
+// fill (`.claude/rules/styling.md`).
+.dropzone[data-accept] {
+  border-color: var(--color-foreground);
+  background-color: var(--color-surface);
+  color: var(--color-foreground);
+}
+
+// The full-screen target's content wrapper, which Mantine leaves at its
+// content's height, so the prompt can centre on the screen.
+.fill {
+  height: 100%;
+}

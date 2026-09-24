@@ -21,7 +21,9 @@ import { useMutation } from '@tanstack/react-query';
 import { pick } from '@/shared/lib/collections';
 import { ErrorAlert, Markdown } from '@/shared/ui';
 
+import { titleFromFileName } from '../lib/read-file';
 import classes from './document-form.module.scss';
+import { FileImport } from './file-import';
 
 const CONTENT_MIN_ROWS = 16;
 
@@ -56,6 +58,7 @@ export function DocumentForm({ document, save, onSaved }: DocumentFormProps) {
     },
   });
   const creating = document === undefined;
+  const blank = form.values.content.trim() === '';
 
   return (
     <form
@@ -81,6 +84,15 @@ export function DocumentForm({ document, save, onSaved }: DocumentFormProps) {
           description="Markdown"
           error={form.errors['content']}
         >
+          <FileImport
+            replaces={!blank}
+            onRead={(content, { name }) => {
+              form.setFieldValue('content', content);
+              if (form.getValues().title.trim() === '') {
+                form.setFieldValue('title', titleFromFileName(name));
+              }
+            }}
+          />
           <Tabs defaultValue="write" keepMounted={false} mt="xs">
             <Tabs.List>
               <Tabs.Tab value="write">Write</Tabs.Tab>
@@ -98,7 +110,7 @@ export function DocumentForm({ document, save, onSaved }: DocumentFormProps) {
               />
             </Tabs.Panel>
             <Tabs.Panel value="preview" pt="sm">
-              {form.values.content.trim() === '' ? (
+              {blank ? (
                 <Text c="dimmed">Nothing to preview yet.</Text>
               ) : (
                 <Markdown source={form.values.content} />

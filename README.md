@@ -11,10 +11,10 @@ documents by retrieving the passages relevant to each question (RAG).
 - **AI** — any provider that speaks the OpenAI API specification
 
 What is there: sign-up and sign-in; documents in markdown with tags, a preview
-and each one's embedding status; a chat that streams its answers, cites the
-passages it used and keeps its conversations across sessions; and a usage page
-counting tokens per model per day. Of the brief's stretch goals, all but file
-upload are in.
+and each one's embedding status, typed in or read from a dropped `.txt`, `.md`
+or `.pdf` file; a chat that streams its answers, cites the passages it used and
+keeps its conversations across sessions; and a usage page counting tokens per
+model per day. All of the brief's stretch goals are in.
 
 ## Setup
 
