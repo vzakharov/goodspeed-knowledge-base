@@ -299,8 +299,9 @@ CHAT_BASE_URL=http://localhost:8000/v1
   PDFs each need working out how the app should handle them, and moving the
   processing into the background would be one of the first things I'd do.
 - **Retrieval quality.** RAG doesn't always get it right — the walkthrough
-  shows a fairly simple question it misses. Semantic chunking and the like;
-  in any system like this, the main work is in those details.
+  shows a fairly simple question it misses. Semantic chunking, retrieval over
+  a knowledge graph built from the documents rather than flat chunks, and the
+  like; in any system like this, the main work is in those details.
 - **Adapters for genuinely different model APIs**, Anthropic's first, rather
   than only providers that speak the OpenAI specification. `ChatModel` and
   `EmbeddingModel` above are the seam each would implement.
