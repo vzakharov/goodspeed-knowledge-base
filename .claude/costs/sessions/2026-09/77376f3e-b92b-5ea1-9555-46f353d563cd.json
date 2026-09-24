@@ -1,0 +1,58 @@
+{
+  "sessionId": "77376f3e-b92b-5ea1-9555-46f353d563cd",
+  "branch": "claude/loom-walkthrough-script-07aomg",
+  "cwd": "/home/user/goodspeed-knowledge-base",
+  "name": "Loom walkthrough script",
+  "openingPrompt": "Начитал текст для основного лума, давай обсудим (ты дашь отклик), потом переведём и создадим скрипт уже на английском для чистовой записи. Предлагаю так: ты ком…",
+  "prs": [
+    15
+  ],
+  "url": "https://claude.ai/code/session_01FdubK2cCFChsJ1AEZWrXdL",
+  "firstResponseAt": "2026-09-24T10:39:49.450Z",
+  "lastResponseAt": "2026-09-24T11:22:09.581Z",
+  "pricesAsOf": "2026-09-23",
+  "claudeCodeTotalUsd": 1.130514,
+  "total": {
+    "inputTokens": 112,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 145419,
+    "cacheReadTokens": 7875768,
+    "outputTokens": 37588,
+    "thinkingTokens": 12059,
+    "responses": 56,
+    "costUsd": 3.4907136
+  },
+  "ownTurns": {
+    "inputTokens": 112,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 145419,
+    "cacheReadTokens": 7875768,
+    "outputTokens": 37588,
+    "thinkingTokens": 12059,
+    "responses": 56,
+    "costUsd": 3.4907136
+  },
+  "subagents": {
+    "inputTokens": 0,
+    "cacheWrite5mTokens": 0,
+    "cacheWrite1hTokens": 0,
+    "cacheReadTokens": 0,
+    "outputTokens": 0,
+    "thinkingTokens": 0,
+    "responses": 0,
+    "costUsd": 0
+  },
+  "byRate": {
+    "claude-opus-5-5/standard": {
+      "inputTokens": 112,
+      "cacheWrite5mTokens": 0,
+      "cacheWrite1hTokens": 145419,
+      "cacheReadTokens": 7875768,
+      "outputTokens": 37588,
+      "thinkingTokens": 12059,
+      "responses": 56,
+      "costUsd": 3.4907136
+    }
+  },
+  "warnings": []
+}
