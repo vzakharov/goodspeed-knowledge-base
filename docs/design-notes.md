@@ -722,7 +722,7 @@ The web app's schemas for what it sends to and reads from the API are the backen
 
 Each app uses them at its own edge. The API parses every body, query and id through `ZodPipe` ([`zod.pipe.ts:10-24`](../apps/api/src/http/zod.pipe.ts#L10-L24)), as in `@Body(new ZodPipe(questionInputSchema))` ([`conversations.controller.ts:89`](../apps/api/src/chat/conversations.controller.ts#L89)), so a body that does not match is a 400 naming the field. Its responses are checked by the compiler only: a handler's return type is the contract's type ([line 62](../apps/api/src/chat/conversations.controller.ts#L62)). The web client parses every response at runtime: `api.request(path, schema)` ends in `schema.parse` ([`api-client.ts:68`](../apps/web/src/shared/api/api-client.ts#L68)), and the chat parses each stream event with `answerEventSchema` ([`conversations.ts:80`](../apps/web/src/pages/chat/api/conversations.ts#L80)). The document form validates with `documentInputSchema` ([`document-form.tsx:48`](../apps/web/src/pages/document-editor/ui/document-form.tsx#L48)), the schema the API applies to the same body ([`documents.controller.ts:68`](../apps/api/src/documents/documents.controller.ts#L68)).
 
-The package does not hold the routes. Which path and method take which schema is written on each side separately (`` `/conversations/${id}/messages` `` in the client, `@Post(':id/messages')` in the controller), and the client's request body is typed `unknown` ([`api-client.ts:17`](../apps/web/src/shared/api/api-client.ts#L17)). So a request body is checked at compile time only where the caller's own parameter has the contract's type, as `createDocument(input: DocumentInput)` does, and a route renamed on one side fails at runtime, as a 404.
+The package does not hold the routes. Which path and method take which schema is written on each side separately, and the client's request body is typed `unknown` ([`api-client.ts:17`](../apps/web/src/shared/api/api-client.ts#L17)), so a route renamed on one side fails at runtime, as a 404. §5 takes this up under [what the contract does not cover](#what-the-contract-does-not-cover) and [the API client](#the-api-client-takes-any-path).
 
 ### Turborepo: the task graph over the workspaces
 
@@ -919,14 +919,7 @@ A single Next.js app whose server actions are its backend gets this for free. A 
 
 ### What the contract does not cover
 
-The web app parses with the backend's own schemas. Both import them from `@kb/contracts`:
-
-- the API parses every body, query and path parameter with a `ZodPipe` ([`zod.pipe.ts`](../apps/api/src/http/zod.pipe.ts#L10-L24));
-- the client parses every response ([`api-client.ts:68`](../apps/web/src/shared/api/api-client.ts#L68));
-- the document form validates with `documentInputSchema` ([`document-form.tsx:48`](../apps/web/src/pages/document-editor/ui/document-form.tsx#L48));
-- the chat stream is parsed with `answerEventSchema` ([`conversations.ts:80`](../apps/web/src/pages/chat/api/conversations.ts#L80)), and error bodies with `apiErrorSchema`.
-
-So rename a field on one side and the other side fails to compile.
+Every body that crosses the wire is parsed with a schema both apps import from `@kb/contracts`, so renaming a field on one side fails to compile on the other ([the `@kb/contracts` entry](#kbcontracts-one-set-of-schemas-on-both-sides-of-the-wire) in §3 lists where each side parses).
 
 What can still drift is the part of the HTTP exchange that is not a schema:
 
