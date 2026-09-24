@@ -23,11 +23,12 @@ import { ThemeToggle } from '@/features/switch-theme';
 
 const HEADER_HEIGHT = 56;
 
+// `/` is left out: it only sends a reader on to the documents or the chat.
 const NAV: LabeledLink[] = [
-  { label: 'Overview', href: '/' },
   { label: 'Documents', href: '/documents' },
   { label: 'Chat', href: '/chat' },
   { label: 'Usage', href: '/usage' },
+  { label: 'Models', href: '/models' },
 ];
 
 /**
@@ -36,10 +37,7 @@ const NAV: LabeledLink[] = [
  * `apps/web/pages/` keeps empty.
  */
 function isCurrent(href: string, pathname: string | null): boolean {
-  return (
-    pathname === href ||
-    (href !== '/' && pathname?.startsWith(`${href}/`) === true)
-  );
+  return pathname === href || pathname?.startsWith(`${href}/`) === true;
 }
 
 function SignOutButton() {
@@ -108,6 +106,7 @@ export function SignedInLayout({ children }: WithChildren) {
                   key={href}
                   {...{ href }}
                   size="sm"
+                  underline="hover"
                   fw={current ? 700 : 400}
                   aria-current={current ? 'page' : undefined}
                 >
