@@ -101,9 +101,9 @@ skipped commit on every future run.
 abandoned midway, an un-bumped watermark costs a re-triage; a bumped one that
 merged without its port silently skips commits forever.
 
-## Two invariants
+## Three invariants
 
-Both hold at every link in the chain, so they live here rather than in the
+Each holds at every link in the chain, so they live here rather than in the
 watermark.
 
 ### Never sync the watermark file itself
@@ -115,6 +115,14 @@ to a foreign history. **The failure surfaces one sync later, as an unresolvable
 SHA**, by which point the cause is several commits back.
 
 Exclude it unconditionally, whatever `adopted` says.
+
+### Never sync the source's cost rows
+
+`.claude/costs/sessions/` is the source's own ledger — what _its_ sessions cost —
+and the one path in `.claude/costs/` that is data rather than machinery. A sync
+that ported it would add the source's spend to this repo's totals, and no later
+report could tell the two apart. Exclude it unconditionally too, whether or not
+this repo runs the ledger.
 
 ### Judge the diff, not the commit message's "we"
 
@@ -239,6 +247,12 @@ scripts/check-skill-catalog.sh` is that check where it was adopted.
 - **Declined** → add the path to `declined` with the reason.
 
 Either way the question does not come back.
+
+**An opt-in row is offered by its own path, the same way**, even when a broader
+`adopted` entry already covers it. The catalog marks such a row `opt-in: ask`,
+and a parent directory having been taken says nothing about whether the operator
+wants what it costs. Ask with the row's criteria, and record the answer as an
+entry of its own, under the row's path, in `adopted` or `declined`.
 
 ### Step 5 — Apply by intent, not by patch
 
